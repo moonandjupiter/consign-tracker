@@ -97,16 +97,16 @@
              }
 
              .search-reset-container button {
-                 width: 100%;
+               width: 100%;
              }
 
              /* Adjust export options container on mobile */
              .export-options {
-                 width: 100%;
+               width: 100%;
              }
 
               .export-options button {
-                  width: 100%;
+                width: 100%;
               }
 
               /* Mobile specific dropdown styling */
@@ -416,11 +416,11 @@
             <p class="text-sm text-gray-600 mt-2">Type your SR ID, Consignment Order #, or Invoice # and click 'Search' to see the latest status.</p>
 
             <div id="quantitySummaryPanel" class="mt-4 p-4 bg-blue-100 border border-blue-200 rounded-lg text-blue-800 font-semibold hidden">
-                  <div class="summary-content">
-                       <i class="fas fa-info-circle summary-icon"></i> <div id="overallSummary"></div>
-                  </div>
-                  <ul id="consignmentSummaryList" class="mt-2 text-sm font-normal">
-                      </ul>
+                 <div class="summary-content">
+                      <i class="fas fa-info-circle summary-icon"></i> <div id="overallSummary"></div>
+                 </div>
+                 <ul id="consignmentSummaryList" class="mt-2 text-sm font-normal">
+                     </ul>
             </div>
 
             <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4">
@@ -501,7 +501,7 @@
             // Disable if input is empty or if data is not yet loaded (allData is empty)
             // The button should be enabled if there is text in the input AND data is loaded.
             searchButton.disabled = searchInput.value.trim() === '' || allData.length === 0;
-            // console.log(`Search button disabled state updated: ${searchButton.disabled}`); // Debugging log
+             // console.log(`Search button disabled state updated: ${searchButton.disabled}`); // Debugging log
         }
 
         // Function to show messages
@@ -586,10 +586,10 @@
                 const icon = header.querySelector('i');
                 if (icon) {
                     // Hide icons if filter is empty (showing no data)
-                    if (filteredData.length === 0) { // Hide if showing no data
+                     if (filteredData.length === 0) { // Hide if showing no data
                          icon.style.visibility = 'hidden';
                          header.classList.remove('sorted-asc', 'sorted-desc'); // Remove sorted classes
-                    } else {
+                     } else {
                          icon.style.visibility = 'visible';
                          icon.classList.remove('fa-sort', 'fa-sort-up', 'fa-sort-down');
                          if (sortColumn === currentSortColumn) {
@@ -599,7 +599,7 @@
                              icon.classList.add('fa-sort'); // Default unsorted icon
                              header.classList.remove('sorted-asc', 'sorted-desc');
                          }
-                    }
+                     }
                 }
             });
         }
@@ -821,8 +821,8 @@
                              const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
 
                              return srId.includes(searchTerm) ||
-                                    consignmentOrderNumber.includes(searchTerm) ||
-                                    invoiceNo.includes(searchTerm);
+                                         consignmentOrderNumber.includes(searchTerm) ||
+                                         invoiceNo.includes(searchTerm);
                          });
                          console.log(`Filtered by free-text "${searchTerm}". Found ${filteredData.length} results.`); // Debugging log
                      }
@@ -927,8 +927,8 @@
                             searchInput.value = suggestion.display; // Set input value to the displayed label
                             suggestionsList.classList.add('hidden'); // Hide suggestions
                             performSearch(suggestion.value); // Trigger search using the hidden value
-                            // --- ADDED: Explicitly disable search button after suggestion click search ---
-                            searchButton.disabled = true;
+                             // --- ADDED: Explicitly disable search button after suggestion click search ---
+                             searchButton.disabled = true;
                              // console.log("Suggestion click search complete. Search button disabled."); // Debugging log
                         });
                         suggestionsList.appendChild(suggestionItem);
@@ -1016,6 +1016,154 @@
                  console.log(`Next page clicked. Current page: ${currentPage}`); // Debugging line
             }
         });
+
+        // Add event listener for the export button to toggle the dropdown visibility
+        exportButton.addEventListener('click', (event) => {
+            // Prevent the default button action (like form submission, though not in a form here)
+            event.preventDefault();
+            // Prevent the window click listener from immediately hiding the dropdown
+            event.stopPropagation();
+
+            // Toggle the 'hidden' class to show or hide the dropdown
+            exportDropdown.classList.toggle('hidden');
+             console.log("Export button clicked. Dropdown visibility toggled."); // Debugging log
+        });
+
+        // Add event listeners for the export dropdown options
+        exportDropdown.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default link behavior
+                const format = link.getAttribute('data-format');
+                console.log(`Export option clicked: ${format}`); // Debugging log
+
+                if (format === 'csv') {
+                    exportTableToCSV();
+                } else if (format === 'html') {
+                    exportTableToHTML();
+                }
+
+                exportDropdown.classList.add('hidden'); // Hide dropdown after clicking an option
+                 console.log("Dropdown option clicked. Dropdown hidden."); // Debugging log
+            });
+        });
+
+
+        // Function to export table data to CSV
+        function exportTableToCSV() {
+            console.log("Exporting to CSV..."); // Debugging log
+            if (filteredData.length === 0) {
+                showMessage("No data to export.", 'info');
+                console.log("No data to export to CSV."); // Debugging log
+                return;
+            }
+
+            const headers = Object.keys(filteredData[0]); // Get headers from the first object
+            const csvRows = [];
+
+            // Add headers to CSV
+            csvRows.push(headers.map(header => `"${header.replace(/"/g, '""')}"`).join(','));
+
+            // Add data rows
+            filteredData.forEach(item => {
+                const values = headers.map(header => {
+                    const value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
+                    // Escape double quotes and wrap in double quotes if value contains comma or double quote
+                    return `"${value.replace(/"/g, '""')}"`;
+                });
+                csvRows.push(values.join(','));
+            });
+
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+
+            // Create a download link
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', 'invoice_data.csv');
+
+            // Append to body, click, and remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Clean up the Blob URL
+            setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+
+            showMessage("Data exported as CSV.", 'success'); // Assuming a 'success' type exists or style accordingly
+            console.log("CSV Export complete."); // Debugging log
+        }
+
+        // Function to export table data to HTML
+        function exportTableToHTML() {
+             console.log("Exporting to HTML..."); // Debugging log
+             if (filteredData.length === 0) {
+                showMessage("No data to export.", 'info');
+                 console.log("No data to export to HTML."); // Debugging log
+                return;
+            }
+
+            const headers = Object.keys(filteredData[0]); // Get headers from the first object
+            let htmlString = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Invoice Data Export</title>
+                    <style>
+                        body { font-family: sans-serif; }
+                        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                        tr:nth-child(even) { background-color: #f9f9f9; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Invoice Data Export</h1>
+                    <table>
+                        <thead>
+                            <tr>
+                                ${headers.map(header => `<th>${header}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            filteredData.forEach(item => {
+                htmlString += '<tr>';
+                headers.forEach(header => {
+                    const value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
+                    htmlString += `<td>${value}</td>`;
+                });
+                htmlString += '</tr>';
+            });
+
+            htmlString += `
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob([htmlString], { type: 'text/html;charset=utf-8;' });
+            const link = document.createElement('a');
+
+            // Create a download link
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', 'invoice_data.html');
+
+            // Append to body, click, and remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Clean up the Blob URL
+            setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+
+            showMessage("Data exported as HTML.", 'success'); // Assuming a 'success' type exists or style accordingly
+             console.log("HTML Export complete."); // Debugging log
+        }
+
 
         // Initial data fetch when the page loads
         fetchData();
