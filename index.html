@@ -87,13 +87,13 @@
 
              /* Adjust search and reset button container on mobile */
              .search-reset-container {
-                flex-direction: column;
-                width: 100%;
+               flex-direction: column;
+               width: 100%;
              }
 
              .search-input-container {
-                width: 100%;
-                margin-bottom: 10px; /* Space between search and reset on mobile */
+               width: 100%;
+               margin-bottom: 10px; /* Space between search and reset on mobile */
              }
 
              .search-reset-container button {
@@ -372,7 +372,7 @@
 </head>
 <body>
 
-    <div class="container mx-auto bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl border border-gray-200">
+    <div class="container mx-auto bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl border border-gray-200 mt-10 mb-10">
         <div class="header">
             <div class="header-content">
                 <div>
@@ -416,14 +416,14 @@
             <p class="text-sm text-gray-600 mt-2">Type your SR ID, Consignment Order #, or Invoice # and click 'Search' to see the latest status.</p>
 
             <div id="quantitySummaryPanel" class="mt-4 p-4 bg-blue-100 border border-blue-200 rounded-lg text-blue-800 font-semibold hidden">
-                 <div class="summary-content">
-                      <i class="fas fa-info-circle summary-icon"></i> <div id="overallSummary"></div>
-                 </div>
-                 <ul id="consignmentSummaryList" class="mt-2 text-sm font-normal">
-                     </ul>
+                  <div class="summary-content">
+                       <i class="fas fa-info-circle summary-icon"></i> <div id="overallSummary"></div>
+                  </div>
+                  <ul id="consignmentSummaryList" class="mt-2 text-sm font-normal">
+                      </ul>
             </div>
 
-            <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4">
+            <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4">
                 <table id="invoiceTable" class="min-w-full bg-white">
                     <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                         <tr>
@@ -495,7 +495,6 @@
         // Get the table and pagination containers
         const tableContainer = document.getElementById('tableContainer');
         const paginationContainer = document.getElementById('paginationContainer');
-
 
         // Function to update the disabled state of the search button
         function updateSearchButtonState() {
@@ -822,8 +821,8 @@
                              const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
 
                              return srId.includes(searchTerm) ||
-                                     consignmentOrderNumber.includes(searchTerm) ||
-                                     invoiceNo.includes(searchTerm);
+                                    consignmentOrderNumber.includes(searchTerm) ||
+                                    invoiceNo.includes(searchTerm);
                          });
                          console.log(`Filtered by free-text "${searchTerm}". Found ${filteredData.length} results.`); // Debugging log
                      }
@@ -892,11 +891,11 @@
 
                     // Check if the search term matches any of the relevant fields
                     if (srId.includes(searchTerm)) {
-                        matchedValue = item['SR ID'];
+                         matchedValue = item['SR ID'];
                     } else if (consignmentOrderNumber.includes(searchTerm)) {
-                        matchedValue = item['Consignment Order Number'];
+                         matchedValue = item['Consignment Order Number'];
                     } else if (invoiceNo.includes(searchTerm)) {
-                        matchedValue = item['Invoice No.'];
+                         matchedValue = item['Invoice No.'];
                     }
 
                     // If a match is found in any of the key fields, create a suggestion
@@ -948,27 +947,27 @@
 
 
          // Event listener for the reset button
-        resetButton.addEventListener('click', () => {
+         resetButton.addEventListener('click', () => {
              console.log("Reset button clicked."); // Debugging line
-            searchInput.value = ''; // Clear search input
-            filteredData = []; // Reset to show no data (initial state)
-            currentPage = 1; // Reset to first page
-            hideMessageBox(); // Hide any messages
+             searchInput.value = ''; // Clear search input
+             filteredData = []; // Reset to show no data (initial state)
+             currentPage = 1; // Reset to first page
+             hideMessageBox(); // Hide any messages
              currentSortColumn = null; // Reset sort state on reset
              currentSortDirection = 'asc';
-            calculateAndDisplaySummary(); // Calculate and update the summary panel (will hide it)
-            renderTable(); // renderTable updates export button state and sort icons
+             calculateAndDisplaySummary(); // Calculate and update the summary panel (will hide it)
+             renderTable(); // renderTable updates export button state and sort icons
              suggestionsList.classList.add('hidden'); // Hide suggestions on reset
              suggestionsList.innerHTML = ''; // Clear suggestions list content
-            // Update search button state after reset
-            updateSearchButtonState();
+             // Update search button state after reset
+             updateSearchButtonState();
 
              // Hide table and pagination containers on mobile after reset
              if (window.innerWidth <= 767) {
                  tableContainer.style.display = 'none';
                  paginationContainer.style.display = 'none';
              }
-        });
+         });
 
         // Hide the dropdown if the user clicks outside of it
         window.addEventListener('click', (event) => {
