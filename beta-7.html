@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Status Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Ensure Poppins font is used and provide a fallback */
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6; /* Improve readability */
+        }
+
+        /* Custom styling for the responsive layout */
+        /* Hide table headers on small screens */
+        @media (max-width: 767px) { /* Tailwind's 'md' breakpoint is 768px, so this targets screens smaller than that */
+            #invoiceTable thead {
+                display: none;
+            }
+
+            #invoiceTable, #invoiceTable tbody, #invoiceTable tr, #invoiceTable td {
+                display: block;
+                width: 100%;
+            }
+
+            #invoiceTable tr {
+                margin-bottom: 15px; /* Add space between rows */
+                border: 1px solid #d1d5db; /* Add a border */
+                border-radius: 0.5rem; /* Rounded corners */
+                background-color: #ffffff; /* White background for default */
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08); /* Add a subtle shadow */
+                overflow: hidden; /* Ensure rounded corners apply */
+            }
+
+            /* Add alternating background colors for rows in mobile view */
+            #invoiceTable tbody tr:nth-child(even) {
+                background-color: #f9fafb; /* Tailwind gray-50 for even rows */
+            }
+
+            #invoiceTable td {
+                border-bottom: 1px solid #e5e7eb; /* Tailwind gray-200 */
+                position: relative;
+                padding: 12px 15px 12px 50%; /* Adjust padding for label and content */
+                text-align: right; /* Align data to the right */
+                font-size: 0.9rem; /* Slightly smaller text for card items */
+                min-height: 40px; /* Ensure a minimum height for the cell */
+                display: flex; /* Use flexbox for better label/value alignment */
+                align-items: center; /* Vertically center content */
+                justify-content: flex-end; /* Align content to the right */
+            }
+
+            #invoiceTable td:last-child {
+                border-bottom: 0; /* No border on the last item in the card */
+            }
+
+            /* Add data labels before the content on small screens */
+            #invoiceTable td::before {
+                content: attr(data-label);
+                position: absolute; /* Keep absolute positioning for the label */
+                left: 0;
+                width: 45%;
+                padding-left: 15px;
+                font-weight: 600; /* Semi-bold weight for labels */
+                text-align: left; /* Align label to the left */
+                color: #4b5563; /* Tailwind gray-600 */
+                 /* Remove flex-related styles from pseudo-element if any were inherited */
+                 display: block;
+                 align-items: initial;
+                 justify-content: initial;
+            }
+
+            /* Emphasize SR ID column in mobile view */
+            #invoiceTable td[data-label="SR ID:"] {
+                background-color: #e0f2f7; /* A light blue background */
+                font-weight: 700; /* Make the text bold */
+            }
+
+            /* Adjust button size and spacing on mobile */
+            .mb-6.flex.flex-col.md\:flex-row.gap-4.items-center button {
+                width: 100%; /* Make buttons full width on mobile */
+                padding: 10px 15px; /* Adjust padding */
+                font-size: 1rem; /* Standard font size */
+            }
+
+             /* Adjust search and reset button container on mobile */
+             .search-reset-container {
+                flex-direction: column;
+                width: 100%;
+             }
+
+             .search-input-container {
+                width: 100%;
+                margin-bottom: 10px; /* Space between search and reset on mobile */
+             }
+
+             .search-reset-container button {
+                 width: 100%;
+             }
+
+             /* Adjust export options container on mobile */
+             .export-options {
+                 width: 100%;
+             }
+
+              .export-options button {
+                  width: 100%;
+              }
+
+              /* Mobile specific dropdown styling */
+              .export-dropdown {
+                 position: static; /* Remove absolute positioning on mobile */
+                 width: 100%;
+                 margin-top: 10px; /* Space below the button */
+                 box-shadow: none; /* Remove shadow on mobile */
+                 border: 1px solid #d1d5db; /* Add border on mobile */
+              }
+
+              .export-dropdown a {
+                 padding: 10px; /* Adjust padding */
+                 text-align: center; /* Center text */
+              }
+
+            /* Mobile header adjustments */
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .version-number {
+                margin-top: 5px;
+                font-size: 0.8rem;
+            }
+
+            /* Summary panel adjustments for mobile */
+             #quantitySummaryPanel {
+                 font-size: 0.9rem;
+                 padding: 10px;
+             }
+
+             #consignmentSummaryList {
+                 margin-top: 5px;
+                 font-size: 0.85rem;
+                 list-style: disc; /* Add bullet points */
+                 padding-left: 20px; /* Add padding for bullet points */
+             }
+
+             #consignmentSummaryList li {
+                 margin-bottom: 3px;
+             }
+
+            /* Mobile suggestion list styling */
+            #suggestionsList {
+                position: static; /* Remove absolute positioning on mobile */
+                width: 100%;
+                margin-top: 5px;
+                border-radius: 0.5rem;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            }
+             #suggestionsList div {
+                 padding: 8px 15px;
+                 font-size: 0.9rem;
+             }
+
+            /* Style for the empty table message on mobile */
+            #invoiceTable td.empty-table-message {
+                text-align: left; /* Align text to the left */
+                justify-content: flex-start; /* Align flex content to the start */
+                padding-left: 15px; /* Restore left padding */
+                padding-right: 15px; /* Ensure right padding */
+            }
+
+             /* Ensure the ::before pseudo-element is hidden for this specific cell */
+             #invoiceTable td.empty-table-message::before {
+                 content: none;
+             }
+
+
+        }
+
+        /* Default table styling for larger screens (md and up) */
+        @media (min-width: 768px) {
+             #invoiceTable th,
+             #invoiceTable td {
+                 border-bottom: 1px solid #e5e7eb; /* Tailwind gray-200 */
+                 padding: 12px 16px; /* More padding for better spacing */
+                 text-align: left;
+             }
+            #invoiceTable thead th {
+                border-bottom-width: 2px; /* Thicker border for header */
+                border-top: none;
+                background-color: #f3f4f6; /* Tailwind gray-100 */
+                color: #4b5563; /* Tailwind gray-600 */
+                font-weight: 600; /* Semi-bold header */
+                text-transform: uppercase;
+                font-size: 0.8rem; /* Smaller header font size */
+                cursor: pointer; /* Indicate sortable header */
+                 /* Add padding-right to make space for sort icon */
+                 padding-right: 25px;
+                 position: relative; /* Needed for absolute positioning of icon */
+            }
+
+            /* Style for sort icons in table headers */
+            #invoiceTable thead th i {
+                position: absolute;
+                right: 8px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #9ca3af; /* Tailwind gray-400 */
+                font-size: 0.7em; /* Smaller icon */
+                visibility: hidden; /* Initially hidden */
+            }
+
+            /* Show sort icon when parent th has 'sortable' class and data is filtered */
+             #invoiceTable thead th.sortable i {
+                 visibility: visible;
+             }
+
+
+             #invoiceTable tbody tr:last-child td {
+                 border-bottom: none; /* Remove bottom border for the last row */
+             }
+            /* Optional: Add alternating row colors for better readability */
+            #invoiceTable tbody tr:nth-child(even) {
+                background-color: #f9fafb; /* Tailwind gray-50 */
+            }
+             #invoiceTable tbody tr:hover {
+                 background-color: #eef2ff; /* Tailwind indigo-50 */
+                 transition: background-color 0.2s ease-in-out;
+             }
+
+            /* Desktop header adjustments */
+            .header-content {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .version-number {
+                font-size: 0.9rem;
+            }
+             /* Summary panel adjustments for desktop */
+             #quantitySummaryPanel {
+                 font-size: 1rem;
+                 padding: 1rem;
+             }
+
+             #consignmentSummaryList {
+                 margin-top: 8px;
+                 font-size: 0.9rem;
+                 list-style: disc; /* Add bullet points */
+                 padding-left: 25px; /* Add padding for bullet points */
+             }
+
+             #consignmentSummaryList li {
+                 margin-bottom: 4px;
+             }
+
+            /* Desktop suggestion list styling */
+            #suggestionsList {
+                position: absolute; /* Position relative to the search input container */
+                width: calc(100% - 40px); /* Match input width minus padding/icon space */
+                max-height: 200px; /* Limit height and make it scrollable */
+                overflow-y: auto;
+                background-color: white;
+                border: 1px solid #d1d5db; /* Tailwind gray-300 */
+                border-top: none; /* No top border */
+                border-bottom-left-radius: 0.5rem; /* rounded-lg */
+                border-bottom-right-radius: 0.5rem; /* rounded-lg */
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Tailwind shadow-lg */
+                z-index: 20; /* Ensure it's above other content */
+                top: 100%; /* Position right below the input */
+                left: 0;
+            }
+
+            #suggestionsList div {
+                padding: 10px 15px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                color: #4b5563; /* Tailwind gray-600 */
+            }
+
+            #suggestionsList div:hover {
+                background-color: #f3f4f6; /* Tailwind gray-100 */
+            }
+        }
+
+         /* General button styling improvements */
+         button {
+             transition: all 0.15s ease-in-out; /* Smooth transitions for buttons */
+             display: inline-flex; /* Align icon and text */
+             align-items: center; /* Vertically center icon and text */
+             justify-content: center; /* Horizontally center content */
+         }
+
+         button i {
+             margin-right: 8px; /* Space between icon and text */
+         }
+
+         /* Style for disabled export button */
+         #exportButton:disabled {
+             opacity: 0.5;
+             cursor: not-allowed;
+         }
+         /* Style for disabled search button */
+         #searchButton:disabled {
+             opacity: 0.5;
+             cursor: not-allowed;
+         }
+
+
+        /* Style for the search input container and icon */
+        .search-input-container {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .search-input-container input {
+            padding-left: 40px; /* Make space for the icon */
+        }
+
+        .search-input-container i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af; /* Tailwind gray-400 */
+            pointer-events: none; /* Allow clicks to pass through to the input */
+        }
+
+        /* Header styling */
+        .header {
+            background-color: #1d4ed8; /* Tailwind blue-700 */
+            color: white;
+            padding: 1.5rem; /* p-6 */
+            border-top-left-radius: 0.75rem; /* rounded-xl */
+            border-top-right-radius: 0.75rem; /* rounded-xl */
+            position: relative; /* Needed for version number positioning */
+            overflow: hidden; /* Ensure rounded corners apply */
+        }
+
+        .header-content {
+            display: flex;
+        }
+
+        .version-number {
+            color: #93c5fd; /* Tailwind blue-300 */
+            font-weight: 400; /* Normal weight */
+        }
+
+        /* Styling for the summary panel content */
+        .summary-content {
+            display: flex;
+            align-items: center; /* Vertically align icon and text */
+            gap: 10px; /* Space between icon and text */
+        }
+
+        .summary-icon {
+            font-size: 1.5rem; /* Adjust size as needed */
+            color: #1e3a8a; /* A slightly darker blue for contrast */
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="container mx-auto bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl border border-gray-200">
+        <div class="header">
+            <div class="header-content">
+                <div>
+                    <h1 class="text-3xl font-bold">ConsignTracker</h1>
+                    <p class="text-blue-200 mt-1 text-sm">Smart lookup for consignors: reported sales, invoices, and vouchers at a glance.</p>
+                </div>
+                <div class="version-number">Version: 1.3 build 6</div>
+            </div>
+        </div>
+
+        <div class="p-6">
+            <div class="mb-6 flex flex-col md:flex-row gap-4 items-center">
+                <div class="flex gap-4 flex-grow search-reset-container">
+                    <div class="search-input-container">
+                        <input type="text" id="searchInput" placeholder="Search by, Consignment Order Number, SR ID, or Invoice No."
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-gray-700 shadow-sm">
+                        <i class="fas fa-search"></i>
+                         <div id="suggestionsList" class="hidden"></div>
+                    </div>
+                    <button id="searchButton"
+                                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 transition duration-150 ease-in-out shadow-sm">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                     <button id="resetButton"
+                                class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 transition duration-150 ease-in-out shadow-sm">
+                         <i class="fas fa-sync-alt"></i> Reset
+                     </button>
+                </div>
+
+                <div class="export-options relative">
+                     <button id="exportButton" disabled
+                                class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 transition duration-150 ease-in-out shadow-sm">
+                         <i class="fas fa-download"></i> Export <i class="fas fa-caret-down ml-2"></i>
+                     </button>
+                     <div id="exportDropdown" class="export-dropdown hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-10">
+                          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="csv">Export as CSV</a>
+                          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="html" id="exportHtmlOption">Export as HTML</a>
+                     </div>
+                </div>
+            </div>
+            <p class="text-sm text-gray-600 mt-2">Type your SR ID, Consignment Order #, or Invoice # and click 'Search' to see the latest status.</p>
+
+            <div id="quantitySummaryPanel" class="mt-4 p-4 bg-blue-100 border border-blue-200 rounded-lg text-blue-800 font-semibold hidden">
+                 <div class="summary-content">
+                      <i class="fas fa-info-circle summary-icon"></i> <div id="overallSummary"></div>
+                 </div>
+                 <ul id="consignmentSummaryList" class="mt-2 text-sm font-normal">
+                     </ul>
+            </div>
+
+            <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4">
+                <table id="invoiceTable" class="min-w-full bg-white">
+                    <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                        <tr>
+                            <th class="py-3 px-6 text-left" data-sort="SR ID">SR ID</th>
+                            <th class="py-3 px-6 text-left" data-sort="Name of Company">Name of Company</th>
+                            <th class="py-3 px-6 text-left sortable" data-sort="Consignment Order Number">Consignment Order Number <i class="fas fa-sort"></i></th>
+                            <th class="py-3 px-6 text-left" data-sort="Quantity Sold">Quantity Sold</th>
+                            <th class="py-3 px-6 text-left" data-sort="Amount">Amount</th>
+                            <th class="py-3 px-6 text-left sortable" data-sort="Invoice No.">Invoice No. <i class="fas fa-sort"></i></th>
+                            <th class="py-3 px-6 text-left" data-sort="Voucher No.">Voucher No.</th>
+                            <th class="py-3 px-6 text-left" data-sort="Voucher Date">Voucher Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceTableBody" class="text-gray-700 text-sm font-light">
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and click 'Search'.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6 flex flex-col md:flex-row justify-between items-center">
+                <div class="flex gap-4 mb-4 md:mb-0">
+                    <button id="prevPageButton"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out shadow-sm">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button id="nextPageButton"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out shadow-sm">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                <span id="pageInfo" class="text-gray-700 text-sm"></span>
+            </div>
+
+            <div id="messageBox" class="mt-4 p-4 rounded-md hidden"></div>
+
+        </div>
+    </div>
+
+    <script>
+        const jsonUrl = "https://raw.githubusercontent.com/moonandjupiter/my-json-data/refs/heads/main/Sheet1_data.json";
+        const itemsPerPage = 5;
+        let currentPage = 1;
+        let allData = [];
+        let filteredData = []; // This will now only be updated on search/reset
+        let currentSortColumn = null;
+        let currentSortDirection = 'asc'; // 'asc' or 'desc'
+
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton'); // Get the new search button
+        const resetButton = document.getElementById('resetButton');
+        const exportButton = document.getElementById('exportButton'); // Get the export button
+        const exportDropdown = document.getElementById('exportDropdown'); // Get the export dropdown
+        const exportHtmlOption = document.getElementById('exportHtmlOption'); // Get the HTML export option
+        const invoiceTableBody = document.getElementById('invoiceTableBody');
+        const prevPageButton = document.getElementById('prevPageButton');
+        const nextPageButton = document.getElementById('nextPageButton');
+        const pageInfoSpan = document.getElementById('pageInfo');
+        const messageBox = document.getElementById('messageBox');
+         // Get the quantity summary panel and the span inside it
+        const quantitySummaryPanel = document.getElementById('quantitySummaryPanel');
+        const overallSummaryDiv = document.getElementById('overallSummary'); // Get the div for overall summary
+        const consignmentSummaryList = document.getElementById('consignmentSummaryList'); // Get the list for consignment summaries
+         // Get the suggestions list container
+        const suggestionsList = document.getElementById('suggestionsList');
+        // Select only the headers that should be sortable
+        const sortableTableHeaders = document.querySelectorAll('#invoiceTable th.sortable');
+
+        // Function to update the disabled state of the search button
+        function updateSearchButtonState() {
+            // Disable if input is empty or if data is not yet loaded (allData is empty)
+            // The button should be enabled if there is text in the input AND data is loaded.
+            searchButton.disabled = searchInput.value.trim() === '' || allData.length === 0;
+            // console.log(`Search button disabled state updated: ${searchButton.disabled}`); // Debugging log
+        }
+
+        // Function to show messages
+        function showMessage(message, type = 'info') {
+            messageBox.textContent = message;
+            messageBox.className = `mt-4 p-4 rounded-md ${type === 'error' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`;
+            messageBox.classList.remove('hidden');
+        }
+
+        // Function to hide messages
+        function hideMessageBox() {
+            messageBox.classList.add('hidden');
+        }
+
+         // Function to calculate and display the total quantity of the filtered data and per consignment
+         function calculateAndDisplaySummary() {
+             // Calculate overall total quantity
+             const totalQuantity = filteredData.reduce((sum, item) => {
+                 // Safely parse 'Quantity Sold' as an integer, defaulting to 0 if not a valid number
+                 const quantity = parseInt(item['Quantity Sold'], 10);
+                 return sum + (isNaN(quantity) ? 0 : quantity);
+             }, 0);
+
+             // Update overall summary text with correct grammar for results
+             const resultText = filteredData.length === 1 ? 'result' : 'results';
+             // --- MODIFIED: Changed period to colon ---
+             overallSummaryDiv.textContent = `Found ${filteredData.length} ${resultText}:`;
+
+             // Calculate total quantity per Consignment Order Number
+             const consignmentTotals = filteredData.reduce((acc, item) => {
+                 const consignmentNumber = item['Consignment Order Number'] || 'N/A';
+                 const quantity = parseInt(item['Quantity Sold'], 10);
+                 if (!isNaN(quantity)) {
+                     acc[consignmentNumber] = (acc[consignmentNumber] || 0) + quantity;
+                 }
+                 return acc;
+             }, {});
+
+             // Clear previous consignment summaries
+             consignmentSummaryList.innerHTML = '';
+
+             // Display consignment summaries
+             if (Object.keys(consignmentTotals).length > 0) {
+                 const sortedConsignments = Object.entries(consignmentTotals).sort(([a], [b]) => a.localeCompare(b)); // Sort by consignment number
+                 sortedConsignments.forEach(([consignment, total]) => {
+                     // --- MODIFIED: Changed "sold." to "reported sold." and added comma formatting ---
+                     const formattedTotal = total.toLocaleString(); // Format the number with commas
+                     const listItem = document.createElement('li'); // Use li for bullet points
+                     listItem.textContent = `CO Number ${consignment}: ${formattedTotal} pcs reported sold.`;
+                     consignmentSummaryList.appendChild(listItem);
+                 });
+             } else {
+                 // Optionally display a message if no consignment data found in filtered results
+                  const listItem = document.createElement('li'); // Use li for consistency
+                  listItem.textContent = 'No consignment breakdown available.';
+                  consignmentSummaryList.appendChild(listItem);
+             }
+
+
+             // Show the panel only if search input is not empty and there are filtered results
+             if (searchInput.value.trim() !== '' && filteredData.length > 0) {
+                 quantitySummaryPanel.classList.remove('hidden');
+             } else {
+                 quantitySummaryPanel.classList.add('hidden');
+             }
+         }
+
+        // Function to update pagination button states and info
+        function updatePaginationControls() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            pageInfoSpan.textContent = filteredData.length === 0 ? 'No data' : `Page ${currentPage} of ${totalPages}`;
+
+            prevPageButton.disabled = currentPage === 1 || filteredData.length === 0;
+            nextPageButton.disabled = currentPage >= totalPages || filteredData.length === 0; // Disable next if on last page or no data
+        }
+
+        // Function to update sort icons in table headers
+        function updateSortIcons() {
+             console.log("updateSortIcons called"); // Debugging line
+            sortableTableHeaders.forEach(header => {
+                const sortColumn = header.getAttribute('data-sort');
+                const icon = header.querySelector('i');
+                if (icon) {
+                    // Hide icons if filter is empty (showing no data)
+                    if (filteredData.length === 0) { // Hide if showing no data
+                         icon.style.visibility = 'hidden';
+                         header.classList.remove('sorted-asc', 'sorted-desc'); // Remove sorted classes
+                    } else {
+                         icon.style.visibility = 'visible';
+                         icon.classList.remove('fa-sort', 'fa-sort-up', 'fa-sort-down');
+                         if (sortColumn === currentSortColumn) {
+                             icon.classList.add(currentSortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down');
+                             header.classList.add(currentSortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                         } else {
+                             icon.classList.add('fa-sort'); // Default unsorted icon
+                             header.classList.remove('sorted-asc', 'sorted-desc');
+                         }
+                    }
+                }
+            });
+        }
+
+        // Function to sort data
+        function sortData(column) {
+             console.log(`sortData called for column: ${column}`); // Debugging line
+            // Only sort if there are filtered results
+            if (filteredData.length === 0) {
+                 console.log("No data to sort."); // Debugging line
+                 return;
+            }
+
+            // Determine sort direction
+            if (currentSortColumn === column) {
+                currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortColumn = column;
+                currentSortDirection = 'asc';
+            }
+
+            // Sort the filtered data
+            filteredData.sort((a, b) => {
+                const valueA = a[column] || ''; // Handle null/undefined values
+                const valueB = b[column] || '';
+
+                // Basic string comparison - consider enhancing for numbers/dates
+                if (valueA < valueB) {
+                    return currentSortDirection === 'asc' ? -1 : 1;
+                }
+                if (valueA > valueB) {
+                    return currentSortDirection === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+
+            // Reset to the first page after sorting
+            currentPage = 1;
+            renderTable(); // renderTable calls updateSortIcons
+             // Recalculate and display summary after sorting
+             calculateAndDisplaySummary();
+        }
+
+
+        // Function to render the table for the current page
+        function renderTable() {
+             console.log("renderTable called"); // Debugging line
+            invoiceTableBody.innerHTML = ''; // Clear current table rows
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const dataToDisplay = filteredData.slice(startIndex, endIndex);
+
+             console.log(`Rendering page ${currentPage}. Displaying ${dataToDisplay.length} items.`); // Debugging line
+
+            if (filteredData.length === 0) {
+                 // Display message when no search results are found or initially
+                 const message = searchInput.value.trim() === '' ? 'Enter a search term and click \'Search\'.' : 'No data found for your search.';
+                 // Added empty-table-message class here
+                 invoiceTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
+                 console.log("No data found after filtering/on current page."); // Debugging line
+            } else {
+                dataToDisplay.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50'; // Add hover effect
+                    // Use data-label attributes for mobile view
+                    row.innerHTML = `
+                        <td data-label="SR ID:" class="px-6 py-3">${item['SR ID'] || ''}</td>
+                        <td data-label="Company:" class="px-6 py-3">${item['Name of Company'] || ''}</td>
+                        <td data-label="Order Number:" class="px-6 py-3">${item['Consignment Order Number'] || ''}</td>
+                        <td data-label="Quantity:" class="px-6 py-3">${item['Quantity Sold'] || ''}</td>
+                        <td data-label="Amount:" class="px-6 py-3">${item['Amount'] || ''}</td>
+                        <td data-label="Invoice No.:" class="px-6 py-3">${item['Invoice No.'] || ''}</td>
+                        <td data-label="Voucher No.:" class="px-6 py-3">${item['Voucher No.'] || ''}</td>
+                        <td data-label="Voucher Date:" class="px-6 py-3">${item['Voucher Date'] || ''}</td>
+                    `;
+                    invoiceTableBody.appendChild(row);
+                });
+            }
+
+            updatePaginationControls();
+             // Enable export button only if there are filtered results (after a search)
+             exportButton.disabled = filteredData.length === 0;
+             // Update sort icons after rendering the table
+             updateSortIcons();
+        }
+
+
+        // Function to fetch data from the JSON URL
+        async function fetchData() {
+            // Disable search button while fetching
+            searchButton.disabled = true;
+             console.log("Fetching data... Search button disabled."); // Debugging log
+
+            // Clear loading message before fetching
+            invoiceTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Loading data...</td></tr>'; // Added empty-table-message class here
+            try {
+                const response = await fetch(jsonUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                allData = await response.json();
+                // Initially, filteredData is empty until a search is performed
+                filteredData = [];
+                hideMessageBox(); // Hide loading message on success
+                renderTable(); // Render empty table initially
+                 // Hide summary panel on initial load
+                 quantitySummaryPanel.classList.add('hidden');
+                 console.log("Data fetched successfully."); // Debugging log
+
+                 // Update search button state after data is loaded
+                 updateSearchButtonState();
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                showMessage(`Failed to load data: ${error.message}`, 'error');
+                // Added empty-table-message class here
+                invoiceTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>';
+                 // Hide summary panel on error
+                 quantitySummaryPanel.classList.add('hidden');
+                 console.log("Error fetching data."); // Debugging log
+            } finally {
+                 // Ensure search button state is correct after fetch completes (success or error)
+                 updateSearchButtonState(); // Call to check input state
+                 console.log("Fetch complete. Final Search button state updated."); // Debugging log
+            }
+        }
+
+
+        // Function to perform the search
+        // Accepts an optional searchValue to filter by a specific key value
+        function performSearch(searchValue = null) {
+             console.log("performSearch called with searchValue:", searchValue); // Debugging line
+            // Disable search button at the start of search
+            searchButton.disabled = true;
+             console.log("Search in progress. Search button disabled."); // Debugging log
+
+            const searchTerm = searchValue ? String(searchValue).toLowerCase() : searchInput.value.toLowerCase(); // Ensure searchValue is treated as string
+             console.log(`Effective search term: "${searchTerm}"`); // Debugging line
+
+            if (searchTerm) {
+                // If a specific searchValue is provided (from suggestion click), filter by exact match on key fields
+                if (searchValue !== null) {
+                     const searchTermForExactMatch = String(searchValue).toLowerCase(); // Use a distinct variable name for clarity
+                     console.log(`Filtering for exact match with value: "${searchValue}" (lowercase: "${searchTermForExactMatch}")`); // Debugging log
+                     filteredData = allData.filter(item => {
+                         const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+                         const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                         const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+
+                         const isMatch = srId === searchTermForExactMatch || consignmentOrderNumber === searchTermForExactMatch || invoiceNo === searchTermForExactMatch;
+                         // console.log(`Checking item: SR ID="${srId}", CO="${consignmentOrderNumber}", Invoice="${invoiceNo}". Match: ${isMatch}`); // More detailed item check (can be noisy)
+                         return isMatch;
+                     });
+                     console.log(`Filtered by exact value: ${searchValue}. Found ${filteredData.length} results.`); // Debugging log
+
+                } else {
+                     // If no specific searchValue, check for exact match in allData first
+                     let exactMatchFound = false;
+                     let exactMatchValue = null;
+
+                     for (const item of allData) {
+                         const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+                         const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                         const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+
+                         if (srId === searchTerm || consignmentOrderNumber === searchTerm || invoiceNo === searchTerm) {
+                             exactMatchFound = true;
+                             // Use the value that exactly matched for filtering
+                             if (srId === searchTerm) exactMatchValue = item['SR ID'];
+                             else if (consignmentOrderNumber === searchTerm) exactMatchValue = item['Consignment Order Number'];
+                             else if (invoiceNo === searchTerm) exactMatchValue = item['Invoice No.'];
+                             break; // Found an exact match, no need to check further
+                         }
+                     }
+
+                     if (exactMatchFound && exactMatchValue !== null) {
+                         // If an exact match was found, filter by that specific value across the key fields
+                         console.log(`Exact match found for "${searchTerm}" with value "${exactMatchValue}". Filtering by exact value.`); // Debugging log
+                         const exactMatchSearchTerm = String(exactMatchValue).toLowerCase(); // Ensure value is string and lowercase
+                         filteredData = allData.filter(item => {
+                             const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+                             const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                             const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+                             // Compare lowercase values for filtering
+                             return srId === exactMatchSearchTerm || consignmentOrderNumber === exactMatchSearchTerm || invoiceNo === exactMatchSearchTerm;
+                         });
+                         console.log(`Filtered by exact matched value: ${exactMatchValue}. Found ${filteredData.length} results.`); // Debugging log
+
+                     } else {
+                         // If no exact match found in the key fields, perform a free-text filter against the three fields
+                         console.log(`No exact match found for "${searchTerm}". Performing free-text filter.`); // Debugging log
+                         filteredData = allData.filter(item => {
+                             const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+                             const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                             const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+
+                             return srId.includes(searchTerm) ||
+                                     consignmentOrderNumber.includes(searchTerm) ||
+                                     invoiceNo.includes(searchTerm);
+                         });
+                         console.log(`Filtered by free-text "${searchTerm}". Found ${filteredData.length} results.`); // Debugging log
+                     }
+                }
+
+
+                 if (filteredData.length === 0) {
+                     showMessage("No matching results found.", 'info');
+                     console.log("Filtered data is empty."); // Debugging line
+                 } else {
+                     hideMessageBox(); // Hide message if search is successful
+                     console.log(`Filtered data has ${filteredData.length} items.`); // Debugging line
+                 }
+            } else {
+                filteredData = []; // If search term is empty, show no data
+                 hideMessageBox(); // Hide message if search is cleared
+                 console.log("Search term empty, showing no data."); // Debugging line
+            }
+            currentPage = 1; // Reset to first page on search
+            calculateAndDisplaySummary(); // Calculate and update the summary panel
+            renderTable(); // renderTable updates export button state and sort icons
+
+            // Re-enable search button after search completes, based on input state
+            updateSearchButtonState();
+             console.log("Search complete. Search button state updated."); // Debugging log
+        }
+
+
+        // Event listener for the search button
+        searchButton.addEventListener('click', () => {
+             performSearch(); // Call performSearch without a specific value
+             suggestionsList.classList.add('hidden'); // Hide suggestions after search
+        });
+
+        // Optional: Allow pressing Enter in the search field to trigger search
+        searchInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent default form submission if it were a form
+                 performSearch(); // Call performSearch without a specific value
+                 suggestionsList.classList.add('hidden'); // Hide suggestions after search
+            }
+        });
+
+        // Event listener for input changes in the search field for suggestions
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            suggestionsList.innerHTML = ''; // Clear previous suggestions
+             // console.log(`Input event fired for suggestions. Search term: "${searchTerm}`); // Debugging log
+
+            // Update search button state as user types
+            updateSearchButtonState();
+
+            // Only show suggestions if at least 4 characters are typed and data is loaded
+            if (searchTerm.length > 3 && allData.length > 0) {
+                 // console.log("Generating suggestions..."); // Debugging log
+                const matchedItems = new Map(); // Use a Map to store unique suggestions by a key (e.g., company + consignment)
+
+                allData.forEach(item => {
+                    const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+                    const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                    const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+                    const companyName = item['Name of Company'] ? String(item['Name of Company']) : 'Unknown Company'; // Get original case company name
+                    const originalConsignmentNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']) : 'N/A'; // Get original case consignment number
+
+                    let matchedValue = null; // To store the actual value that matched
+
+                    // Check if the search term matches any of the relevant fields
+                    if (srId.includes(searchTerm)) {
+                        matchedValue = item['SR ID'];
+                    } else if (consignmentOrderNumber.includes(searchTerm)) {
+                        matchedValue = item['Consignment Order Number'];
+                    } else if (invoiceNo.includes(searchTerm)) {
+                        matchedValue = item['Invoice No.'];
+                    }
+
+                    // If a match is found in any of the key fields, create a suggestion
+                    if (matchedValue !== null) {
+                         const suggestionKey = `${companyName}-${originalConsignmentNumber}`; // Use a combination for unique key
+                         if (!matchedItems.has(suggestionKey)) {
+                             matchedItems.set(suggestionKey, {
+                                 display: `${companyName} – ${originalConsignmentNumber}`,
+                                 value: matchedValue // Store the actual value that matched
+                             });
+                         }
+                    }
+                });
+
+                 // console.log(`Found ${matchedItems.size} unique suggestions.`); // Debugging log
+
+                if (matchedItems.size > 0) {
+                    // Convert map values to an array and sort them by display text
+                    const sortedSuggestions = Array.from(matchedItems.values()).sort((a, b) => a.display.localeCompare(b.display));
+
+                    sortedSuggestions.forEach(suggestion => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.textContent = suggestion.display; // Display the formatted label
+                        // Store the actual value in a data attribute
+                        suggestionItem.setAttribute('data-value', suggestion.value);
+                        suggestionItem.classList.add('px-4', 'py-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-700'); // Tailwind classes for styling
+                        suggestionItem.addEventListener('click', () => {
+                             console.log(`Suggestion clicked. Display: "${suggestion.display}", Value: "${suggestion.value}"`); // Debugging log
+                            searchInput.value = suggestion.display; // Set input value to the displayed label
+                            suggestionsList.classList.add('hidden'); // Hide suggestions
+                            performSearch(suggestion.value); // Trigger search using the hidden value
+                            // --- ADDED: Explicitly disable search button after suggestion click search ---
+                            searchButton.disabled = true;
+                             // console.log("Suggestion click search complete. Search button disabled."); // Debugging log
+                        });
+                        suggestionsList.appendChild(suggestionItem);
+                    });
+                    suggestionsList.classList.remove('hidden'); // Show suggestions list
+                     // console.log("Suggestions list shown."); // Debugging log
+                } else {
+                    suggestionsList.classList.add('hidden'); // Hide if no matches
+                     // console.log("No matching items for suggestions, suggestions list hidden."); // Debugging log
+                }
+            } else {
+                suggestionsList.classList.add('hidden'); // Hide if search term is too short or data not loaded
+                 // console.log("Search term too short or data not loaded, suggestions list hidden."); // Debugging log
+            }
+        });
+
+
+         // Event listener for the reset button
+        resetButton.addEventListener('click', () => {
+             console.log("Reset button clicked."); // Debugging line
+            searchInput.value = ''; // Clear search input
+            filteredData = []; // Reset to show no data (initial state)
+            currentPage = 1; // Reset to first page
+            hideMessageBox(); // Hide any messages
+             currentSortColumn = null; // Reset sort state on reset
+             currentSortDirection = 'asc';
+            calculateAndDisplaySummary(); // Calculate and update the summary panel (will hide it)
+            renderTable(); // renderTable updates export button state and sort icons
+             suggestionsList.classList.add('hidden'); // Hide suggestions on reset
+             suggestionsList.innerHTML = ''; // Clear suggestions list content
+            // Update search button state after reset
+            updateSearchButtonState();
+        });
+
+        // Hide the dropdown if the user clicks outside of it
+        window.addEventListener('click', (event) => {
+            if (!exportButton.contains(event.target) && !exportDropdown.contains(event.target) && !searchInput.contains(event.target) && !suggestionsList.contains(event.target)) {
+                exportDropdown.classList.add('hidden');
+                 suggestionsList.classList.add('hidden'); // Also hide suggestions list
+                 // console.log("Clicked outside, hiding export dropdown and suggestions list."); // Debugging log
+            }
+        });
+
+        // Function to update the HTML export option label based on screen size
+        function updateHtmlOptionLabel() {
+             console.log("updateHtmlOptionLabel called"); // Debugging line
+             console.log(`Window width: ${window.innerWidth}`); // Debugging line
+            if (window.innerWidth <= 767) { // Match the mobile breakpoint
+                exportHtmlOption.textContent = 'Export for Mobile Browser';
+                 console.log("HTML option label set to 'Export for Mobile Browser'"); // Debugging line
+            } else {
+                exportHtmlOption.textContent = 'Export as HTML';
+                 console.log("HTML option label set to 'Export as HTML'"); // Debugging HTML'); // Debugging line
+            }
+        }
+
+        // Update label on page load and window resize
+        window.addEventListener('load', updateHtmlOptionLabel);
+        window.addEventListener('resize', updateHtmlOptionLabel);
+
+
+        // Event listener for the previous page button
+        prevPageButton.addEventListener('click', () => {
+             console.log("Previous page button clicked"); // Debugging line
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+                 console.log(`Previous page clicked. Current page: ${currentPage}`); // Debugging line
+            }
+        });
+
+        // Event listener for the next page button
+        nextPageButton.addEventListener('click', () => {
+             console.log("Next page button clicked"); // Debugging line
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+                 console.log(`Next page clicked. Current page: ${currentPage}`); // Debugging line
+            }
+        });
+
+        // Initial data fetch when the page loads
+        fetchData();
+
+        // Initial state update for the search button
+        updateSearchButtonState();
+
+
+    </script>
+
+</body>
+</html>
