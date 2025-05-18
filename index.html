@@ -177,6 +177,11 @@
                  content: none;
              }
 
+            /* Hide table and pagination on mobile initially */
+            #tableContainer, #paginationContainer {
+                display: none;
+            }
+
 
         }
 
@@ -418,7 +423,7 @@
                      </ul>
             </div>
 
-            <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4">
+            <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4">
                 <table id="invoiceTable" class="min-w-full bg-white">
                     <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                         <tr>
@@ -440,7 +445,7 @@
                 </table>
             </div>
 
-            <div class="mt-6 flex flex-col md:flex-row justify-between items-center">
+            <div id="paginationContainer" class="mt-6 flex flex-col md:flex-row justify-between items-center">
                 <div class="flex gap-4 mb-4 md:mb-0">
                     <button id="prevPageButton"
                                 class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out shadow-sm">
@@ -487,6 +492,10 @@
         const suggestionsList = document.getElementById('suggestionsList');
         // Select only the headers that should be sortable
         const sortableTableHeaders = document.querySelectorAll('#invoiceTable th.sortable');
+        // Get the table and pagination containers
+        const tableContainer = document.getElementById('tableContainer');
+        const paginationContainer = document.getElementById('paginationContainer');
+
 
         // Function to update the disabled state of the search button
         function updateSearchButtonState() {
@@ -652,6 +661,13 @@
                  // Added empty-table-message class here
                  invoiceTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
                  console.log("No data found after filtering/on current page."); // Debugging line
+
+                 // Hide table and pagination containers on mobile if no results
+                 if (window.innerWidth <= 767) {
+                     tableContainer.style.display = 'none';
+                     paginationContainer.style.display = 'none';
+                 }
+
             } else {
                 dataToDisplay.forEach(item => {
                     const row = document.createElement('tr');
@@ -669,6 +685,12 @@
                     `;
                     invoiceTableBody.appendChild(row);
                 });
+
+                 // Show table and pagination containers on mobile if there are results
+                 if (window.innerWidth <= 767) {
+                     tableContainer.style.display = 'block';
+                     paginationContainer.style.display = 'flex'; // Use flex as it's a flex container
+                 }
             }
 
             updatePaginationControls();
@@ -687,6 +709,12 @@
 
             // Clear loading message before fetching
             invoiceTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Loading data...</td></tr>'; // Added empty-table-message class here
+            // Hide table and pagination on initial load (mobile)
+             if (window.innerWidth <= 767) {
+                 tableContainer.style.display = 'none';
+                 paginationContainer.style.display = 'none';
+             }
+
             try {
                 const response = await fetch(jsonUrl);
                 if (!response.ok) {
@@ -712,6 +740,11 @@
                  // Hide summary panel on error
                  quantitySummaryPanel.classList.add('hidden');
                  console.log("Error fetching data."); // Debugging log
+                 // Hide table and pagination on error (mobile)
+                 if (window.innerWidth <= 767) {
+                     tableContainer.style.display = 'none';
+                     paginationContainer.style.display = 'none';
+                 }
             } finally {
                  // Ensure search button state is correct after fetch completes (success or error)
                  updateSearchButtonState(); // Call to check input state
@@ -929,6 +962,12 @@
              suggestionsList.innerHTML = ''; // Clear suggestions list content
             // Update search button state after reset
             updateSearchButtonState();
+
+             // Hide table and pagination containers on mobile after reset
+             if (window.innerWidth <= 767) {
+                 tableContainer.style.display = 'none';
+                 paginationContainer.style.display = 'none';
+             }
         });
 
         // Hide the dropdown if the user clicks outside of it
