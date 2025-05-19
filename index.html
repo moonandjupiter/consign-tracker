@@ -753,54 +753,55 @@
 
 
         // Function to perform the search
-        // Accepts an optional searchValue to filter by a specific key value
+        // Accepts an optional searchValue to filter by a specific key value (used for suggestion clicks)
         function performSearch(searchValue = null) {
              console.log("performSearch called with searchValue:", searchValue); // Debugging line
-            // Disable search button at the start of search
-            searchButton.disabled = true;
+
+             // Disable search button at the start of search
+             searchButton.disabled = true;
              console.log("Search in progress. Search button disabled."); // Debugging log
 
-            const searchTerm = searchValue ? String(searchValue).toLowerCase() : searchInput.value.toLowerCase(); // Ensure searchValue is treated as string
-             console.log(`Effective search term: "${searchTerm}"`); // Debugging line
+            if (searchValue !== null) {
+                // If a specific searchValue is provided (from suggestion click), filter by exact match on Consignment Order Number
+                 console.log(`Filtering for exact match on Consignment Order Number with value: "${searchValue}"`); // Debugging log
+                 const searchConsignmentNumber = String(searchValue).toLowerCase();
+                 filteredData = allData.filter(item => {
+                     const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                     return consignmentOrderNumber === searchConsignmentNumber;
+                 });
+                 console.log(`Filtered by Consignment Order Number "${searchValue}". Found ${filteredData.length} results.`); // Debugging log
 
-            if (searchTerm) {
-                // If a specific searchValue is provided (from suggestion click), filter by exact match on key fields
-                if (searchValue !== null) {
-                     const searchTermForExactMatch = String(searchValue).toLowerCase(); // Use a distinct variable name for clarity
-                     console.log(`Filtering for exact match with value: "${searchValue}" (lowercase: "${searchTermForExactMatch}")`); // Debugging log
-                     filteredData = allData.filter(item => {
-                         const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
-                         const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
-                         const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+                 // Update the search input field with the suggestion's display value
+                 // This is handled in the suggestion click listener, but doing it here ensures consistency
+                 // searchInput.value = searchValue; // No, keep the display value from the suggestion click
 
-                         const isMatch = srId === searchTermForExactMatch || consignmentOrderNumber === searchTermForExactMatch || invoiceNo === searchTermForExactMatch;
-                         // console.log(`Checking item: SR ID="${srId}", CO="${consignmentOrderNumber}", Invoice="${invoiceNo}". Match: ${isMatch}`); // More detailed item check (can be noisy)
-                         return isMatch;
-                     });
-                     console.log(`Filtered by exact value: ${searchValue}. Found ${filteredData.length} results.`); // Debugging log
+            } else {
+                // If no specific searchValue, use the input field value for search button/Enter key search
+                const searchTerm = searchInput.value.toLowerCase();
+                 console.log(`Performing search based on input field value: "${searchTerm}"`); // Debugging line
 
-                } else {
-                     // If no specific searchValue, check for exact match in allData first
-                     let exactMatchFound = false;
-                     let exactMatchValue = null;
+                if (searchTerm) {
+                    // Check for exact match in SR ID, Consignment Order Number, or Invoice No. first
+                    let exactMatchFound = false;
+                    let exactMatchValue = null;
 
-                     for (const item of allData) {
-                         const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
-                         const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
-                         const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+                    for (const item of allData) {
+                        const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+                        const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                        const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
 
-                         if (srId === searchTerm || consignmentOrderNumber === searchTerm || invoiceNo === searchTerm) {
-                             exactMatchFound = true;
-                             // Use the value that exactly matched for filtering
-                             if (srId === searchTerm) exactMatchValue = item['SR ID'];
-                             else if (consignmentOrderNumber === searchTerm) exactMatchValue = item['Consignment Order Number'];
-                             else if (invoiceNo === searchTerm) exactMatchValue = item['Invoice No.'];
-                             break; // Found an exact match, no need to check further
-                         }
-                     }
+                        if (srId === searchTerm || consignmentOrderNumber === searchTerm || invoiceNo === searchTerm) {
+                            exactMatchFound = true;
+                            // Use the value that exactly matched for filtering
+                            if (srId === searchTerm) exactMatchValue = item['SR ID'];
+                            else if (consignmentOrderNumber === searchTerm) exactMatchValue = item['Consignment Order Number'];
+                            else if (invoiceNo === searchTerm) exactMatchValue = item['Invoice No.'];
+                            break; // Found an exact match, no need to check further
+                        }
+                    }
 
-                     if (exactMatchFound && exactMatchValue !== null) {
-                         // If an exact match was found, filter by that specific value across the key fields
+                    if (exactMatchFound && exactMatchValue !== null) {
+                        // If an exact match was found, filter by that specific value across the key fields
                          console.log(`Exact match found for "${searchTerm}" with value "${exactMatchValue}". Filtering by exact value.`); // Debugging log
                          const exactMatchSearchTerm = String(exactMatchValue).toLowerCase(); // Ensure value is string and lowercase
                          filteredData = allData.filter(item => {
@@ -812,8 +813,8 @@
                          });
                          console.log(`Filtered by exact matched value: ${exactMatchValue}. Found ${filteredData.length} results.`); // Debugging log
 
-                     } else {
-                         // If no exact match found in the key fields, perform a free-text filter against the three fields
+                    } else {
+                        // If no exact match found in the key fields, perform a free-text filter against the three fields
                          console.log(`No exact match found for "${searchTerm}". Performing free-text filter.`); // Debugging log
                          filteredData = allData.filter(item => {
                              const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
@@ -821,26 +822,27 @@
                              const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
 
                              return srId.includes(searchTerm) ||
-                                         consignmentOrderNumber.includes(searchTerm) ||
-                                         invoiceNo.includes(searchTerm);
+                                            consignmentOrderNumber.includes(searchTerm) ||
+                                            invoiceNo.includes(searchTerm);
                          });
                          console.log(`Filtered by free-text "${searchTerm}". Found ${filteredData.length} results.`); // Debugging log
+                    }
+
+
+                     if (filteredData.length === 0) {
+                         showMessage("No matching results found.", 'info');
+                         console.log("Filtered data is empty."); // Debugging line
+                     } else {
+                         hideMessageBox(); // Hide message if search is successful
+                         console.log(`Filtered data has ${filteredData.length} items.`); // Debugging line
                      }
+                } else {
+                    filteredData = []; // If search term is empty, show no data
+                     hideMessageBox(); // Hide message if search is cleared
+                     console.log("Search term empty, showing no data."); // Debugging line
                 }
-
-
-                 if (filteredData.length === 0) {
-                     showMessage("No matching results found.", 'info');
-                     console.log("Filtered data is empty."); // Debugging line
-                 } else {
-                     hideMessageBox(); // Hide message if search is successful
-                     console.log(`Filtered data has ${filteredData.length} items.`); // Debugging line
-                 }
-            } else {
-                filteredData = []; // If search term is empty, show no data
-                 hideMessageBox(); // Hide message if search is cleared
-                 console.log("Search term empty, showing no data."); // Debugging line
             }
+
             currentPage = 1; // Reset to first page on search
             calculateAndDisplaySummary(); // Calculate and update the summary panel
             renderTable(); // renderTable updates export button state and sort icons
@@ -853,7 +855,7 @@
 
         // Event listener for the search button
         searchButton.addEventListener('click', () => {
-             performSearch(); // Call performSearch without a specific value
+             performSearch(); // Call performSearch without a specific value (uses input field)
              suggestionsList.classList.add('hidden'); // Hide suggestions after search
         });
 
@@ -861,7 +863,7 @@
         searchInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault(); // Prevent default form submission if it were a form
-                 performSearch(); // Call performSearch without a specific value
+                 performSearch(); // Call performSearch without a specific value (uses input field)
                  suggestionsList.classList.add('hidden'); // Hide suggestions after search
             }
         });
@@ -875,10 +877,10 @@
             // Update search button state as user types
             updateSearchButtonState();
 
-            // Only show suggestions if at least 4 characters are typed and data is loaded
-            if (searchTerm.length > 3 && allData.length > 0) {
+            // Only show suggestions if at least 3 characters are typed and data is loaded
+            if (searchTerm.length > 2 && allData.length > 0) { // Changed threshold to 3 for slightly quicker suggestions
                  // console.log("Generating suggestions..."); // Debugging log
-                const matchedItems = new Map(); // Use a Map to store unique suggestions by a key (e.g., company + consignment)
+                const matchedItems = new Map(); // Use a Map to store unique suggestions by Consignment Order Number
 
                 allData.forEach(item => {
                     const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
@@ -887,24 +889,16 @@
                     const companyName = item['Name of Company'] ? String(item['Name of Company']) : 'Unknown Company'; // Get original case company name
                     const originalConsignmentNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']) : 'N/A'; // Get original case consignment number
 
-                    let matchedValue = null; // To store the actual value that matched
-
                     // Check if the search term matches any of the relevant fields
-                    if (srId.includes(searchTerm)) {
-                         matchedValue = item['SR ID'];
-                    } else if (consignmentOrderNumber.includes(searchTerm)) {
-                         matchedValue = item['Consignment Order Number'];
-                    } else if (invoiceNo.includes(searchTerm)) {
-                         matchedValue = item['Invoice No.'];
-                    }
+                    if (srId.includes(searchTerm) || consignmentOrderNumber.includes(searchTerm) || invoiceNo.includes(searchTerm)) {
+                         // If a match is found in any of the key fields, use the Consignment Order Number for the suggestion value
+                         const suggestionValue = originalConsignmentNumber; // Use the CO Number as the value to search by
+                         const suggestionKey = suggestionValue; // Use CO Number as the key for uniqueness
 
-                    // If a match is found in any of the key fields, create a suggestion
-                    if (matchedValue !== null) {
-                         const suggestionKey = `${companyName}-${originalConsignmentNumber}`; // Use a combination for unique key
-                         if (!matchedItems.has(suggestionKey)) {
+                         if (suggestionValue !== 'N/A' && !matchedItems.has(suggestionKey)) { // Only add if CO Number exists and is unique
                              matchedItems.set(suggestionKey, {
-                                 display: `${companyName} – ${originalConsignmentNumber}`,
-                                 value: matchedValue // Store the actual value that matched
+                                 display: `${companyName} – ${originalConsignmentNumber}`, // Display Company and CO Number
+                                 value: suggestionValue // Store the CO Number as the value for filtering
                              });
                          }
                     }
@@ -919,17 +913,15 @@
                     sortedSuggestions.forEach(suggestion => {
                         const suggestionItem = document.createElement('div');
                         suggestionItem.textContent = suggestion.display; // Display the formatted label
-                        // Store the actual value in a data attribute
+                        // Store the actual value (Consignment Order Number) in a data attribute
                         suggestionItem.setAttribute('data-value', suggestion.value);
                         suggestionItem.classList.add('px-4', 'py-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-700'); // Tailwind classes for styling
                         suggestionItem.addEventListener('click', () => {
                              console.log(`Suggestion clicked. Display: "${suggestion.display}", Value: "${suggestion.value}"`); // Debugging log
-                            searchInput.value = suggestion.display; // Set input value to the displayed label
-                            suggestionsList.classList.add('hidden'); // Hide suggestions
-                            performSearch(suggestion.value); // Trigger search using the hidden value
-                             // --- ADDED: Explicitly disable search button after suggestion click search ---
-                             searchButton.disabled = true;
-                             // console.log("Suggestion click search complete. Search button disabled."); // Debugging log
+                             searchInput.value = suggestion.display; // Set input value to the displayed label
+                             suggestionsList.classList.add('hidden'); // Hide suggestions
+                             performSearch(suggestion.value); // Trigger search using the Consignment Order Number
+                             // The performSearch function already handles disabling/re-enabling the search button
                         });
                         suggestionsList.appendChild(suggestionItem);
                     });
@@ -1097,72 +1089,83 @@
         function exportTableToHTML() {
              console.log("Exporting to HTML..."); // Debugging log
              if (filteredData.length === 0) {
-                showMessage("No data to export.", 'info');
+                 showMessage("No data to export.", 'info');
                  console.log("No data to export to HTML."); // Debugging log
-                return;
-            }
+                 return;
+             }
 
-            const headers = Object.keys(filteredData[0]); // Get headers from the first object
-            let htmlString = `
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Invoice Data Export</title>
-                    <style>
-                        body { font-family: sans-serif; }
-                        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                        th { background-color: #f2f2f2; }
-                        tr:nth-child(even) { background-color: #f9f9f9; }
-                    </style>
-                </head>
-                <body>
-                    <h1>Invoice Data Export</h1>
-                    <table>
-                        <thead>
-                            <tr>
-                                ${headers.map(header => `<th>${header}</th>`).join('')}
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
+             const headers = Object.keys(filteredData[0]); // Get headers from the first object
+             let htmlString = `
+                 <!DOCTYPE html>
+                 <html lang="en">
+                 <head>
+                     <meta charset="UTF-8">
+                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                     <title>Invoice Data Export</title>
+                     <style>
+                         body { font-family: sans-serif; }
+                         table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                         th { background-color: #f2f2f2; }
+                         tr:nth-child(even) { background-color: #f9f9f9; }
+                     </style>
+                 </head>
+                 <body>
+                     <h1>Invoice Data Export</h1>
+                     <table>
+                         <thead>
+                             <tr>
+                                 ${headers.map(header => `<th>${header}</th>`).join('')}
+                             </tr>
+                         </thead>
+                         <tbody>
+             `;
 
-            filteredData.forEach(item => {
-                htmlString += '<tr>';
-                headers.forEach(header => {
-                    const value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
-                    htmlString += `<td>${value}</td>`;
-                });
-                htmlString += '</tr>';
-            });
+             filteredData.forEach(item => {
+                 htmlString += '<tr>';
+                 headers.forEach(header => {
+                     const value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
+                     htmlString += `<td>${value}</td>`;
+                 });
+                 htmlString += '</tr>';
+             });
 
-            htmlString += `
-                        </tbody>
-                    </table>
-                </body>
-                </html>
-            `;
+             htmlString += `
+                         </tbody>
+                     </table>
+                 </body>
+                 </html>
+             `;
 
-            const blob = new Blob([htmlString], { type: 'text/html;charset=utf-8;' });
-            const link = document.createElement('a');
+             const blob = new Blob([htmlString], { type: 'text/html;charset=utf-8;' });
+             const link = document.createElement('a');
 
-            // Create a download link
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute('download', 'invoice_data.html');
+             // Create a download link
+             link.href = URL.createObjectURL(blob);
+             link.setAttribute('download', 'invoice_data.html');
 
-            // Append to body, click, and remove
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+             // Append to body, click, and remove
+             document.body.appendChild(link);
+             link.click();
+             document.body.removeChild(link);
 
-            // Clean up the Blob URL
-            setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+             // Clean up the Blob URL
+             setTimeout(() => URL.revokeObjectURL(link.href), 10000);
 
-            showMessage("Data exported as HTML.", 'success'); // Assuming a 'success' type exists or style accordingly
+             showMessage("Data exported as HTML.", 'success'); // Assuming a 'success' type exists or style accordingly
              console.log("HTML Export complete."); // Debugging log
-        }
+         }
+
+
+        // Add event listeners for sortable headers
+        sortableTableHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const sortColumn = header.getAttribute('data-sort');
+                if (sortColumn) {
+                    sortData(sortColumn);
+                }
+            });
+        });
 
 
         // Initial data fetch when the page loads
