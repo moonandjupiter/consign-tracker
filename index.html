@@ -94,6 +94,8 @@
              .search-input-container {
                width: 100%;
                margin-bottom: 10px; /* Space between search and reset on mobile */
+               position: relative; /* Ensure this is relative for absolute children */
+               z-index: 100; /* High z-index for the input container */
              }
 
              .search-reset-container button {
@@ -153,11 +155,19 @@
 
             /* Mobile suggestion list styling */
             #suggestionsList {
-                position: static; /* Remove absolute positioning on mobile */
+                position: absolute; /* Changed to absolute for better control */
                 width: 100%;
-                margin-top: 5px;
+                margin-top: 0; /* Remove default margin-top */
                 border-radius: 0.5rem;
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+                z-index: 99; /* High z-index, lower than input container */
+                background-color: white; /* Ensure background is white */
+                border: 1px solid #d1d5db; /* Add border */
+                border-top: none; /* No top border */
+                left: 0; /* Align with the left edge of the container */
+                top: 100%; /* Position directly below the input container */
+                 max-height: 150px; /* Limit height */
+                 overflow-y: auto; /* Add scroll if needed */
             }
              #suggestionsList div {
                  padding: 8px 15px;
@@ -180,6 +190,21 @@
             /* Hide table and pagination on mobile initially */
             #tableContainer, #paginationContainer {
                 display: none;
+            }
+
+            /* Mobile specific input and icon positioning */
+            .search-input-container input {
+                padding-left: 45px; /* Increased padding for icon */
+            }
+
+             .search-input-container i {
+                position: absolute; /* Ensure absolute positioning is applied */
+                left: 15px; /* Adjusted left position */
+                top: 50%;
+                transform: translateY(-50%);
+                color: #9ca3af;
+                pointer-events: none;
+                z-index: 101; /* Give the icon a very high z-index */
             }
 
 
@@ -315,14 +340,16 @@
 
         /* Style for the search input container and icon */
         .search-input-container {
-            position: relative;
+            position: relative; /* Ensure this is relative for absolute children */
             flex-grow: 1; /* Allow input to take available space */
         }
 
+        /* Default padding for input (desktop and general) */
         .search-input-container input {
             padding-left: 40px; /* Make space for the icon */
         }
 
+        /* Default icon positioning (desktop and general) */
         .search-input-container i {
             position: absolute;
             left: 12px;
@@ -330,8 +357,7 @@
             transform: translateY(-50%);
             color: #9ca3af; /* Tailwind gray-400 */
             pointer-events: none; /* Allow clicks to pass through to the input */
-            /* The search icon is positioned absolutely within the search input container */
-            /* This ensures it stays fixed relative to the input field */
+            z-index: 1; /* Ensure icon is above input */
         }
 
         /* Header styling */
@@ -467,25 +493,20 @@
         let currentSortDirection = 'asc'; // 'asc' or 'desc'
 
         const searchInput = document.getElementById('searchInput');
-        // const searchButton = document.getElementById('searchButton'); // Search button removed
         const resetButton = document.getElementById('resetButton');
-        const exportButton = document.getElementById('exportButton'); // Get the export button
-        const exportDropdown = document.getElementById('exportDropdown'); // Get the export dropdown
-        const exportHtmlOption = document.getElementById('exportHtmlOption'); // Get the HTML export option
+        const exportButton = document.getElementById('exportButton');
+        const exportDropdown = document.getElementById('exportDropdown');
+        const exportHtmlOption = document.getElementById('exportHtmlOption');
         const invoiceTableBody = document.getElementById('invoiceTableBody');
         const prevPageButton = document.getElementById('prevPageButton');
         const nextPageButton = document.getElementById('nextPageButton');
         const pageInfoSpan = document.getElementById('pageInfo');
         const messageBox = document.getElementById('messageBox');
-         // Get the quantity summary panel and the span inside it
         const quantitySummaryPanel = document.getElementById('quantitySummaryPanel');
-        const overallSummaryDiv = document.getElementById('overallSummary'); // Get the div for overall summary
-        const consignmentSummaryList = document.getElementById('consignmentSummaryList'); // Get the list for consignment summaries
-         // Get the suggestions list container
+        const overallSummaryDiv = document.getElementById('overallSummary');
+        const consignmentSummaryList = document.getElementById('consignmentSummaryList');
         const suggestionsList = document.getElementById('suggestionsList');
-        // Select only the headers that should be sortable
         const sortableTableHeaders = document.querySelectorAll('#invoiceTable th.sortable');
-        // Get the table and pagination containers
         const tableContainer = document.getElementById('tableContainer');
         const paginationContainer = document.getElementById('paginationContainer');
 
@@ -503,19 +524,14 @@
 
          // Function to calculate and display the total quantity of the filtered data and per consignment
          function calculateAndDisplaySummary() {
-             // Calculate overall total quantity
              const totalQuantity = filteredData.reduce((sum, item) => {
-                 // Safely parse 'Quantity Sold' as an integer, defaulting to 0 if not a valid number
                  const quantity = parseInt(item['Quantity Sold'], 10);
                  return sum + (isNaN(quantity) ? 0 : quantity);
              }, 0);
 
-             // Update overall summary text with correct grammar for results
              const resultText = filteredData.length === 1 ? 'result' : 'results';
-             // --- MODIFIED: Changed period to colon ---
              overallSummaryDiv.textContent = `Found ${filteredData.length} ${resultText}:`;
 
-             // Calculate total quantity per Consignment Order Number
              const consignmentTotals = filteredData.reduce((acc, item) => {
                  const consignmentNumber = item['Consignment Order Number'] || 'N/A';
                  const quantity = parseInt(item['Quantity Sold'], 10);
@@ -525,28 +541,23 @@
                  return acc;
              }, {});
 
-             // Clear previous consignment summaries
              consignmentSummaryList.innerHTML = '';
 
-             // Display consignment summaries
              if (Object.keys(consignmentTotals).length > 0) {
-                 const sortedConsignments = Object.entries(consignmentTotals).sort(([a], [b]) => a.localeCompare(b)); // Sort by consignment number
+                 const sortedConsignments = Object.entries(consignmentTotals).sort(([a], [b]) => a.localeCompare(b));
                  sortedConsignments.forEach(([consignment, total]) => {
-                     // --- MODIFIED: Changed "sold." to "reported sold." and added comma formatting ---
-                     const formattedTotal = total.toLocaleString(); // Format the number with commas
-                     const listItem = document.createElement('li'); // Use li for bullet points
+                     const formattedTotal = total.toLocaleString();
+                     const listItem = document.createElement('li');
                      listItem.textContent = `CO Number ${consignment}: ${formattedTotal} pcs reported sold.`;
                      consignmentSummaryList.appendChild(listItem);
                  });
              } else {
-                 // Optionally display a message if no consignment data found in filtered results
-                  const listItem = document.createElement('li'); // Use li for consistency
+                  const listItem = document.createElement('li');
                   listItem.textContent = 'No consignment breakdown available.';
                   consignmentSummaryList.appendChild(listItem);
              }
 
 
-             // Show the panel only if search input is not empty and there are filtered results
              if (searchInput.value.trim() !== '' && filteredData.length > 0) {
                  quantitySummaryPanel.classList.remove('hidden');
              } else {
@@ -560,20 +571,18 @@
             pageInfoSpan.textContent = filteredData.length === 0 ? 'No data' : `Page ${currentPage} of ${totalPages}`;
 
             prevPageButton.disabled = currentPage === 1 || filteredData.length === 0;
-            nextPageButton.disabled = currentPage >= totalPages || filteredData.length === 0; // Disable next if on last page or no data
+            nextPageButton.disabled = currentPage >= totalPages || filteredData.length === 0;
         }
 
         // Function to update sort icons in table headers
         function updateSortIcons() {
-             console.log("updateSortIcons called"); // Debugging line
             sortableTableHeaders.forEach(header => {
                 const sortColumn = header.getAttribute('data-sort');
                 const icon = header.querySelector('i');
                 if (icon) {
-                    // Hide icons if filter is empty (showing no data)
-                     if (filteredData.length === 0) { // Hide if showing no data
+                     if (filteredData.length === 0) {
                          icon.style.visibility = 'hidden';
-                         header.classList.remove('sorted-asc', 'sorted-desc'); // Remove sorted classes
+                         header.classList.remove('sorted-asc', 'sorted-desc');
                      } else {
                          icon.style.visibility = 'visible';
                          icon.classList.remove('fa-sort', 'fa-sort-up', 'fa-sort-down');
@@ -581,7 +590,7 @@
                              icon.classList.add(currentSortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down');
                              header.classList.add(currentSortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc');
                          } else {
-                             icon.classList.add('fa-sort'); // Default unsorted icon
+                             icon.classList.add('fa-sort');
                              header.classList.remove('sorted-asc', 'sorted-desc');
                          }
                      }
@@ -591,14 +600,10 @@
 
         // Function to sort data
         function sortData(column) {
-             console.log(`sortData called for column: ${column}`); // Debugging line
-            // Only sort if there are filtered results
             if (filteredData.length === 0) {
-                 console.log("No data to sort."); // Debugging line
                  return;
             }
 
-            // Determine sort direction
             if (currentSortColumn === column) {
                 currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
             } else {
@@ -606,12 +611,10 @@
                 currentSortDirection = 'asc';
             }
 
-            // Sort the filtered data
             filteredData.sort((a, b) => {
-                const valueA = a[column] || ''; // Handle null/undefined values
+                const valueA = a[column] || '';
                 const valueB = b[column] || '';
 
-                // Basic string comparison - consider enhancing for numbers/dates
                 if (valueA < valueB) {
                     return currentSortDirection === 'asc' ? -1 : 1;
                 }
@@ -621,32 +624,23 @@
                 return 0;
             });
 
-            // Reset to the first page after sorting
             currentPage = 1;
-            renderTable(); // renderTable calls updateSortIcons
-             // Recalculate and display summary after sorting
-             calculateAndDisplaySummary();
+            renderTable();
+            calculateAndDisplaySummary();
         }
 
 
         // Function to render the table for the current page
         function renderTable() {
-             console.log("renderTable called"); // Debugging line
-            invoiceTableBody.innerHTML = ''; // Clear current table rows
+            invoiceTableBody.innerHTML = '';
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
             const dataToDisplay = filteredData.slice(startIndex, endIndex);
 
-             console.log(`Rendering page ${currentPage}. Displaying ${dataToDisplay.length} items.`); // Debugging line
-
             if (filteredData.length === 0) {
-                 // Display message when no search results are found or initially
                  const message = searchInput.value.trim() === '' ? 'Enter a search term and press Enter or select a suggestion.' : 'No data found for your search.';
-                 // Added empty-table-message class here
                  invoiceTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
-                 console.log("No data found after filtering/on current page."); // Debugging line
 
-                 // Hide table and pagination containers on mobile if no results
                  if (window.innerWidth <= 767) {
                      tableContainer.style.display = 'none';
                      paginationContainer.style.display = 'none';
@@ -655,8 +649,7 @@
             } else {
                 dataToDisplay.forEach(item => {
                     const row = document.createElement('tr');
-                    row.className = 'hover:bg-gray-50'; // Add hover effect
-                    // Use data-label attributes for mobile view
+                    row.className = 'hover:bg-gray-50';
                     row.innerHTML = `
                         <td data-label="SR ID:" class="px-6 py-3">${item['SR ID'] || ''}</td>
                         <td data-label="Company:" class="px-6 py-3">${item['Name of Company'] || ''}</td>
@@ -670,28 +663,21 @@
                     invoiceTableBody.appendChild(row);
                 });
 
-                 // Show table and pagination containers on mobile if there are results
                  if (window.innerWidth <= 767) {
                      tableContainer.style.display = 'block';
-                     paginationContainer.style.display = 'flex'; // Use flex as it's a flex container
+                     paginationContainer.style.display = 'flex';
                  }
             }
 
             updatePaginationControls();
-             // Enable export button only if there are filtered results (after a search)
-             exportButton.disabled = filteredData.length === 0;
-             // Update sort icons after rendering the table
-             updateSortIcons();
+            exportButton.disabled = filteredData.length === 0;
+            updateSortIcons();
         }
 
 
         // Function to fetch data from the JSON URL
         async function fetchData() {
-             console.log("Fetching data..."); // Debugging log
-
-            // Clear loading message before fetching
-            invoiceTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Loading data...</td></tr>'; // Added empty-table-message class here
-            // Hide table and pagination on initial load (mobile)
+            invoiceTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Loading data...</td></tr>';
              if (window.innerWidth <= 767) {
                  tableContainer.style.display = 'none';
                  paginationContainer.style.display = 'none';
@@ -703,30 +689,21 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 allData = await response.json();
-                // Initially, filteredData is empty until a search is performed
                 filteredData = [];
-                hideMessageBox(); // Hide loading message on success
-                renderTable(); // Render empty table initially
-                 // Hide summary panel on initial load
-                 quantitySummaryPanel.classList.add('hidden');
-                 console.log("Data fetched successfully."); // Debugging log
-
+                hideMessageBox();
+                renderTable();
+                quantitySummaryPanel.classList.add('hidden');
 
             } catch (error) {
                 console.error("Error fetching data:", error);
                 showMessage(`Failed to load data: ${error.message}`, 'error');
-                // Added empty-table-message class here
                 invoiceTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>';
-                 // Hide summary panel on error
-                 quantitySummaryPanel.classList.add('hidden');
-                 console.log("Error fetching data."); // Debugging log
-                 // Hide table and pagination on error (mobile)
+                quantitySummaryPanel.classList.add('hidden');
                  if (window.innerWidth <= 767) {
                      tableContainer.style.display = 'none';
                      paginationContainer.style.display = 'none';
                  }
             } finally {
-                 console.log("Fetch complete."); // Debugging log
             }
         }
 
@@ -734,27 +711,17 @@
         // Function to perform the search
         // Accepts an optional searchValue to filter by a specific key value (used for suggestion clicks)
         function performSearch(searchValue = null) {
-             console.log("performSearch called with searchValue:", searchValue); // Debugging line
-
-             console.log("Search in progress."); // Debugging log
-
             if (searchValue !== null) {
-                // If a specific searchValue is provided (from suggestion click), filter by exact match on Consignment Order Number
-                 console.log(`Filtering for exact match on Consignment Order Number with value: "${searchValue}"`); // Debugging log
                  const searchConsignmentNumber = String(searchValue).toLowerCase();
                  filteredData = allData.filter(item => {
                      const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
                      return consignmentOrderNumber === searchConsignmentNumber;
                  });
-                 console.log(`Filtered by Consignment Order Number "${searchValue}". Found ${filteredData.length} results.`); // Debugging log
 
             } else {
-                // If no specific searchValue, use the input field value for Enter key search
                 const searchTerm = searchInput.value.toLowerCase();
-                 console.log(`Performing search based on input field value: "${searchTerm}"`); // Debugging line
 
                 if (searchTerm) {
-                    // Check for exact match in SR ID, Consignment Order Number, or Invoice No. first
                     let exactMatchFound = false;
                     let exactMatchValue = null;
 
@@ -765,30 +732,23 @@
 
                         if (srId === searchTerm || consignmentOrderNumber === searchTerm || invoiceNo === searchTerm) {
                             exactMatchFound = true;
-                            // Use the value that exactly matched for filtering
                             if (srId === searchTerm) exactMatchValue = item['SR ID'];
                             else if (consignmentOrderNumber === searchTerm) exactMatchValue = item['Consignment Order Number'];
                             else if (invoiceNo === searchTerm) exactMatchValue = item['Invoice No.'];
-                            break; // Found an exact match, no need to check further
+                            break;
                         }
                     }
 
                     if (exactMatchFound && exactMatchValue !== null) {
-                        // If an exact match was found, filter by that specific value across the key fields
-                         console.log(`Exact match found for "${searchTerm}" with value "${exactMatchValue}". Filtering by exact value.`); // Debugging log
-                         const exactMatchSearchTerm = String(exactMatchValue).toLowerCase(); // Ensure value is string and lowercase
+                         const exactMatchSearchTerm = String(exactMatchValue).toLowerCase();
                          filteredData = allData.filter(item => {
                              const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
                              const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
                              const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
-                             // Compare lowercase values for filtering
-                             return srId === exactMatchSearchTerm || consignmentOrderNumber === exactMatchOrderNumber || invoiceNo === exactMatchInvoiceNo;
+                             return srId === exactMatchSearchTerm || consignmentOrderNumber === exactMatchSearchTerm || invoiceNo === exactMatchSearchTerm;
                          });
-                         console.log(`Filtered by exact matched value: ${exactMatchValue}. Found ${filteredData.length} results.`); // Debugging log
 
                     } else {
-                        // If no exact match found in the key fields, perform a free-text filter against the three fields
-                         console.log(`No exact match found for "${searchTerm}". Performing free-text filter.`); // Debugging log
                          filteredData = allData.filter(item => {
                              const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
                              const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
@@ -798,123 +758,101 @@
                                             consignmentOrderNumber.includes(searchTerm) ||
                                             invoiceNo.includes(searchTerm);
                          });
-                         console.log(`Filtered by free-text "${searchTerm}". Found ${filteredData.length} results.`); // Debugging log
                     }
 
 
                      if (filteredData.length === 0) {
                          showMessage("No matching results found.", 'info');
-                         console.log("Filtered data is empty."); // Debugging line
                      } else {
-                         hideMessageBox(); // Hide message if search is successful
-                         console.log(`Filtered data has ${filteredData.length} items.`); // Debugging line
+                         hideMessageBox();
                      }
                 } else {
-                    filteredData = []; // If search term is empty, show no data
-                     hideMessageBox(); // Hide message if search is cleared
-                     console.log("Search term empty, showing no data."); // Debugging line
+                    filteredData = [];
+                     hideMessageBox();
                 }
             }
 
-            currentPage = 1; // Reset to first page on search
-            calculateAndDisplaySummary(); // Calculate and update the summary panel
-            renderTable(); // renderTable updates export button state and sort icons
-
-             console.log("Search complete."); // Debugging log
+            currentPage = 1;
+            calculateAndDisplaySummary();
+            renderTable();
         }
 
 
         // Optional: Allow pressing Enter in the search field to trigger search
         searchInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
-                event.preventDefault(); // Prevent default form submission if it were a form
-                 performSearch(); // Call performSearch without a specific value (uses input field)
-                 suggestionsList.classList.add('hidden'); // Hide suggestions after search
+                event.preventDefault();
+                performSearch();
+                suggestionsList.classList.add('hidden');
             }
         });
 
         // Event listener for input changes in the search field for suggestions
         searchInput.addEventListener('input', () => {
             const searchTerm = searchInput.value.toLowerCase();
-            suggestionsList.innerHTML = ''; // Clear previous suggestions
-             // console.log(`Input event fired for suggestions. Search term: "${searchTerm}`); // Debugging log
+            suggestionsList.innerHTML = '';
 
-
-            // Only show suggestions if at least 3 characters are typed and data is loaded
-            if (searchTerm.length > 2 && allData.length > 0) { // Changed threshold to 3 for slightly quicker suggestions
-                 // console.log("Generating suggestions..."); // Debugging log
-                const matchedItems = new Map(); // Use a Map to store unique suggestions by Consignment Order Number
+            if (searchTerm.length > 2 && allData.length > 0) {
+                const matchedItems = new Map();
 
                 allData.forEach(item => {
                     const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
                     const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
                     const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
-                    const companyName = item['Name of Company'] ? String(item['Name of Company']) : 'Unknown Company'; // Get original case company name
-                    const originalConsignmentNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']) : 'N/A'; // Get original case consignment number
+                    const companyName = item['Name of Company'] ? String(item['Name of Company']) : 'Unknown Company';
+                    const originalConsignmentNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']) : 'N/A';
 
-                    // Check if the search term matches any of the relevant fields
                     if (srId.includes(searchTerm) || consignmentOrderNumber.includes(searchTerm) || invoiceNo.includes(searchTerm)) {
-                         // If a match is found in any of the key fields, use the Consignment Order Number for the suggestion value
-                         const suggestionValue = originalConsignmentNumber; // Use the CO Number as the value to search by
-                         const suggestionKey = suggestionValue; // Use CO Number as the key for uniqueness
+                         const suggestionValue = originalConsignmentNumber;
+                         const suggestionKey = suggestionValue;
 
-                         if (suggestionValue !== 'N/A' && !matchedItems.has(suggestionKey)) { // Only add if CO Number exists and is unique
+                         if (suggestionValue !== 'N/A' && !matchedItems.has(suggestionKey)) {
                              matchedItems.set(suggestionKey, {
-                                 display: `${companyName} – ${originalConsignmentNumber}`, // Display Company and CO Number
-                                 value: suggestionValue // Store the CO Number as the value for filtering
+                                 display: `${companyName} – ${originalConsignmentNumber}`,
+                                 value: suggestionValue
                              });
                          }
                     }
                 });
 
-                 // console.log(`Found ${matchedItems.size} unique suggestions.`); // Debugging log
-
                 if (matchedItems.size > 0) {
-                    // Convert map values to an array and sort them by display text
                     const sortedSuggestions = Array.from(matchedItems.values()).sort((a, b) => a.display.localeCompare(b.display));
 
                     sortedSuggestions.forEach(suggestion => {
                         const suggestionItem = document.createElement('div');
-                        suggestionItem.textContent = suggestion.display; // Display the formatted label
-                        // Store the actual value (Consignment Order Number) in a data attribute
+                        suggestionItem.textContent = suggestion.display;
                         suggestionItem.setAttribute('data-value', suggestion.value);
-                        suggestionItem.classList.add('px-4', 'py-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-700'); // Tailwind classes for styling
+                        suggestionItem.classList.add('px-4', 'py-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-700');
                         suggestionItem.addEventListener('click', () => {
-                             console.log(`Suggestion clicked. Display: "${suggestion.display}", Value: "${suggestion.value}"`); // Debugging log
-                             searchInput.value = suggestion.display; // Set input value to the displayed label
-                             suggestionsList.classList.add('hidden'); // Hide suggestions
-                             performSearch(suggestion.value); // Trigger search using the Consignment Order Number
+                             searchInput.value = suggestion.display;
+                             suggestionsList.classList.add('hidden');
+                             performSearch(suggestion.value);
                         });
                         suggestionsList.appendChild(suggestionItem);
                     });
-                    suggestionsList.classList.remove('hidden'); // Show suggestions list
-                     // console.log("Suggestions list shown."); // Debugging log
+                    suggestionsList.classList.remove('hidden');
                 } else {
-                    suggestionsList.classList.add('hidden'); // Hide if no matches
-                     // console.log("No matching items for suggestions, suggestions list hidden."); // Debugging log
+                    suggestionsList.classList.add('hidden');
                 }
             } else {
-                suggestionsList.classList.add('hidden'); // Hide if search term is too short or data not loaded
-                 // console.log("Search term too short or data not loaded, suggestions list hidden."); // Debugging log
+                suggestionsList.classList.add('hidden');
             }
         });
 
 
          // Event listener for the reset button
          resetButton.addEventListener('click', () => {
-             console.log("Reset button clicked."); // Debugging line
-             searchInput.value = ''; // Clear search input
-             filteredData = []; // Reset to show no data (initial state)
-             currentPage = 1; // Reset to first page
-             hideMessageBox(); // Hide any messages
-             currentSortColumn = null; // Reset sort state on reset
+             searchInput.value = '';
+             filteredData = [];
+             currentPage = 1;
+             hideMessageBox();
+             currentSortColumn = null;
              currentSortDirection = 'asc';
-             calculateAndDisplaySummary(); // Calculate and update the summary panel (will hide it)
-             renderTable(); // renderTable updates export button state and sort icons
-             suggestionsList.classList.add('hidden'); // Hide suggestions on reset
-             suggestionsList.innerHTML = ''; // Clear suggestions list content
+             calculateAndDisplaySummary();
+             renderTable();
+             suggestionsList.classList.add('hidden');
+             suggestionsList.innerHTML = '';
 
-             // Hide table and pagination containers on mobile after reset
              if (window.innerWidth <= 767) {
                  tableContainer.style.display = 'none';
                  paginationContainer.style.display = 'none';
@@ -925,21 +863,16 @@
         window.addEventListener('click', (event) => {
             if (!exportButton.contains(event.target) && !exportDropdown.contains(event.target) && !searchInput.contains(event.target) && !suggestionsList.contains(event.target)) {
                 exportDropdown.classList.add('hidden');
-                 suggestionsList.classList.add('hidden'); // Also hide suggestions list
-                 // console.log("Clicked outside, hiding export dropdown and suggestions list."); // Debugging log
+                 suggestionsList.classList.add('hidden');
             }
         });
 
         // Function to update the HTML export option label based on screen size
         function updateHtmlOptionLabel() {
-             console.log("updateHtmlOptionLabel called"); // Debugging line
-             console.log(`Window width: ${window.innerWidth}`); // Debugging line
-            if (window.innerWidth <= 767) { // Match the mobile breakpoint
+            if (window.innerWidth <= 767) {
                 exportHtmlOption.textContent = 'Export for Mobile Browser';
-                 console.log("HTML option label set to 'Export for Mobile Browser'"); // Debugging line
             } else {
                 exportHtmlOption.textContent = 'Export as HTML';
-                 console.log("HTML option label set to 'Export as HTML'"); // Debugging HTML'); // Debugging line
             }
         }
 
@@ -950,43 +883,33 @@
 
         // Event listener for the previous page button
         prevPageButton.addEventListener('click', () => {
-             console.log("Previous page button clicked"); // Debugging line
             if (currentPage > 1) {
                 currentPage--;
                 renderTable();
-                 console.log(`Previous page clicked. Current page: ${currentPage}`); // Debugging line
             }
         });
 
         // Event listener for the next page button
         nextPageButton.addEventListener('click', () => {
-             console.log("Next page button clicked"); // Debugging line
             const totalPages = Math.ceil(filteredData.length / itemsPerPage);
             if (currentPage < totalPages) {
                 currentPage++;
                 renderTable();
-                 console.log(`Next page clicked. Current page: ${currentPage}`); // Debugging line
             }
         });
 
         // Add event listener for the export button to toggle the dropdown visibility
         exportButton.addEventListener('click', (event) => {
-            // Prevent the default button action (like form submission, though not in a form here)
             event.preventDefault();
-            // Prevent the window click listener from immediately hiding the dropdown
             event.stopPropagation();
-
-            // Toggle the 'hidden' class to show or hide the dropdown
             exportDropdown.classList.toggle('hidden');
-             console.log("Export button clicked. Dropdown visibility toggled."); // Debugging log
         });
 
         // Add event listeners for the export dropdown options
         exportDropdown.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', (event) => {
-                event.preventDefault(); // Prevent default link behavior
+                event.preventDefault();
                 const format = link.getAttribute('data-format');
-                console.log(`Export option clicked: ${format}`); // Debugging log
 
                 if (format === 'csv') {
                     exportTableToCSV();
@@ -994,32 +917,26 @@
                     exportTableToHTML();
                 }
 
-                exportDropdown.classList.add('hidden'); // Hide dropdown after clicking an option
-                 console.log("Dropdown option clicked. Dropdown hidden."); // Debugging log
+                exportDropdown.classList.add('hidden');
             });
         });
 
 
         // Function to export table data to CSV
         function exportTableToCSV() {
-            console.log("Exporting to CSV..."); // Debugging log
             if (filteredData.length === 0) {
                 showMessage("No data to export.", 'info');
-                console.log("No data to export to CSV."); // Debugging log
                 return;
             }
 
-            const headers = Object.keys(filteredData[0]); // Get headers from the first object
+            const headers = Object.keys(filteredData[0]);
             const csvRows = [];
 
-            // Add headers to CSV
             csvRows.push(headers.map(header => `"${header.replace(/"/g, '""')}"`).join(','));
 
-            // Add data rows
             filteredData.forEach(item => {
                 const values = headers.map(header => {
                     const value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
-                    // Escape double quotes and wrap in double quotes if value contains comma or double quote
                     return `"${value.replace(/"/g, '""')}"`;
                 });
                 csvRows.push(values.join(','));
@@ -1029,32 +946,26 @@
             const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
 
-            // Create a download link
             link.href = URL.createObjectURL(blob);
             link.setAttribute('download', 'invoice_data.csv');
 
-            // Append to body, click, and remove
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
 
-            // Clean up the Blob URL
             setTimeout(() => URL.revokeObjectURL(link.href), 10000);
 
-            showMessage("Data exported as CSV.", 'success'); // Assuming a 'success' type exists or style accordingly
-            console.log("CSV Export complete."); // Debugging log
+            showMessage("Data exported as CSV.", 'success');
         }
 
         // Function to export table data to HTML
         function exportTableToHTML() {
-             console.log("Exporting to HTML..."); // Debugging log
              if (filteredData.length === 0) {
                  showMessage("No data to export.", 'info');
-                 console.log("No data to export to HTML."); // Debugging log
                  return;
              }
 
-             const headers = Object.keys(filteredData[0]); // Get headers from the first object
+             const headers = Object.keys(filteredData[0]);
              let htmlString = `
                  <!DOCTYPE html>
                  <html lang="en">
@@ -1100,20 +1011,16 @@
              const blob = new Blob([htmlString], { type: 'text/html;charset=utf-8;' });
              const link = document.createElement('a');
 
-             // Create a download link
              link.href = URL.createObjectURL(blob);
              link.setAttribute('download', 'invoice_data.html');
 
-             // Append to body, click, and remove
              document.body.appendChild(link);
              link.click();
              document.body.removeChild(link);
 
-             // Clean up the Blob URL
              setTimeout(() => URL.revokeObjectURL(link.href), 10000);
 
-             showMessage("Data exported as HTML.", 'success'); // Assuming a 'success' type exists or style accordingly
-             console.log("HTML Export complete."); // Debugging log
+             showMessage("Data exported as HTML.", 'success');
          }
 
 
