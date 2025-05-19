@@ -330,6 +330,8 @@
             transform: translateY(-50%);
             color: #9ca3af; /* Tailwind gray-400 */
             pointer-events: none; /* Allow clicks to pass through to the input */
+            /* The search icon is positioned absolutely within the search input container */
+            /* This ensures it stays fixed relative to the input field */
         }
 
         /* Header styling */
@@ -430,7 +432,7 @@
                     </thead>
                     <tbody id="invoiceTableBody" class="text-gray-700 text-sm font-light">
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and click 'Search'.</td>
+                            <td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -486,14 +488,6 @@
         // Get the table and pagination containers
         const tableContainer = document.getElementById('tableContainer');
         const paginationContainer = document.getElementById('paginationContainer');
-
-        // Function to update the disabled state of the search button (No longer needed)
-        // function updateSearchButtonState() {
-        //     // Disable if input is empty or if data is not yet loaded (allData is empty)
-        //     // The button should be enabled if there is text in the input AND data is loaded.
-        //     searchButton.disabled = searchInput.value.trim() === '' || allData.length === 0;
-        //      // console.log(`Search button disabled state updated: ${searchButton.disabled}`); // Debugging log
-        // }
 
         // Function to show messages
         function showMessage(message, type = 'info') {
@@ -647,7 +641,7 @@
 
             if (filteredData.length === 0) {
                  // Display message when no search results are found or initially
-                 const message = searchInput.value.trim() === '' ? 'Enter a search term and click \'Search\'.' : 'No data found for your search.';
+                 const message = searchInput.value.trim() === '' ? 'Enter a search term and press Enter or select a suggestion.' : 'No data found for your search.';
                  // Added empty-table-message class here
                  invoiceTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
                  console.log("No data found after filtering/on current page."); // Debugging line
@@ -693,8 +687,6 @@
 
         // Function to fetch data from the JSON URL
         async function fetchData() {
-            // Disable search button while fetching (No longer needed as button is removed)
-            // searchButton.disabled = true;
              console.log("Fetching data..."); // Debugging log
 
             // Clear loading message before fetching
@@ -719,8 +711,6 @@
                  quantitySummaryPanel.classList.add('hidden');
                  console.log("Data fetched successfully."); // Debugging log
 
-                 // Update search button state after data is loaded (No longer needed)
-                 // updateSearchButtonState();
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -736,8 +726,6 @@
                      paginationContainer.style.display = 'none';
                  }
             } finally {
-                 // Ensure search button state is correct after fetch completes (success or error) (No longer needed)
-                 // updateSearchButtonState(); // Call to check input state
                  console.log("Fetch complete."); // Debugging log
             }
         }
@@ -748,8 +736,6 @@
         function performSearch(searchValue = null) {
              console.log("performSearch called with searchValue:", searchValue); // Debugging line
 
-             // Disable search button at the start of search (No longer needed)
-             // searchButton.disabled = true;
              console.log("Search in progress."); // Debugging log
 
             if (searchValue !== null) {
@@ -761,10 +747,6 @@
                      return consignmentOrderNumber === searchConsignmentNumber;
                  });
                  console.log(`Filtered by Consignment Order Number "${searchValue}". Found ${filteredData.length} results.`); // Debugging log
-
-                 // Update the search input field with the suggestion's display value
-                 // This is handled in the suggestion click listener, but doing it here ensures consistency
-                 // searchInput.value = searchValue; // No, keep the display value from the suggestion click
 
             } else {
                 // If no specific searchValue, use the input field value for Enter key search
@@ -800,7 +782,7 @@
                              const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
                              const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
                              // Compare lowercase values for filtering
-                             return srId === exactMatchSearchTerm || consignmentOrderNumber === exactMatchSearchTerm || invoiceNo === exactMatchSearchTerm;
+                             return srId === exactMatchSearchTerm || consignmentOrderNumber === exactMatchOrderNumber || invoiceNo === exactMatchInvoiceNo;
                          });
                          console.log(`Filtered by exact matched value: ${exactMatchValue}. Found ${filteredData.length} results.`); // Debugging log
 
@@ -838,17 +820,9 @@
             calculateAndDisplaySummary(); // Calculate and update the summary panel
             renderTable(); // renderTable updates export button state and sort icons
 
-            // Re-enable search button after search completes, based on input state (No longer needed)
-            // updateSearchButtonState();
              console.log("Search complete."); // Debugging log
         }
 
-
-        // Event listener for the search button (Removed)
-        // searchButton.addEventListener('click', () => {
-        //      performSearch(); // Call performSearch without a specific value (uses input field)
-        //      suggestionsList.classList.add('hidden'); // Hide suggestions after search
-        // });
 
         // Optional: Allow pressing Enter in the search field to trigger search
         searchInput.addEventListener('keypress', (event) => {
@@ -865,8 +839,6 @@
             suggestionsList.innerHTML = ''; // Clear previous suggestions
              // console.log(`Input event fired for suggestions. Search term: "${searchTerm}`); // Debugging log
 
-            // Update search button state as user types (No longer needed)
-            // updateSearchButtonState();
 
             // Only show suggestions if at least 3 characters are typed and data is loaded
             if (searchTerm.length > 2 && allData.length > 0) { // Changed threshold to 3 for slightly quicker suggestions
@@ -912,7 +884,6 @@
                              searchInput.value = suggestion.display; // Set input value to the displayed label
                              suggestionsList.classList.add('hidden'); // Hide suggestions
                              performSearch(suggestion.value); // Trigger search using the Consignment Order Number
-                             // The performSearch function already handles disabling/re-enabling the search button (No longer needed)
                         });
                         suggestionsList.appendChild(suggestionItem);
                     });
@@ -942,8 +913,6 @@
              renderTable(); // renderTable updates export button state and sort icons
              suggestionsList.classList.add('hidden'); // Hide suggestions on reset
              suggestionsList.innerHTML = ''; // Clear suggestions list content
-             // Update search button state after reset (No longer needed)
-             // updateSearchButtonState();
 
              // Hide table and pagination containers on mobile after reset
              if (window.innerWidth <= 767) {
@@ -1161,9 +1130,6 @@
 
         // Initial data fetch when the page loads
         fetchData();
-
-        // Initial state update for the search button (No longer needed)
-        // updateSearchButtonState();
 
 
     </script>
