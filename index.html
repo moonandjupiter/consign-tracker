@@ -212,16 +212,17 @@
             .loading-text {
                 font-size: 2rem; /* Smaller font size for mobile */
                 margin-top: 30px; /* Adjusted margin */
+                display: flex; /* Make it a flex container */
+                align-items: baseline; /* Align items to their baseline */
+                white-space: nowrap; /* Prevent wrapping */
             }
 
             .version-suffix {
                 font-size: 1.2rem; /* Smaller suffix font size */
                 color: #93c5fd; /* Lighter blue, same as icon */
                 font-weight: 600; /* Semi-bold */
-                /* Adjusted positioning for better alignment on mobile */
-                position: relative;
-                top: -0.15em; /* Fine-tune vertical position */
                 margin-left: 0.2em; /* Small space */
+                /* Removed position: relative and top for flex alignment */
             }
         }
 
@@ -1099,7 +1100,7 @@
                 htmlString += '<tr>';
                 headers.forEach(header => {
                     const value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
-                    htmlString += `<td>${value}</td>`;
+                    return `<td>${value}</td>`;
                 });
                 htmlString += '</tr>';
             });
