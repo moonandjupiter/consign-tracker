@@ -669,13 +669,9 @@
 
         // Function to calculate and display the total quantity of the filtered data and per consignment
         function calculateAndDisplaySummary() {
-            const totalQuantity = filteredData.reduce((sum, item) => {
-                const quantity = parseInt(item['Quantity Sold'], 10);
-                return sum + (isNaN(quantity) ? 0 : quantity);
-            }, 0);
-
-            const resultText = filteredData.length === 1 ? 'result' : 'results';
-            overallSummaryDiv.textContent = `Found ${filteredData.length} ${resultText}:`;
+            const totalResults = filteredData.length;
+            const resultWord = totalResults === 1 ? 'result' : 'results';
+            overallSummaryDiv.textContent = `Found ${totalResults} ${resultWord}:`;
 
             const consignmentTotals = filteredData.reduce((acc, item) => {
                 const consignmentNumber = item['Consignment Order Number'] || 'N/A';
@@ -692,8 +688,9 @@
                 const sortedConsignments = Object.entries(consignmentTotals).sort(([a], [b]) => a.localeCompare(b));
                 sortedConsignments.forEach(([consignment, total]) => {
                     const formattedTotal = total.toLocaleString();
+                    const pcWord = total === 1 ? 'pc' : 'pcs';
                     const listItem = document.createElement('li');
-                    listItem.textContent = `CO Number ${consignment}: ${formattedTotal} pcs reported sold.`;
+                    listItem.innerHTML = `CO Number ${consignment} : <span class="font-bold text-blue-700">${formattedTotal} ${pcWord}</span> reported sold.`;
                     consignmentSummaryList.appendChild(listItem);
                 });
             } else {
