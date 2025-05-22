@@ -188,11 +188,6 @@
                 content: none;
             }
 
-            /* Hide table and pagination on mobile initially */
-            #tableContainer, #paginationContainer {
-                display: none;
-            }
-
             /* Mobile specific input and icon positioning */
             .search-input-container input {
                 padding-left: 45px; /* Increased padding for icon */
@@ -210,8 +205,8 @@
 
             /* Mobile adjustments for loading overlay */
             #loadingOverlay {
-                /* Removed padding-top to allow true vertical centering */
                 justify-content: center; /* Ensure content is vertically centered */
+                padding: 0 1rem; /* Add horizontal padding for mobile */
             }
 
             .loading-text {
@@ -314,9 +309,10 @@
             /* Desktop suggestion list styling */
             #suggestionsList {
                 position: absolute; /* Position relative to the search input container */
-                width: calc(100% - 40px); /* Match input width minus padding/icon space */
-                max-height: 200px; /* Limit height and make it scrollable */
-                overflow-y: auto;
+                width: max-content; /* Allow it to grow to content width */
+                min-width: 100%; /* Ensure it's at least as wide as the input */
+                max-height: 300px; /* Increased height for more suggestions */
+                overflow-y: auto; /* Ensure scroll if needed */
                 background-color: white;
                 border: 1px solid #d1d5db; /* Tailwind gray-300 */
                 border-top: none; /* No top border */
@@ -325,7 +321,8 @@
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Tailwind shadow-lg */
                 z-index: 20; /* Ensure it's above other content */
                 top: 100%; /* Position right below the input */
-                left: 0;
+                left: 0; /* Align with the left edge of the input container */
+                padding-right: 15px; /* Added for visual comfort */
             }
 
             #suggestionsList div {
@@ -333,6 +330,8 @@
                 cursor: pointer;
                 font-size: 0.9rem;
                 color: #4b5563; /* Tailwind gray-600 */
+                white-space: nowrap; /* Prevent text from wrapping */
+                max-width: none; /* Ensure text itself doesn't have a max-width */
             }
 
             #suggestionsList div:hover {
@@ -362,6 +361,8 @@
         .search-input-container {
             position: relative; /* Ensure this is relative for absolute children */
             flex-grow: 1; /* Allow input to take available space */
+            /* Add overflow: visible to ensure absolutely positioned children are not clipped */
+            overflow: visible; /* THIS IS THE KEY ADDITION */
         }
 
         /* Default padding for input (desktop and general) */
@@ -502,7 +503,7 @@
     </div>
 
     <div id="mainContent" class="hidden">
-        <div class="container mx-auto bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl border border-gray-200 mt-10 mb-10">
+        <div class="container mx-auto bg-white rounded-xl shadow-2xl border border-gray-200 mt-10 mb-10">
             <div class="header">
                 <div class="header-content">
                     <div>
@@ -748,10 +749,9 @@
                 const message = searchInput.value.trim() === '' ? 'Enter a search term and press Enter or select a suggestion.' : 'No data found for your search.';
                 invoiceTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
 
-                if (window.innerWidth <= 767) {
-                    tableContainer.style.display = 'none';
-                    paginationContainer.style.display = 'none';
-                }
+                // Explicitly hide table and pagination when no data is found
+                tableContainer.style.display = 'none';
+                paginationContainer.style.display = 'none';
 
             } else {
                 dataToDisplay.forEach(item => {
@@ -770,10 +770,9 @@
                     invoiceTableBody.appendChild(row);
                 });
 
-                if (window.innerWidth <= 767) {
-                    tableContainer.style.display = 'block';
-                    paginationContainer.style.display = 'flex';
-                }
+                // Explicitly show table and pagination when data is present
+                tableContainer.style.display = 'block';
+                paginationContainer.style.display = 'flex';
             }
 
             updatePaginationControls();
@@ -966,10 +965,9 @@
             suggestionsList.classList.add('hidden');
             suggestionsList.innerHTML = '';
 
-            if (window.innerWidth <= 767) {
-                tableContainer.style.display = 'none';
-                paginationContainer.style.display = 'none';
-            }
+            // Ensure table and pagination are hidden on reset
+            tableContainer.style.display = 'none';
+            paginationContainer.style.display = 'none';
         });
 
         // Hide the dropdown if the user clicks outside of it
