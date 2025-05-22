@@ -216,16 +216,12 @@
 
             .version-suffix {
                 font-size: 1.2rem; /* Smaller suffix font size */
-            }
-
-            .loading-dots-container {
-                gap: 10px; /* Smaller gap between dots */
-                margin-bottom: 15px; /* Adjusted margin */
-            }
-
-            .loading-dot {
-                width: 15px; /* Smaller dots */
-                height: 15px;
+                color: #93c5fd; /* Lighter blue, same as icon */
+                font-weight: 600; /* Semi-bold */
+                /* Adjusted positioning for better alignment on mobile */
+                position: relative;
+                top: -0.15em; /* Fine-tune vertical position */
+                margin-left: 0.2em; /* Small space */
             }
         }
 
@@ -462,7 +458,7 @@
             height: 20px;
             border-radius: 50%;
             background-color: #93c5fd; /* Default dot color */
-            animation: bounce 1.4s infinite ease-in-out; /* Reverted to ease-in-out */
+            animation: bounce 1.4s infinite ease-in-out; /* Re-added animation property */
         }
 
         /* Specific colors for each dot */
@@ -481,11 +477,9 @@
         @keyframes bounce {
             0%, 100% {
                 transform: translateY(0);
-                /* Removed specific timing functions from 0% and 100% */
             }
             50% {
                 transform: translateY(-20px); /* Peak of the jump */
-                /* Removed specific timing function from 50% */
             }
         }
     </style>
