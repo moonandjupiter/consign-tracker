@@ -539,16 +539,16 @@
         .modal-content {
             background-color: white; /* Pure white background */
             background-image: none; /* Removed gradient */
-            padding: 2.5rem;
-            border-radius: 0.75rem; /* Slightly less rounded than before */
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Softer, less spread shadow */
+            padding: 1.5rem; /* Reduced padding for a more compact receipt feel */
+            border-radius: 0.25rem; /* Minimal border-radius for sharp edges like a receipt */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Lighter, less spread shadow */
             width: 90%;
-            max-width: 550px;
-            transform: translateY(-20px) scale(0.98); /* Less pronounced initial animation */
-            transition: transform 0.3s ease-out; /* Smoother, quicker animation */
+            max-width: 380px; /* Narrower for receipt-like feel */
+            transform: translateY(-10px) scale(0.99); /* Subtle animation */
+            transition: transform 0.2s ease-out; /* Quicker animation */
             position: relative;
-            color: #374151;
-            border: none; /* Removed border, relying on shadow */
+            color: #1f2937; /* Dark gray for main text, good for print */
+            border: 1px solid #e5e7eb; /* Subtle light gray border */
         }
 
         .modal-overlay.show .modal-content {
@@ -557,78 +557,81 @@
 
         .modal-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e5e7eb; /* Lighter gray border */
+            flex-direction: column; /* Stack title and close button */
+            align-items: center; /* Center header content */
+            border-bottom: 1px dashed #d1d5db; /* Dashed line for receipt feel */
             padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
+            position: relative; /* For positioning close button */
         }
 
         .modal-header h2 {
-            font-size: 1.75rem; /* Reverted to original size */
+            font-size: 1.5rem; /* Slightly smaller title for receipt */
             font-weight: 700;
             color: #1f2937; /* Darker title color */
-            text-shadow: none; /* Removed text shadow */
+            text-shadow: none;
+            margin-bottom: 0.5rem; /* Space between title and close button */
         }
 
         .modal-close-button {
+            position: absolute; /* Position close button absolutely */
+            top: 0.5rem;
+            right: 0.5rem;
             background: none;
             border: none;
-            font-size: 1.5rem; /* Reverted to original size */
+            font-size: 1.2rem; /* Smaller close icon */
             cursor: pointer;
             color: #6b7280;
             transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            padding: 0.25rem; /* Add padding for easier clicking */
         }
 
         .modal-close-button:hover {
-            color: #ef4444;
+            color: #dc2626; /* Red-600 on hover */
             transform: rotate(90deg);
         }
 
         .modal-body p {
-            margin-bottom: 0.75rem; /* Slightly less space between lines */
-            font-size: 1rem; /* Reverted to original size */
+            margin-bottom: 0.5rem; /* Reduced space between lines */
+            font-size: 0.95rem; /* Slightly smaller text for receipt */
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            padding: 0.75rem 0; /* Consistent vertical padding */
-            border-bottom: 1px solid #f3f4f6; /* Very light gray solid line for subtle separation */
-        }
-
-        .modal-body p:last-child {
-            border-bottom: none;
+            padding: 0.25rem 0; /* Minimal vertical padding */
+            border-bottom: none; /* No border for each line */
         }
 
         .modal-body strong {
-            color: #4b5563; /* Tailwind gray-600 - less prominent than values */
-            font-weight: 600; /* Slightly bolder than 500, less than 700 */
+            color: #4b5563; /* Tailwind gray-600 */
+            font-weight: normal; /* No bold for labels */
             flex-shrink: 0;
-            margin-right: 1rem;
+            margin-right: 0.75rem; /* Reduced space */
         }
 
         .modal-body span {
-            color: #1d4ed8; /* Main theme blue */
-            font-weight: 700; /* Keep bold for emphasis */
+            color: #1f2937; /* Dark gray for values, good for print */
+            font-weight: 600; /* Semi-bold for values to stand out slightly */
             text-align: right;
             flex-grow: 1;
         }
 
         .modal-footer {
             display: flex;
-            justify-content: flex-end;
+            flex-direction: column; /* Stack content in footer */
+            align-items: center; /* Center footer content */
             gap: 1rem;
-            border-top: 1px solid #e5e7eb; /* Lighter gray border */
-            padding-top: 1.5rem;
-            margin-top: 2rem;
+            border-top: 1px dashed #d1d5db; /* Dashed line for receipt feel */
+            padding-top: 1.25rem;
+            margin-top: 1.5rem;
         }
 
         .modal-footer button {
-            padding: 0.75rem 1.5rem; /* Reverted to original padding */
-            border-radius: 0.5rem; /* Reverted to original radius */
+            padding: 0.6rem 1.2rem; /* Smaller buttons */
+            border-radius: 0.375rem; /* Slightly less rounded */
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease-in-out;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle button shadow */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Even lighter shadow */
         }
 
         .modal-print-button {
@@ -639,7 +642,7 @@
 
         .modal-print-button:hover {
             background-color: #16a34a;
-            box-shadow: 0 4px 8px rgba(34, 197, 94, 0.3);
+            box-shadow: 0 2px 5px rgba(34, 197, 94, 0.2);
         }
 
         .modal-cancel-button {
@@ -649,8 +652,16 @@
         }
 
         .modal-cancel-button:hover {
-            background-color: #f3f4f6;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            background-color: #f9fafb; /* Lighter hover background */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .modal-note {
+            font-size: 0.8rem; /* Smaller font for the note */
+            color: #6b7280; /* Gray text for notes */
+            text-align: center;
+            margin-top: 0.75rem; /* Space above the note */
+            line-height: 1.4;
         }
 
         /* Print specific styles */
@@ -671,16 +682,36 @@
                 max-width: none;
                 box-shadow: none;
                 border: none;
-                padding: 0;
+                padding: 0.5rem; /* Minimal padding for print */
                 transform: none;
+                border-radius: 0; /* No rounded corners for print */
             }
             body.print-active .modal-header,
             body.print-active .modal-footer {
-                border: none;
+                border: none; /* Remove borders for print */
             }
             body.print-active .modal-close-button,
             body.print-active .modal-footer button {
-                display: none;
+                display: none; /* Hide buttons when printing */
+            }
+            body.print-active .modal-header h2 {
+                font-size: 1.2rem; /* Even smaller for print */
+                margin-bottom: 0.25rem;
+            }
+            body.print-active .modal-body p {
+                font-size: 0.85rem; /* Even smaller for print */
+                margin-bottom: 0.2rem;
+                padding: 0.1rem 0;
+            }
+            body.print-active .modal-body strong {
+                font-weight: normal; /* Ensure no bold for labels in print */
+            }
+            body.print-active .modal-body span {
+                font-weight: 600; /* Keep values slightly bold for clarity in print */
+            }
+            body.print-active .modal-note {
+                font-size: 0.7rem; /* Smallest for print note */
+                margin-top: 0.5rem;
             }
         }
     </style>
@@ -789,7 +820,7 @@
     <div id="detailsModalOverlay" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Invoice Details</h2>
+                <h2>Sales Report Ticket</h2>
                 <button class="modal-close-button" id="closeModalButton">&times;</button>
             </div>
             <div class="modal-body" id="modalDetailsBody">
@@ -797,6 +828,9 @@
             <div class="modal-footer">
                 <button class="modal-cancel-button" id="cancelPrintButton">Close</button>
                 <button class="modal-print-button" id="printDetailsButton"><i class="fas fa-print"></i> Print</button>
+                <p class="modal-note">
+                    <strong>Note to Supplier:</strong> This ticket must be attached when submitting your sales invoice. Failure to attach this ticket may cause difficulties in retrieving relevant reports.
+                </p>
             </div>
         </div>
     </div>
