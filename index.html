@@ -207,6 +207,31 @@
                 pointer-events: none;
                 z-index: 101; /* Give the icon a very high z-index */
             }
+
+            /* Mobile adjustments for loading overlay */
+            #loadingOverlay {
+                /* Removed padding-top to allow true vertical centering */
+                justify-content: center; /* Ensure content is vertically centered */
+            }
+
+            .loading-text {
+                font-size: 2rem; /* Smaller font size for mobile */
+                margin-top: 30px; /* Adjusted margin */
+            }
+
+            .version-suffix {
+                font-size: 1.2rem; /* Smaller suffix font size */
+            }
+
+            .loading-dots-container {
+                gap: 10px; /* Smaller gap between dots */
+                margin-bottom: 15px; /* Adjusted margin */
+            }
+
+            .loading-dot {
+                width: 15px; /* Smaller dots */
+                height: 15px;
+            }
         }
 
         /* Default table styling for larger screens (md and up) */
