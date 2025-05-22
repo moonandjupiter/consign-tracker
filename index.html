@@ -212,17 +212,17 @@
             .loading-text {
                 font-size: 2rem; /* Smaller font size for mobile */
                 margin-top: 30px; /* Adjusted margin */
-                display: flex; /* Make it a flex container */
-                align-items: baseline; /* Align items to their baseline */
+                /* Removed display: flex and align-items: baseline for mobile */
                 white-space: nowrap; /* Prevent wrapping */
             }
 
             .version-suffix {
-                font-size: 1.2rem; /* Smaller suffix font size */
+                font-size: 0.7em; /* Smaller suffix font size relative to parent */
                 color: #93c5fd; /* Lighter blue, same as icon */
                 font-weight: 600; /* Semi-bold */
+                vertical-align: super; /* Re-added for superscript effect */
                 margin-left: 0.2em; /* Small space */
-                /* Removed position: relative and top for flex alignment */
+                /* Removed position: relative and top for mobile */
             }
         }
 
