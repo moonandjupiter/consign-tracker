@@ -513,6 +513,176 @@
             0%, 100% { opacity: 0.5; transform: scale(1); }
             50% { opacity: 1; transform: scale(1.2); }
         }
+
+        /* Styles for the Details Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it's on top */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: white; /* Pure white background */
+            background-image: none; /* Removed gradient */
+            padding: 2.5rem;
+            border-radius: 0.75rem; /* Slightly less rounded than before */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Softer, less spread shadow */
+            width: 90%;
+            max-width: 550px;
+            transform: translateY(-20px) scale(0.98); /* Less pronounced initial animation */
+            transition: transform 0.3s ease-out; /* Smoother, quicker animation */
+            position: relative;
+            color: #374151;
+            border: none; /* Removed border, relying on shadow */
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb; /* Lighter gray border */
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.75rem; /* Reverted to original size */
+            font-weight: 700;
+            color: #1f2937; /* Darker title color */
+            text-shadow: none; /* Removed text shadow */
+        }
+
+        .modal-close-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem; /* Reverted to original size */
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+        }
+
+        .modal-close-button:hover {
+            color: #ef4444;
+            transform: rotate(90deg);
+        }
+
+        .modal-body p {
+            margin-bottom: 0.75rem; /* Slightly less space between lines */
+            font-size: 1rem; /* Reverted to original size */
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 0.75rem 0; /* Consistent vertical padding */
+            border-bottom: 1px solid #f3f4f6; /* Very light gray solid line for subtle separation */
+        }
+
+        .modal-body p:last-child {
+            border-bottom: none;
+        }
+
+        .modal-body strong {
+            color: #4b5563; /* Tailwind gray-600 - less prominent than values */
+            font-weight: 600; /* Slightly bolder than 500, less than 700 */
+            flex-shrink: 0;
+            margin-right: 1rem;
+        }
+
+        .modal-body span {
+            color: #1d4ed8; /* Main theme blue */
+            font-weight: 700; /* Keep bold for emphasis */
+            text-align: right;
+            flex-grow: 1;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            border-top: 1px solid #e5e7eb; /* Lighter gray border */
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .modal-footer button {
+            padding: 0.75rem 1.5rem; /* Reverted to original padding */
+            border-radius: 0.5rem; /* Reverted to original radius */
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle button shadow */
+        }
+
+        .modal-print-button {
+            background-color: #22c55e;
+            color: white;
+            border: 1px solid #22c55e;
+        }
+
+        .modal-print-button:hover {
+            background-color: #16a34a;
+            box-shadow: 0 4px 8px rgba(34, 197, 94, 0.3);
+        }
+
+        .modal-cancel-button {
+            background-color: white;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+        }
+
+        .modal-cancel-button:hover {
+            background-color: #f3f4f6;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        /* Print specific styles */
+        @media print {
+            body.print-active > *:not(.modal-overlay) {
+                display: none;
+            }
+            body.print-active .modal-overlay {
+                position: static;
+                background-color: transparent;
+                display: block;
+                width: auto;
+                height: auto;
+                overflow: visible;
+            }
+            body.print-active .modal-content {
+                width: auto;
+                max-width: none;
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                transform: none;
+            }
+            body.print-active .modal-header,
+            body.print-active .modal-footer {
+                border: none;
+            }
+            body.print-active .modal-close-button,
+            body.print-active .modal-footer button {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -586,11 +756,11 @@
                                 <th class="py-3 px-6 text-left sortable" data-sort="Invoice No.">Invoice No. <i class="fas fa-sort"></i></th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher No.">Voucher No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher Date">Voucher Date</th>
-                            </tr>
+                                <th class="py-3 px-6 text-left">Details</th> </tr>
                         </thead>
                         <tbody id="invoiceTableBody" class="text-gray-700 text-sm font-light">
                             <tr>
-                                <td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
+                                <td colspan="9" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -615,6 +785,22 @@
             </div>
         </div>
     </div>
+
+    <div id="detailsModalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Invoice Details</h2>
+                <button class="modal-close-button" id="closeModalButton">&times;</button>
+            </div>
+            <div class="modal-body" id="modalDetailsBody">
+                </div>
+            <div class="modal-footer">
+                <button class="modal-cancel-button" id="cancelPrintButton">Close</button>
+                <button class="modal-print-button" id="printDetailsButton"><i class="fas fa-print"></i> Print</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const jsonUrl = "https://raw.githubusercontent.com/moonandjupiter/my-json-data/refs/heads/main/Sheet1_data.json";
         const itemsPerPage = 5;
@@ -644,6 +830,13 @@
         const loadingOverlay = document.getElementById('loadingOverlay');
         const mainContent = document.getElementById('mainContent');
 
+        // Modal elements
+        const detailsModalOverlay = document.getElementById('detailsModalOverlay');
+        const closeModalButton = document.getElementById('closeModalButton');
+        const modalDetailsBody = document.getElementById('modalDetailsBody');
+        const printDetailsButton = document.getElementById('printDetailsButton');
+        const cancelPrintButton = document.getElementById('cancelPrintButton');
+
 
         // Function to show messages
         function showMessage(message, type = 'info') {
@@ -652,7 +845,7 @@
             messageBox.innerHTML = ''; // Clear previous content
 
             if (message === "Loading results, please wait..." && type === 'info') {
-                messageBox.classList.add('bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-center');
+                messageBox.classList.add('bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-content-center');
                 messageBox.innerHTML = `
                     <span>${message}</span>
                     <span class="loading-message-dots">
@@ -677,7 +870,7 @@
         function hideMessageBox() {
             messageBox.classList.add('hidden');
             messageBox.innerHTML = ''; // Clear content when hidden
-            messageBox.classList.remove('bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-center'); // Also remove styling classes
+            messageBox.classList.remove('bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-content-center'); // Also remove styling classes
         }
 
         // Function to calculate and display the total quantity of the filtered data and per consignment
@@ -686,31 +879,42 @@
             const resultWord = totalResults === 1 ? 'result' : 'results';
             overallSummaryDiv.textContent = `Found ${totalResults} ${resultWord}:`;
 
+            // Aggregate by Consignment Order Number only for the summary panel
             const consignmentTotals = filteredData.reduce((acc, item) => {
-                const consignmentNumber = item['Consignment Order Number'] || 'N/A';
+                const consignmentNumber = String(item['Consignment Order Number'] || 'N/A');
                 const quantity = parseInt(item['Quantity Sold'], 10);
+                const amount = parseFloat(String(item['Amount'] || '0').replace(/[^0-9.-]+/g,""));
                 
-                // Initialize the accumulator for this consignmentNumber if it doesn't exist
                 if (!acc[consignmentNumber]) {
-                    acc[consignmentNumber] = 0;
+                    acc[consignmentNumber] = {
+                        consignmentOrder: consignmentNumber,
+                        quantity: 0,
+                        amount: 0
+                    };
                 }
                 
-                // Add the quantity to the accumulator for this consignmentNumber
                 if (!isNaN(quantity)) {
-                    acc[consignmentNumber] += quantity;
+                    acc[consignmentNumber].quantity += quantity;
+                }
+                if (!isNaN(amount)) {
+                    acc[consignmentNumber].amount += amount;
                 }
                 return acc;
-            }, {}); // Initial accumulator is an empty object
+            }, {});
 
             consignmentSummaryList.innerHTML = '';
 
             if (Object.keys(consignmentTotals).length > 0) {
-                const sortedConsignments = Object.entries(consignmentTotals).sort(([a], [b]) => a.localeCompare(b));
-                sortedConsignments.forEach(([consignment, total]) => {
-                    const formattedTotal = total.toLocaleString();
-                    const pcWord = total === 1 ? 'pc' : 'pcs';
+                const sortedConsignments = Object.entries(consignmentTotals).sort(([keyA, valA], [keyB, valB]) => {
+                    return String(valA.consignmentOrder).localeCompare(String(valB.consignmentOrder));
+                });
+
+                sortedConsignments.forEach(([compositeKey, totals]) => {
+                    const formattedQuantity = totals.quantity.toLocaleString();
+                    const formattedAmount = totals.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    const pcWord = totals.quantity === 1 ? 'pc' : 'pcs';
                     const listItem = document.createElement('li');
-                    listItem.innerHTML = `CO Number ${consignment} : <span class="font-bold text-blue-700">${formattedTotal} ${pcWord}</span> reported sold.`;
+                    listItem.innerHTML = `CO Number ${totals.consignmentOrder} : <span class="font-bold text-blue-700">${formattedQuantity} ${pcWord}</span>, Total Amount <span class="font-bold text-blue-700">${formattedAmount}</span> reported sold.`;
                     consignmentSummaryList.appendChild(listItem);
                 });
             } else {
@@ -776,6 +980,19 @@
                 const valueA = a[column] || '';
                 const valueB = b[column] || '';
 
+                // Handle numeric sorting for Quantity Sold and Amount
+                if (column === 'Quantity Sold' || column === 'Amount') {
+                    const numA = parseFloat(String(valueA).replace(/[^0-9.-]+/g,"")) || 0;
+                    const numB = parseFloat(String(valueB).replace(/[^0-9.-]+/g,"")) || 0;
+                    if (numA < numB) {
+                        return currentSortDirection === 'asc' ? -1 : 1;
+                    }
+                    if (numA > numB) {
+                        return currentSortDirection === 'asc' ? 1 : -1;
+                    }
+                    return 0;
+                }
+                // Default to string comparison for other columns
                 if (valueA < valueB) {
                     return currentSortDirection === 'asc' ? -1 : 1;
                 }
@@ -799,7 +1016,8 @@
 
             if (filteredData.length === 0) {
                 const message = searchInput.value.trim() === '' ? 'Enter a search term and press Enter or select a suggestion.' : 'No data found for your search.';
-                invoiceTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
+                // Changed colspan from 8 to 9 due to new column
+                invoiceTableBody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
 
                 // Explicitly hide table and pagination when no data is found
                 tableContainer.style.display = 'none';
@@ -825,6 +1043,13 @@
                         <td data-label="Invoice No.:" class="px-6 py-3">${item['Invoice No.'] || ''}</td>
                         <td data-label="Voucher No.:" class="px-6 py-3 ${voucherClass}">${item['Voucher No.'] || ''}</td>
                         <td data-label="Voucher Date:" class="px-6 py-3">${item['Voucher Date'] || ''}</td>
+                        <td data-label="Details:" class="px-6 py-3 text-center">
+                            <button class="details-button text-blue-600 hover:text-blue-800 transition-colors duration-150"
+                                data-sr-id="${item['SR ID'] || ''}"
+                                data-consignment-order="${item['Consignment Order Number'] || ''}">
+                                <i class="fas fa-print"></i>
+                            </button>
+                        </td>
                     `;
                     invoiceTableBody.appendChild(row);
                 });
@@ -837,6 +1062,7 @@
             updatePaginationControls();
             exportButton.disabled = filteredData.length === 0;
             updateSortIcons();
+            addDetailsButtonListeners(); // Add listeners after rendering
         }
 
         // Function to fetch data from the JSON URL
@@ -863,7 +1089,7 @@
                 console.error("Error fetching data:", error);
                 showMessage(`Failed to load data: ${error.message}`, 'error');
                 // Still hide overlay even on error, but show error message
-                invoiceTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>';
+                invoiceTableBody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>'; // Changed colspan
                 quantitySummaryPanel.classList.add('hidden');
                 // Ensure main content is visible even on error
                 setTimeout(() => {
@@ -1208,6 +1434,71 @@
                     sortData(sortColumn);
                 }
             });
+        });
+
+        // Function to show the details modal
+        function showDetailsModal(srId, consignmentOrder) {
+            // Filter all data (not just current filteredData) to ensure we get all related records
+            const relatedRecords = allData.filter(item => 
+                String(item['SR ID'] || 'N/A') === String(srId) &&
+                String(item['Consignment Order Number'] || 'N/A') === String(consignmentOrder)
+            );
+
+            let totalQuantity = 0;
+            let totalAmount = 0;
+
+            relatedRecords.forEach(item => {
+                const quantity = parseInt(item['Quantity Sold'], 10);
+                const amount = parseFloat(String(item['Amount'] || '0').replace(/[^0-9.-]+/g,""));
+
+                if (!isNaN(quantity)) {
+                    totalQuantity += quantity;
+                }
+                if (!isNaN(amount)) {
+                    totalAmount += amount;
+                }
+            });
+
+            modalDetailsBody.innerHTML = `
+                <p><strong>SR ID:</strong> <span>${srId}</span></p>
+                <p><strong>Consignment Order Number:</strong> <span>${consignmentOrder}</span></p>
+                <p><strong>Total Quantity Sold:</strong> <span>${totalQuantity.toLocaleString()} pcs</span></p>
+                <p><strong>Total Amount:</strong> <span>${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>
+            `;
+            detailsModalOverlay.classList.add('show');
+        }
+
+        // Function to hide the details modal
+        function hideDetailsModal() {
+            detailsModalOverlay.classList.remove('show');
+        }
+
+        // Event listener for details buttons (delegated for dynamic content)
+        function addDetailsButtonListeners() {
+            document.querySelectorAll('.details-button').forEach(button => {
+                button.onclick = (event) => {
+                    const srId = event.currentTarget.dataset.srId;
+                    const consignmentOrder = event.currentTarget.dataset.consignmentOrder;
+                    showDetailsModal(srId, consignmentOrder);
+                };
+            });
+        }
+
+        // Event listeners for modal buttons
+        closeModalButton.addEventListener('click', hideDetailsModal);
+        cancelPrintButton.addEventListener('click', hideDetailsModal);
+        printDetailsButton.addEventListener('click', () => {
+            // Add a class to the body to trigger print-specific styles
+            document.body.classList.add('print-active');
+            
+            // Call the browser's print function
+            window.print();
+            
+            // Remove the class after printing (or immediately after print dialog opens)
+            // Using setTimeout to ensure the print dialog has a chance to open before class is removed
+            setTimeout(() => {
+                document.body.classList.remove('print-active');
+            }, 500); // A small delay to allow print dialog to initialize
         });
 
         // Initial data fetch when the page loads, wrapped in DOMContentLoaded
