@@ -201,35 +201,33 @@
             }
 
             .search-input-container i {
-                position: absolute; /* Ensure absolute positioning is applied */
-                left: 15px; /* Adjusted left position */
+                position: absolute;
+                left: 15px;
                 top: 50%;
                 transform: translateY(-50%);
                 color: #9ca3af;
                 pointer-events: none;
-                z-index: 101; /* Give the icon a very high z-index */
+                z-index: 101;
             }
 
             /* Mobile adjustments for loading overlay */
             #loadingOverlay {
-                justify-content: center; /* Ensure content is vertically centered */
-                padding: 0 1rem; /* Add horizontal padding for mobile */
+                justify-content: center;
+                padding: 0 1rem;
             }
 
             .loading-text {
-                font-size: 2rem; /* Smaller font size for mobile */
-                margin-top: 30px; /* Adjusted margin */
-                /* Removed display: flex and align-items: baseline for mobile */
-                white-space: nowrap; /* Prevent wrapping */
+                font-size: 2rem;
+                margin-top: 30px;
+                white-space: nowrap;
             }
 
             .version-suffix {
-                font-size: 0.7em; /* Smaller suffix font size relative to parent */
-                color: #93c5fd; /* Lighter blue, same as icon */
-                font-weight: 600; /* Semi-bold */
-                vertical-align: super; /* Re-added for superscript effect */
-                margin-left: 0.2em; /* Small space */
-                /* Removed position: relative and top for mobile */
+                font-size: 0.7em;
+                color: #93c5fd;
+                font-weight: 600;
+                vertical-align: super;
+                margin-left: 0.2em;
             }
         }
 
@@ -237,22 +235,21 @@
         @media (min-width: 768px) {
             #invoiceTable th,
             #invoiceTable td {
-                border-bottom: 1px solid #e5e7eb; /* Tailwind gray-200 */
-                padding: 12px 16px; /* More padding for better spacing */
+                border-bottom: 1px solid #e5e7eb;
+                padding: 12px 16px;
                 text-align: left;
             }
             #invoiceTable thead th {
-                border-bottom-width: 2px; /* Thicker border for header */
+                border-bottom-width: 2px;
                 border-top: none;
-                background-color: #f3f4f6; /* Tailwind gray-100 */
-                color: #4b5563; /* Tailwind gray-600 */
-                font-weight: 600; /* Semi-bold header */
+                background-color: #f3f4f6;
+                color: #4b5563;
+                font-weight: 600;
                 text-transform: uppercase;
-                font-size: 0.8rem; /* Smaller header font size */
-                cursor: pointer; /* Indicate sortable header */
-                /* Add padding-right to make space for sort icon */
+                font-size: 0.8rem;
+                cursor: pointer;
                 padding-right: 25px;
-                position: relative; /* Needed for absolute positioning of icon */
+                position: relative;
             }
 
             /* Style for sort icons in table headers */
@@ -261,9 +258,9 @@
                 right: 8px;
                 top: 50%;
                 transform: translateY(-50%);
-                color: #9ca3af; /* Tailwind gray-400 */
-                font-size: 0.7em; /* Smaller icon */
-                visibility: hidden; /* Initially hidden */
+                color: #9ca3af;
+                font-size: 0.7em;
+                visibility: hidden;
             }
 
             /* Show sort icon when parent th has 'sortable' class and data is filtered */
@@ -273,20 +270,19 @@
 
             /* Highlight Voucher No. on desktop */
             #invoiceTable td.highlight-voucher {
-                /* Removed background-color */
-                color: #047857; /* Tailwind emerald-700 */
-                font-weight: 600; /* Semi-bold */
+                color: #047857;
+                font-weight: 600;
             }
 
             #invoiceTable tbody tr:last-child td {
-                border-bottom: none; /* Remove bottom border for the last row */
+                border-bottom: none;
             }
             /* Optional: Add alternating row colors for better readability */
             #invoiceTable tbody tr:nth-child(even) {
-                background-color: #f9fafb; /* Tailwind gray-50 */
+                background-color: #f9fafb;
             }
             #invoiceTable tbody tr:hover {
-                background-color: #eef2ff; /* Tailwind indigo-50 */
+                background-color: #eef2ff;
                 transition: background-color 0.2s ease-in-out;
             }
 
@@ -309,8 +305,8 @@
             #consignmentSummaryList {
                 margin-top: 8px;
                 font-size: 0.9rem;
-                list-style: disc; /* Add bullet points */
-                padding-left: 25px; /* Add padding for bullet points */
+                list-style: disc;
+                padding-left: 25px;
             }
 
             #consignmentSummaryList li {
@@ -319,47 +315,47 @@
 
             /* Desktop suggestion list styling */
             #suggestionsList {
-                position: absolute; /* Position relative to the search input container */
-                width: max-content; /* Allow it to grow to content width */
-                min-width: 100%; /* Ensure it's at least as wide as the input */
-                max-height: 300px; /* Increased height for more suggestions */
-                overflow-y: auto; /* Ensure scroll if needed */
+                position: absolute;
+                width: max-content;
+                min-width: 100%;
+                max-height: 300px;
+                overflow-y: auto;
                 background-color: white;
-                border: 1px solid #d1d5db; /* Tailwind gray-300 */
-                border-top: none; /* No top border */
-                border-bottom-left-radius: 0.5rem; /* rounded-lg */
-                border-bottom-right-radius: 0.5rem; /* rounded-lg */
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Tailwind shadow-lg */
-                z-index: 20; /* Ensure it's above other content */
-                top: 100%; /* Position right below the input */
-                left: 0; /* Align with the left edge of the input container */
-                padding-right: 15px; /* Added for visual comfort */
+                border: 1px solid #d1d5db;
+                border-top: none;
+                border-bottom-left-radius: 0.5rem;
+                border-bottom-right-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                z-index: 20;
+                top: 100%;
+                left: 0;
+                padding-right: 15px;
             }
 
             #suggestionsList div {
                 padding: 10px 15px;
                 cursor: pointer;
                 font-size: 0.9rem;
-                color: #4b5563; /* Tailwind gray-600 */
-                white-space: nowrap; /* Prevent text from wrapping */
-                max-width: none; /* Ensure text itself doesn't have a max-width */
+                color: #4b5563;
+                white-space: nowrap;
+                max-width: none;
             }
 
             #suggestionsList div:hover {
-                background-color: #f3f4f6; /* Tailwind gray-100 */
+                background-color: #f3f4f6;
             }
         }
 
         /* General button styling improvements */
         button {
-            transition: all 0.15s ease-in-out; /* Smooth transitions for buttons */
-            display: inline-flex; /* Align icon and text */
-            align-items: center; /* Vertically center icon and text */
-            justify-content: center; /* Horizontally center content */
+            transition: all 0.15s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         button i {
-            margin-right: 8px; /* Space between icon and text */
+            margin-right: 8px;
         }
 
         /* Style for disabled export button */
@@ -370,15 +366,14 @@
 
         /* Style for the search input container and icon */
         .search-input-container {
-            position: relative; /* Ensure this is relative for absolute children */
-            flex-grow: 1; /* Allow input to take available space */
-            /* Add overflow: visible to ensure absolutely positioned children are not clipped */
-            overflow: visible; /* THIS IS THE KEY ADDITION */
+            position: relative;
+            flex-grow: 1;
+            overflow: visible;
         }
 
         /* Default padding for input (desktop and general) */
         .search-input-container input {
-            padding-left: 40px; /* Make space for the icon */
+            padding-left: 40px;
         }
 
         /* Default icon positioning (desktop and general) */
@@ -387,20 +382,20 @@
             left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: #9ca3af; /* Tailwind gray-400 */
-            pointer-events: none; /* Allow clicks to pass through to the input */
-            z-index: 1; /* Ensure icon is above input */
+            color: #9ca3af;
+            pointer-events: none;
+            z-index: 1;
         }
 
         /* Header styling */
         .header {
-            background-color: #1d4ed8; /* Tailwind blue-700 */
+            background-color: #1d4ed8;
             color: white;
-            padding: 1.5rem; /* p-6 */
-            border-top-left-radius: 0.75rem; /* rounded-xl */
-            border-top-right-radius: 0.75rem; /* rounded-xl */
-            position: relative; /* Needed for version number positioning */
-            overflow: hidden; /* Ensure rounded corners apply */
+            padding: 1.5rem;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            position: relative;
+            overflow: hidden;
         }
 
         .header-content {
@@ -408,20 +403,20 @@
         }
 
         .version-number {
-            color: #93c5fd; /* Tailwind blue-300 */
-            font-weight: 400; /* Normal weight */
+            color: #93c5fd;
+            font-weight: 400;
         }
 
         /* Styling for the summary panel content */
         .summary-content {
             display: flex;
-            align-items: center; /* Vertically align icon and text */
-            gap: 10px; /* Space between icon and text */
+            align-items: center;
+            gap: 10px;
         }
 
         .summary-icon {
-            font-size: 1.5rem; /* Adjust size as needed */
-            color: #1e3a8a; /* A slightly darker blue for contrast */
+            font-size: 1.5rem;
+            color: #1e3a8a;
         }
 
         /* Loading Overlay Styles */
@@ -431,56 +426,56 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #1d4ed8; /* Tailwind blue-700 */
-            background-image: radial-gradient(circle at center, #1d4ed8 0%, #1e40af 100%); /* Subtle gradient */
+            background-color: #1d4ed8;
+            background-image: radial-gradient(circle at center, #1d4ed8 0%, #1e40af 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 9999; /* Ensure it's on top of everything */
+            z-index: 9999;
             color: white;
-            transition: opacity 0.5s ease-out; /* Smooth fade-out */
+            transition: opacity 0.5s ease-out;
         }
 
         #loadingOverlay.hidden {
             opacity: 0;
-            pointer-events: none; /* Disable interaction when hidden */
+            pointer-events: none;
         }
 
         .loading-text {
             font-size: 2.5rem;
             font-weight: 700;
-            margin-top: 40px; /* Space above text */
-            animation: fadeInOut 2s infinite alternate; /* Fade in and out */
+            margin-top: 40px;
+            animation: fadeInOut 2s infinite alternate;
         }
 
         .version-suffix {
-            font-size: 1.5rem; /* Smaller than main text */
-            color: #93c5fd; /* Lighter blue, same as icon */
-            font-weight: 600; /* Semi-bold */
-            vertical-align: super; /* Slightly raise it */
-            margin-left: 0.2em; /* Small space */
+            font-size: 1.5rem;
+            color: #93c5fd;
+            font-weight: 600;
+            vertical-align: super;
+            margin-left: 0.2em;
         }
 
         .loading-dots-container {
             display: flex;
-            gap: 15px; /* Space between dots */
-            margin-bottom: 20px; /* Space below dots */
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         .loading-dot {
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background-color: #93c5fd; /* Default dot color */
-            animation: bounce 1.4s infinite ease-in-out; /* Re-added animation property */
+            background-color: #93c5fd;
+            animation: bounce 1.4s infinite ease-in-out;
         }
 
         /* Specific colors for each dot */
-        .loading-dot:nth-child(1) { background-color: #4285F4; /* Google Blue */ }
-        .loading-dot:nth-child(2) { background-color: #EA4335; /* Google Red */ animation-delay: 0.1s; }
-        .loading-dot:nth-child(3) { background-color: #FBBC05; /* Google Yellow */ animation-delay: 0.2s; }
-        .loading-dot:nth-child(4) { background-color: #34A853; /* Google Green */ animation-delay: 0.3s; }
+        .loading-dot:nth-child(1) { background-color: #4285F4; }
+        .loading-dot:nth-child(2) { background-color: #EA4335; animation-delay: 0.1s; }
+        .loading-dot:nth-child(3) { background-color: #FBBC05; animation-delay: 0.2s; }
+        .loading-dot:nth-child(4) { background-color: #34A853; animation-delay: 0.3s; }
 
 
         /* Keyframe Animations */
@@ -494,7 +489,7 @@
                 transform: translateY(0);
             }
             50% {
-                transform: translateY(-20px); /* Peak of the jump */
+                transform: translateY(-20px);
             }
         }
 
@@ -509,14 +504,10 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: currentColor; /* Inherit color from parent messageBox */
+            background-color: currentColor;
             margin: 0 2px;
             animation: pulse 1.4s infinite ease-in-out;
         }
-
-        .loading-message-dot:nth-child(1) { animation-delay: 0s; }
-        .loading-message-dot:nth-child(2) { animation-delay: 0.2s; }
-        .loading-message-dot:nth-child(3) { animation-delay: 0.4s; }
 
         @keyframes pulse {
             0%, 100% { opacity: 0.5; transform: scale(1); }
@@ -581,7 +572,7 @@
                     </div>
                     <ul id="consignmentSummaryList" class="mt-2 text-sm font-normal">
                     </ul>
-                </div>
+                    </div>
 
                 <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4">
                     <table id="invoiceTable" class="min-w-full bg-white">
@@ -656,11 +647,12 @@
 
         // Function to show messages
         function showMessage(message, type = 'info') {
+            // Clear all relevant classes first to ensure a clean slate
+            messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-center');
             messageBox.innerHTML = ''; // Clear previous content
-            messageBox.classList.remove('hidden');
 
             if (message === "Loading results, please wait..." && type === 'info') {
-                messageBox.className = `mt-4 p-4 rounded-md bg-blue-100 text-blue-800 flex items-center justify-center`;
+                messageBox.classList.add('bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-center');
                 messageBox.innerHTML = `
                     <span>${message}</span>
                     <span class="loading-message-dots">
@@ -670,15 +662,22 @@
                     </span>
                 `;
             } else {
-                messageBox.textContent = message;
-                messageBox.className = `mt-4 p-4 rounded-md ${type === 'error' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`;
+                messageBox.classList.add('mt-4', 'p-4', 'rounded-md'); // Re-add base styling
+                if (type === 'error') {
+                    messageBox.classList.add('bg-red-100', 'text-red-800');
+                } else {
+                    messageBox.classList.add('bg-blue-100', 'text-blue-800');
+                }
+                messageBox.textContent = message; // Use textContent for simple messages
             }
+            messageBox.classList.remove('hidden'); // Ensure message box is visible
         }
 
         // Function to hide messages
         function hideMessageBox() {
             messageBox.classList.add('hidden');
             messageBox.innerHTML = ''; // Clear content when hidden
+            messageBox.classList.remove('bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-center'); // Also remove styling classes
         }
 
         // Function to calculate and display the total quantity of the filtered data and per consignment
@@ -927,7 +926,7 @@
                                 const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
                                 const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
                                 const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
-                                return srId === exactMatchSearchTerm || consignmentOrderNumber === exactMatchSearchTerm || invoiceNo === exactMatchSearchTerm;
+                                return srId === searchTerm || consignmentOrderNumber === searchTerm || invoiceNo === searchTerm;
                             });
 
                         } else {
@@ -941,30 +940,24 @@
                                     invoiceNo.includes(searchTerm);
                             });
                         }
-
-                        if (filteredData.length === 0) {
-                            showMessage("No matching results found.", 'info');
-                        } else {
-                            hideMessageBox(); // Hide message if results are found
-                        }
                     } else {
                         filteredData = [];
-                        hideMessageBox(); // Hide message if search term is empty
                     }
                 }
 
                 currentPage = 1;
                 calculateAndDisplaySummary();
                 renderTable();
-                if (filteredData.length > 0) {
-                    hideMessageBox(); // Ensure message is hidden if data is displayed
-                } else if (searchInput.value.trim() !== '') {
-                    showMessage("No matching results found.", 'info'); // Re-show message if no results for non-empty search
-                } else {
-                    hideMessageBox(); // Hide if search is empty
+                
+                // Ensure message box is hidden after search completes, regardless of results
+                hideMessageBox();
+
+                // If no results for a non-empty search, show "No matching results found."
+                if (filteredData.length === 0 && searchInput.value.trim() !== '') {
+                    showMessage("No matching results found.", 'info');
                 }
 
-            }, 1500); // Increased to 1500ms (1.5 seconds) delay for the loading effect
+            }, 1500);
         }
 
         // Optional: Allow pressing Enter in the search field to trigger search
@@ -1180,7 +1173,7 @@
                 htmlString += '<tr>';
                 headers.forEach(header => {
                     const value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
-                    return `<td>${value}</td>`;
+                    htmlString += `<td>${value}</td>`;
                 });
                 htmlString += '</tr>';
             });
