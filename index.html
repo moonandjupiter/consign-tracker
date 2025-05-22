@@ -483,6 +483,31 @@
                 transform: translateY(-20px); /* Peak of the jump */
             }
         }
+
+        /* New CSS for loading dots in message box */
+        .loading-message-dots {
+            display: inline-block;
+            margin-left: 8px;
+        }
+
+        .loading-message-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: currentColor; /* Inherit color from parent messageBox */
+            margin: 0 2px;
+            animation: pulse 1.4s infinite ease-in-out;
+        }
+
+        .loading-message-dot:nth-child(1) { animation-delay: 0s; }
+        .loading-message-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-message-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
     </style>
 </head>
 <body>
@@ -617,14 +642,29 @@
 
         // Function to show messages
         function showMessage(message, type = 'info') {
-            messageBox.textContent = message;
-            messageBox.className = `mt-4 p-4 rounded-md ${type === 'error' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`;
+            messageBox.innerHTML = ''; // Clear previous content
             messageBox.classList.remove('hidden');
+
+            if (message === "Loading results, please wait..." && type === 'info') {
+                messageBox.className = `mt-4 p-4 rounded-md bg-blue-100 text-blue-800 flex items-center justify-center`;
+                messageBox.innerHTML = `
+                    <span>${message}</span>
+                    <span class="loading-message-dots">
+                        <span class="loading-message-dot"></span>
+                        <span class="loading-message-dot"></span>
+                        <span class="loading-message-dot"></span>
+                    </span>
+                `;
+            } else {
+                messageBox.textContent = message;
+                messageBox.className = `mt-4 p-4 rounded-md ${type === 'error' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`;
+            }
         }
 
         // Function to hide messages
         function hideMessageBox() {
             messageBox.classList.add('hidden');
+            messageBox.innerHTML = ''; // Clear content when hidden
         }
 
         // Function to calculate and display the total quantity of the filtered data and per consignment
@@ -821,69 +861,86 @@
         // Function to perform the search
         // Accepts an optional searchValue to filter by a specific key value (used for suggestion clicks)
         function performSearch(searchValue = null) {
-            if (searchValue !== null) {
-                const searchConsignmentNumber = String(searchValue).toLowerCase();
-                filteredData = allData.filter(item => {
-                    const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
-                    return consignmentOrderNumber === searchConsignmentNumber;
-                });
+            // Show loading message and hide table/pagination immediately
+            showMessage("Loading results, please wait...", 'info');
+            tableContainer.style.display = 'none';
+            paginationContainer.style.display = 'none';
+            quantitySummaryPanel.classList.add('hidden'); // Hide summary panel during loading
 
-            } else {
-                const searchTerm = searchInput.value.toLowerCase();
-
-                if (searchTerm) {
-                    let exactMatchFound = false;
-                    let exactMatchValue = null;
-
-                    for (const item of allData) {
-                        const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+            // Delay the actual search and rendering
+            setTimeout(() => {
+                if (searchValue !== null) {
+                    const searchConsignmentNumber = String(searchValue).toLowerCase();
+                    filteredData = allData.filter(item => {
                         const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
-                        const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+                        return consignmentOrderNumber === searchConsignmentNumber;
+                    });
 
-                        if (srId === searchTerm || consignmentOrderNumber === searchTerm || invoiceNo === searchTerm) {
-                            exactMatchFound = true;
-                            if (srId === searchTerm) exactMatchValue = item['SR ID'];
-                            else if (consignmentOrderNumber === searchTerm) exactMatchValue = item['Consignment Order Number'];
-                            else if (invoiceNo === searchTerm) exactMatchValue = item['Invoice No.'];
-                            break;
-                        }
-                    }
-
-                    if (exactMatchFound && exactMatchValue !== null) {
-                        const exactMatchSearchTerm = String(exactMatchValue).toLowerCase();
-                        filteredData = allData.filter(item => {
-                            const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
-                            const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
-                            const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
-                            return srId === exactMatchSearchTerm || consignmentOrderNumber === exactMatchSearchTerm || invoiceNo === exactMatchSearchTerm;
-                        });
-
-                    } else {
-                        filteredData = allData.filter(item => {
-                            const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
-                            const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
-                            const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
-
-                            return srId.includes(searchTerm) ||
-                                consignmentOrderNumber.includes(searchTerm) ||
-                                invoiceNo.includes(searchTerm);
-                        });
-                    }
-
-                    if (filteredData.length === 0) {
-                        showMessage("No matching results found.", 'info');
-                    } else {
-                        hideMessageBox();
-                    }
                 } else {
-                    filteredData = [];
-                    hideMessageBox();
-                }
-            }
+                    const searchTerm = searchInput.value.toLowerCase();
 
-            currentPage = 1;
-            calculateAndDisplaySummary();
-            renderTable();
+                    if (searchTerm) {
+                        let exactMatchFound = false;
+                        let exactMatchValue = null;
+
+                        for (const item of allData) {
+                            const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+                            const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                            const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+
+                            if (srId === searchTerm || consignmentOrderNumber === searchTerm || invoiceNo === searchTerm) {
+                                exactMatchFound = true;
+                                if (srId === searchTerm) exactMatchValue = item['SR ID'];
+                                else if (consignmentOrderNumber === searchTerm) exactMatchValue = item['Consignment Order Number'];
+                                else if (invoiceNo === searchTerm) exactMatchValue = item['Invoice No.'];
+                                break;
+                            }
+                        }
+
+                        if (exactMatchFound && exactMatchValue !== null) {
+                            const exactMatchSearchTerm = String(exactMatchValue).toLowerCase();
+                            filteredData = allData.filter(item => {
+                                const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+                                const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                                const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+                                return srId === exactMatchSearchTerm || consignmentOrderNumber === exactMatchSearchTerm || invoiceNo === exactMatchSearchTerm;
+                            });
+
+                        } else {
+                            filteredData = allData.filter(item => {
+                                const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+                                const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                                const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+
+                                return srId.includes(searchTerm) ||
+                                    consignmentOrderNumber.includes(searchTerm) ||
+                                    invoiceNo.includes(searchTerm);
+                            });
+                        }
+
+                        if (filteredData.length === 0) {
+                            showMessage("No matching results found.", 'info');
+                        } else {
+                            hideMessageBox(); // Hide message if results are found
+                        }
+                    } else {
+                        filteredData = [];
+                        hideMessageBox(); // Hide message if search term is empty
+                    }
+                }
+
+                currentPage = 1;
+                calculateAndDisplaySummary();
+                renderTable();
+                if (filteredData.length > 0) {
+                    hideMessageBox(); // Ensure message is hidden if data is displayed
+                } else if (searchInput.value.trim() !== '') {
+                    showMessage("No matching results found.", 'info'); // Re-show message if no results for non-empty search
+                } else {
+                    hideMessageBox(); // Hide if search is empty
+                }
+
+            }, 1500); // Increased to 1500ms (1.5 seconds) delay for the loading effect
         }
 
         // Optional: Allow pressing Enter in the search field to trigger search
@@ -934,7 +991,7 @@
                         suggestionItem.addEventListener('click', () => {
                             searchInput.value = suggestion.display;
                             suggestionsList.classList.add('hidden');
-                            performSearch(suggestion.value);
+                            performSearch(suggestion.value); // Trigger search with animation
                         });
                         suggestionsList.appendChild(suggestionItem);
                     });
