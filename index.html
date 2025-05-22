@@ -12,6 +12,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             line-height: 1.6; /* Improve readability */
+            overflow-x: hidden; /* Prevent horizontal scroll on small screens */
         }
 
         /* Custom styling for the responsive layout */
@@ -66,10 +67,10 @@
                 font-weight: 600; /* Semi-bold weight for labels */
                 text-align: left; /* Align label to the left */
                 color: #4b5563; /* Tailwind gray-600 */
-                 /* Remove flex-related styles from pseudo-element if any were inherited */
-                 display: block;
-                 align-items: initial;
-                 justify-content: initial;
+                /* Remove flex-related styles from pseudo-element if any were inherited */
+                display: block;
+                align-items: initial;
+                justify-content: initial;
             }
 
             /* Emphasize SR ID column in mobile view */
@@ -85,45 +86,45 @@
                 font-size: 1rem; /* Standard font size */
             }
 
-             /* Adjust search and reset button container on mobile */
-             .search-reset-container {
-               flex-direction: column;
-               width: 100%;
-             }
-
-             .search-input-container {
-               width: 100%;
-               margin-bottom: 10px; /* Space between search and reset on mobile */
-               position: relative; /* Ensure this is relative for absolute children */
-               z-index: 100; /* High z-index for the input container */
-             }
-
-             .search-reset-container button {
-               width: 100%;
-             }
-
-             /* Adjust export options container on mobile */
-             .export-options {
-               width: 100%;
-             }
-
-              .export-options button {
+            /* Adjust search and reset button container on mobile */
+            .search-reset-container {
+                flex-direction: column;
                 width: 100%;
-              }
+            }
 
-              /* Mobile specific dropdown styling */
-              .export-dropdown {
-                 position: static; /* Remove absolute positioning on mobile */
-                 width: 100%;
-                 margin-top: 10px; /* Space below the button */
-                 box-shadow: none; /* Remove shadow on mobile */
-                 border: 1px solid #d1d5db; /* Add border on mobile */
-              }
+            .search-input-container {
+                width: 100%;
+                margin-bottom: 10px; /* Space between search and reset on mobile */
+                position: relative; /* Ensure this is relative for absolute children */
+                z-index: 100; /* High z-index for the input container */
+            }
 
-              .export-dropdown a {
-                 padding: 10px; /* Adjust padding */
-                 text-align: center; /* Center text */
-              }
+            .search-reset-container button {
+                width: 100%;
+            }
+
+            /* Adjust export options container on mobile */
+            .export-options {
+                width: 100%;
+            }
+
+            .export-options button {
+                width: 100%;
+            }
+
+            /* Mobile specific dropdown styling */
+            .export-dropdown {
+                position: static; /* Remove absolute positioning on mobile */
+                width: 100%;
+                margin-top: 10px; /* Space below the button */
+                box-shadow: none; /* Remove shadow on mobile */
+                border: 1px solid #d1d5db; /* Add border on mobile */
+            }
+
+            .export-dropdown a {
+                padding: 10px; /* Adjust padding */
+                text-align: center; /* Center text */
+            }
 
             /* Mobile header adjustments */
             .header-content {
@@ -137,21 +138,21 @@
             }
 
             /* Summary panel adjustments for mobile */
-             #quantitySummaryPanel {
-                 font-size: 0.9rem;
-                 padding: 10px;
-             }
+            #quantitySummaryPanel {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
 
-             #consignmentSummaryList {
-                 margin-top: 5px;
-                 font-size: 0.85rem;
-                 list-style: disc; /* Add bullet points */
-                 padding-left: 20px; /* Add padding for bullet points */
-             }
+            #consignmentSummaryList {
+                margin-top: 5px;
+                font-size: 0.85rem;
+                list-style: disc; /* Add bullet points */
+                padding-left: 20px; /* Add padding for bullet points */
+            }
 
-             #consignmentSummaryList li {
-                 margin-bottom: 3px;
-             }
+            #consignmentSummaryList li {
+                margin-bottom: 3px;
+            }
 
             /* Mobile suggestion list styling */
             #suggestionsList {
@@ -166,13 +167,13 @@
                 border-top: none; /* No top border */
                 left: 0; /* Align with the left edge of the container */
                 top: 100%; /* Position directly below the input container */
-                 max-height: 150px; /* Limit height */
-                 overflow-y: auto; /* Add scroll if needed */
+                max-height: 150px; /* Limit height */
+                overflow-y: auto; /* Add scroll if needed */
             }
-             #suggestionsList div {
-                 padding: 8px 15px;
-                 font-size: 0.9rem;
-             }
+            #suggestionsList div {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
 
             /* Style for the empty table message on mobile */
             #invoiceTable td.empty-table-message {
@@ -182,10 +183,10 @@
                 padding-right: 15px; /* Ensure right padding */
             }
 
-             /* Ensure the ::before pseudo-element is hidden for this specific cell */
-             #invoiceTable td.empty-table-message::before {
-                 content: none;
-             }
+            /* Ensure the ::before pseudo-element is hidden for this specific cell */
+            #invoiceTable td.empty-table-message::before {
+                content: none;
+            }
 
             /* Hide table and pagination on mobile initially */
             #tableContainer, #paginationContainer {
@@ -197,7 +198,7 @@
                 padding-left: 45px; /* Increased padding for icon */
             }
 
-             .search-input-container i {
+            .search-input-container i {
                 position: absolute; /* Ensure absolute positioning is applied */
                 left: 15px; /* Adjusted left position */
                 top: 50%;
@@ -206,18 +207,16 @@
                 pointer-events: none;
                 z-index: 101; /* Give the icon a very high z-index */
             }
-
-
         }
 
         /* Default table styling for larger screens (md and up) */
         @media (min-width: 768px) {
-             #invoiceTable th,
-             #invoiceTable td {
-                 border-bottom: 1px solid #e5e7eb; /* Tailwind gray-200 */
-                 padding: 12px 16px; /* More padding for better spacing */
-                 text-align: left;
-             }
+            #invoiceTable th,
+            #invoiceTable td {
+                border-bottom: 1px solid #e5e7eb; /* Tailwind gray-200 */
+                padding: 12px 16px; /* More padding for better spacing */
+                text-align: left;
+            }
             #invoiceTable thead th {
                 border-bottom-width: 2px; /* Thicker border for header */
                 border-top: none;
@@ -227,9 +226,9 @@
                 text-transform: uppercase;
                 font-size: 0.8rem; /* Smaller header font size */
                 cursor: pointer; /* Indicate sortable header */
-                 /* Add padding-right to make space for sort icon */
-                 padding-right: 25px;
-                 position: relative; /* Needed for absolute positioning of icon */
+                /* Add padding-right to make space for sort icon */
+                padding-right: 25px;
+                position: relative; /* Needed for absolute positioning of icon */
             }
 
             /* Style for sort icons in table headers */
@@ -244,22 +243,21 @@
             }
 
             /* Show sort icon when parent th has 'sortable' class and data is filtered */
-             #invoiceTable thead th.sortable i {
-                 visibility: visible;
-             }
+            #invoiceTable thead th.sortable i {
+                visibility: visible;
+            }
 
-
-             #invoiceTable tbody tr:last-child td {
-                 border-bottom: none; /* Remove bottom border for the last row */
-             }
+            #invoiceTable tbody tr:last-child td {
+                border-bottom: none; /* Remove bottom border for the last row */
+            }
             /* Optional: Add alternating row colors for better readability */
             #invoiceTable tbody tr:nth-child(even) {
                 background-color: #f9fafb; /* Tailwind gray-50 */
             }
-             #invoiceTable tbody tr:hover {
-                 background-color: #eef2ff; /* Tailwind indigo-50 */
-                 transition: background-color 0.2s ease-in-out;
-             }
+            #invoiceTable tbody tr:hover {
+                background-color: #eef2ff; /* Tailwind indigo-50 */
+                transition: background-color 0.2s ease-in-out;
+            }
 
             /* Desktop header adjustments */
             .header-content {
@@ -271,22 +269,22 @@
             .version-number {
                 font-size: 0.9rem;
             }
-             /* Summary panel adjustments for desktop */
-             #quantitySummaryPanel {
-                 font-size: 1rem;
-                 padding: 1rem;
-             }
+            /* Summary panel adjustments for desktop */
+            #quantitySummaryPanel {
+                font-size: 1rem;
+                padding: 1rem;
+            }
 
-             #consignmentSummaryList {
-                 margin-top: 8px;
-                 font-size: 0.9rem;
-                 list-style: disc; /* Add bullet points */
-                 padding-left: 25px; /* Add padding for bullet points */
-             }
+            #consignmentSummaryList {
+                margin-top: 8px;
+                font-size: 0.9rem;
+                list-style: disc; /* Add bullet points */
+                padding-left: 25px; /* Add padding for bullet points */
+            }
 
-             #consignmentSummaryList li {
-                 margin-bottom: 4px;
-             }
+            #consignmentSummaryList li {
+                margin-bottom: 4px;
+            }
 
             /* Desktop suggestion list styling */
             #suggestionsList {
@@ -317,26 +315,23 @@
             }
         }
 
-         /* General button styling improvements */
-         button {
-             transition: all 0.15s ease-in-out; /* Smooth transitions for buttons */
-             display: inline-flex; /* Align icon and text */
-             align-items: center; /* Vertically center icon and text */
-             justify-content: center; /* Horizontally center content */
-         }
+        /* General button styling improvements */
+        button {
+            transition: all 0.15s ease-in-out; /* Smooth transitions for buttons */
+            display: inline-flex; /* Align icon and text */
+            align-items: center; /* Vertically center icon and text */
+            justify-content: center; /* Horizontally center content */
+        }
 
-         button i {
-             margin-right: 8px; /* Space between icon and text */
-         }
+        button i {
+            margin-right: 8px; /* Space between icon and text */
+        }
 
-         /* Style for disabled export button */
-         #exportButton:disabled {
-             opacity: 0.5;
-             cursor: not-allowed;
-         }
-         /* Style for disabled search button */
-         /* Removed search button, this style is no longer needed */
-
+        /* Style for disabled export button */
+        #exportButton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
         /* Style for the search input container and icon */
         .search-input-container {
@@ -392,97 +387,183 @@
             color: #1e3a8a; /* A slightly darker blue for contrast */
         }
 
+        /* Loading Overlay Styles */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1d4ed8; /* Tailwind blue-700 */
+            background-image: radial-gradient(circle at center, #1d4ed8 0%, #1e40af 100%); /* Subtle gradient */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999; /* Ensure it's on top of everything */
+            color: white;
+            transition: opacity 0.5s ease-out; /* Smooth fade-out */
+        }
 
+        #loadingOverlay.hidden {
+            opacity: 0;
+            pointer-events: none; /* Disable interaction when hidden */
+        }
+
+        .loading-text {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-top: 40px; /* Space above text */
+            animation: fadeInOut 2s infinite alternate; /* Fade in and out */
+        }
+
+        .version-suffix {
+            font-size: 1.5rem; /* Smaller than main text */
+            color: #93c5fd; /* Lighter blue, same as icon */
+            font-weight: 600; /* Semi-bold */
+            vertical-align: super; /* Slightly raise it */
+            margin-left: 0.2em; /* Small space */
+        }
+
+        .loading-dots-container {
+            display: flex;
+            gap: 15px; /* Space between dots */
+            margin-bottom: 20px; /* Space below dots */
+        }
+
+        .loading-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #93c5fd; /* Default dot color */
+            animation: bounce 1.4s infinite ease-in-out; /* Reverted to ease-in-out */
+        }
+
+        /* Specific colors for each dot */
+        .loading-dot:nth-child(1) { background-color: #4285F4; /* Google Blue */ }
+        .loading-dot:nth-child(2) { background-color: #EA4335; /* Google Red */ animation-delay: 0.1s; }
+        .loading-dot:nth-child(3) { background-color: #FBBC05; /* Google Yellow */ animation-delay: 0.2s; }
+        .loading-dot:nth-child(4) { background-color: #34A853; /* Google Green */ animation-delay: 0.3s; }
+
+
+        /* Keyframe Animations */
+        @keyframes fadeInOut {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+                /* Removed specific timing functions from 0% and 100% */
+            }
+            50% {
+                transform: translateY(-20px); /* Peak of the jump */
+                /* Removed specific timing function from 50% */
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container mx-auto bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl border border-gray-200 mt-10 mb-10">
-        <div class="header">
-            <div class="header-content">
-                <div>
-                    <h1 class="text-3xl font-bold">ConsignTracker</h1>
-                    <p class="text-blue-200 mt-1 text-sm">Smart lookup for consignors: reported sales, invoices, and vouchers at a glance.</p>
-                </div>
-                <div class="version-number">Version: 2.0 build 6</div>
-            </div>
+    <div id="loadingOverlay">
+        <div class="loading-dots-container">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
         </div>
-
-        <div class="p-6">
-            <div class="mb-6 flex flex-col md:flex-row gap-4 items-center">
-                <div class="flex gap-4 flex-grow search-reset-container">
-                    <div class="search-input-container">
-                        <input type="text" id="searchInput" placeholder="Search by, Consignment Order Number, SR ID, or Invoice No."
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-gray-700 shadow-sm">
-                        <i class="fas fa-search"></i>
-                         <div id="suggestionsList" class="hidden"></div>
-                    </div>
-                     <button id="resetButton"
-                                class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 transition duration-150 ease-in-out shadow-sm">
-                         <i class="fas fa-sync-alt"></i> Reset
-                     </button>
-                </div>
-
-                <div class="export-options relative">
-                     <button id="exportButton" disabled
-                                class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 transition duration-150 ease-in-out shadow-sm">
-                         <i class="fas fa-download"></i> Export <i class="fas fa-caret-down ml-2"></i>
-                     </button>
-                     <div id="exportDropdown" class="export-dropdown hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-10">
-                          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="csv">Export as CSV</a>
-                          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="html" id="exportHtmlOption">Export as HTML</a>
-                     </div>
-                </div>
-            </div>
-            <p class="text-sm text-gray-600 mt-2">Type your SR ID, Consignment Order #, or Invoice # to search. Select a suggestion or press Enter.</p> <div id="quantitySummaryPanel" class="mt-4 p-4 bg-blue-100 border border-blue-200 rounded-lg text-blue-800 font-semibold hidden">
-                 <div class="summary-content">
-                      <i class="fas fa-info-circle summary-icon"></i> <div id="overallSummary"></div>
-                 </div>
-                 <ul id="consignmentSummaryList" class="mt-2 text-sm font-normal">
-                     </ul>
-            </div>
-
-            <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4">
-                <table id="invoiceTable" class="min-w-full bg-white">
-                    <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                        <tr>
-                            <th class="py-3 px-6 text-left" data-sort="SR ID">SR ID</th>
-                            <th class="py-3 px-6 text-left" data-sort="Name of Company">Name of Company</th>
-                            <th class="py-3 px-6 text-left sortable" data-sort="Consignment Order Number">Consignment Order Number <i class="fas fa-sort"></i></th>
-                            <th class="py-3 px-6 text-left" data-sort="Quantity Sold">Quantity Sold</th>
-                            <th class="py-3 px-6 text-left" data-sort="Amount">Amount</th>
-                            <th class="py-3 px-6 text-left sortable" data-sort="Invoice No.">Invoice No. <i class="fas fa-sort"></i></th>
-                            <th class="py-3 px-6 text-left" data-sort="Voucher No.">Voucher No.</th>
-                            <th class="py-3 px-6 text-left" data-sort="Voucher Date">Voucher Date</th>
-                        </tr>
-                    </thead>
-                    <tbody id="invoiceTableBody" class="text-gray-700 text-sm font-light">
-                        <tr>
-                            <td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="paginationContainer" class="mt-6 flex flex-col md:flex-row justify-between items-center">
-                <div class="flex gap-4 mb-4 md:mb-0">
-                    <button id="prevPageButton"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out shadow-sm">
-                        <i class="fas fa-arrow-left"></i> Previous
-                    </button>
-                    <button id="nextPageButton"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out shadow-sm">
-                        Next <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-                <span id="pageInfo" class="text-gray-700 text-sm"></span>
-            </div>
-
-            <div id="messageBox" class="mt-4 p-4 rounded-md hidden"></div>
-
-        </div>
+        <h1 class="loading-text">ConsignTracker <span class="version-suffix">v2</span></h1>
     </div>
 
+    <div id="mainContent" class="hidden">
+        <div class="container mx-auto bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl border border-gray-200 mt-10 mb-10">
+            <div class="header">
+                <div class="header-content">
+                    <div>
+                        <h1 class="text-3xl font-bold">ConsignTracker</h1>
+                        <p class="text-blue-200 mt-1 text-sm">Smart lookup for consignors: reported sales, invoices, and vouchers at a glance.</p>
+                    </div>
+                    <div class="version-number">Version: 2.0 build 6</div>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="mb-6 flex flex-col md:flex-row gap-4 items-center">
+                    <div class="flex gap-4 flex-grow search-reset-container">
+                        <div class="search-input-container">
+                            <input type="text" id="searchInput" placeholder="Search by, Consignment Order Number, SR ID, or Invoice No."
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-gray-700 shadow-sm">
+                            <i class="fas fa-search"></i>
+                            <div id="suggestionsList" class="hidden"></div>
+                        </div>
+                        <button id="resetButton"
+                                class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 transition duration-150 ease-in-out shadow-sm">
+                            <i class="fas fa-sync-alt"></i> Reset
+                        </button>
+                    </div>
+
+                    <div class="export-options relative">
+                        <button id="exportButton" disabled
+                                class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 transition duration-150 ease-in-out shadow-sm">
+                            <i class="fas fa-download"></i> Export <i class="fas fa-caret-down ml-2"></i>
+                        </button>
+                        <div id="exportDropdown" class="export-dropdown hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-10">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="csv">Export as CSV</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="html" id="exportHtmlOption">Export as HTML</a>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">Type your SR ID, Consignment Order #, or Invoice # to search. Select a suggestion or press Enter.</p>
+                <div id="quantitySummaryPanel" class="mt-4 p-4 bg-blue-100 border border-blue-200 rounded-lg text-blue-800 font-semibold hidden">
+                    <div class="summary-content">
+                        <i class="fas fa-info-circle summary-icon"></i> <div id="overallSummary"></div>
+                    </div>
+                    <ul id="consignmentSummaryList" class="mt-2 text-sm font-normal">
+                    </ul>
+                </div>
+
+                <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4">
+                    <table id="invoiceTable" class="min-w-full bg-white">
+                        <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                            <tr>
+                                <th class="py-3 px-6 text-left" data-sort="SR ID">SR ID</th>
+                                <th class="py-3 px-6 text-left" data-sort="Name of Company">Name of Company</th>
+                                <th class="py-3 px-6 text-left sortable" data-sort="Consignment Order Number">Consignment Order Number <i class="fas fa-sort"></i></th>
+                                <th class="py-3 px-6 text-left" data-sort="Quantity Sold">Quantity Sold</th>
+                                <th class="py-3 px-6 text-left" data-sort="Amount">Amount</th>
+                                <th class="py-3 px-6 text-left sortable" data-sort="Invoice No.">Invoice No. <i class="fas fa-sort"></i></th>
+                                <th class="py-3 px-6 text-left" data-sort="Voucher No.">Voucher No.</th>
+                                <th class="py-3 px-6 text-left" data-sort="Voucher Date">Voucher Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceTableBody" class="text-gray-700 text-sm font-light">
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="paginationContainer" class="mt-6 flex flex-col md:flex-row justify-between items-center">
+                    <div class="flex gap-4 mb-4 md:mb-0">
+                        <button id="prevPageButton"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out shadow-sm">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button id="nextPageButton"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out shadow-sm">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <span id="pageInfo" class="text-gray-700 text-sm"></span>
+                </div>
+
+                <div id="messageBox" class="mt-4 p-4 rounded-md hidden"></div>
+
+            </div>
+        </div>
+    </div>
     <script>
         const jsonUrl = "https://raw.githubusercontent.com/moonandjupiter/my-json-data/refs/heads/main/Sheet1_data.json";
         const itemsPerPage = 5;
@@ -509,6 +590,9 @@
         const sortableTableHeaders = document.querySelectorAll('#invoiceTable th.sortable');
         const tableContainer = document.getElementById('tableContainer');
         const paginationContainer = document.getElementById('paginationContainer');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const mainContent = document.getElementById('mainContent');
+
 
         // Function to show messages
         function showMessage(message, type = 'info') {
@@ -522,48 +606,47 @@
             messageBox.classList.add('hidden');
         }
 
-         // Function to calculate and display the total quantity of the filtered data and per consignment
-         function calculateAndDisplaySummary() {
-             const totalQuantity = filteredData.reduce((sum, item) => {
-                 const quantity = parseInt(item['Quantity Sold'], 10);
-                 return sum + (isNaN(quantity) ? 0 : quantity);
-             }, 0);
+        // Function to calculate and display the total quantity of the filtered data and per consignment
+        function calculateAndDisplaySummary() {
+            const totalQuantity = filteredData.reduce((sum, item) => {
+                const quantity = parseInt(item['Quantity Sold'], 10);
+                return sum + (isNaN(quantity) ? 0 : quantity);
+            }, 0);
 
-             const resultText = filteredData.length === 1 ? 'result' : 'results';
-             overallSummaryDiv.textContent = `Found ${filteredData.length} ${resultText}:`;
+            const resultText = filteredData.length === 1 ? 'result' : 'results';
+            overallSummaryDiv.textContent = `Found ${filteredData.length} ${resultText}:`;
 
-             const consignmentTotals = filteredData.reduce((acc, item) => {
-                 const consignmentNumber = item['Consignment Order Number'] || 'N/A';
-                 const quantity = parseInt(item['Quantity Sold'], 10);
-                 if (!isNaN(quantity)) {
-                     acc[consignmentNumber] = (acc[consignmentNumber] || 0) + quantity;
-                 }
-                 return acc;
-             }, {});
+            const consignmentTotals = filteredData.reduce((acc, item) => {
+                const consignmentNumber = item['Consignment Order Number'] || 'N/A';
+                const quantity = parseInt(item['Quantity Sold'], 10);
+                if (!isNaN(quantity)) {
+                    acc[consignmentNumber] = (acc[consignmentNumber] || 0) + quantity;
+                }
+                return acc;
+            }, {});
 
-             consignmentSummaryList.innerHTML = '';
+            consignmentSummaryList.innerHTML = '';
 
-             if (Object.keys(consignmentTotals).length > 0) {
-                 const sortedConsignments = Object.entries(consignmentTotals).sort(([a], [b]) => a.localeCompare(b));
-                 sortedConsignments.forEach(([consignment, total]) => {
-                     const formattedTotal = total.toLocaleString();
-                     const listItem = document.createElement('li');
-                     listItem.textContent = `CO Number ${consignment}: ${formattedTotal} pcs reported sold.`;
-                     consignmentSummaryList.appendChild(listItem);
-                 });
-             } else {
-                  const listItem = document.createElement('li');
-                  listItem.textContent = 'No consignment breakdown available.';
-                  consignmentSummaryList.appendChild(listItem);
-             }
+            if (Object.keys(consignmentTotals).length > 0) {
+                const sortedConsignments = Object.entries(consignmentTotals).sort(([a], [b]) => a.localeCompare(b));
+                sortedConsignments.forEach(([consignment, total]) => {
+                    const formattedTotal = total.toLocaleString();
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `CO Number ${consignment}: ${formattedTotal} pcs reported sold.`;
+                    consignmentSummaryList.appendChild(listItem);
+                });
+            } else {
+                const listItem = document.createElement('li');
+                listItem.textContent = 'No consignment breakdown available.';
+                consignmentSummaryList.appendChild(listItem);
+            }
 
-
-             if (searchInput.value.trim() !== '' && filteredData.length > 0) {
-                 quantitySummaryPanel.classList.remove('hidden');
-             } else {
-                 quantitySummaryPanel.classList.add('hidden');
-             }
-         }
+            if (searchInput.value.trim() !== '' && filteredData.length > 0) {
+                quantitySummaryPanel.classList.remove('hidden');
+            } else {
+                quantitySummaryPanel.classList.add('hidden');
+            }
+        }
 
         // Function to update pagination button states and info
         function updatePaginationControls() {
@@ -580,20 +663,20 @@
                 const sortColumn = header.getAttribute('data-sort');
                 const icon = header.querySelector('i');
                 if (icon) {
-                     if (filteredData.length === 0) {
-                         icon.style.visibility = 'hidden';
-                         header.classList.remove('sorted-asc', 'sorted-desc');
-                     } else {
-                         icon.style.visibility = 'visible';
-                         icon.classList.remove('fa-sort', 'fa-sort-up', 'fa-sort-down');
-                         if (sortColumn === currentSortColumn) {
-                             icon.classList.add(currentSortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down');
-                             header.classList.add(currentSortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc');
-                         } else {
-                             icon.classList.add('fa-sort');
-                             header.classList.remove('sorted-asc', 'sorted-desc');
-                         }
-                     }
+                    if (filteredData.length === 0) {
+                        icon.style.visibility = 'hidden';
+                        header.classList.remove('sorted-asc', 'sorted-desc');
+                    } else {
+                        icon.style.visibility = 'visible';
+                        icon.classList.remove('fa-sort', 'fa-sort-up', 'fa-sort-down');
+                        if (sortColumn === currentSortColumn) {
+                            icon.classList.add(currentSortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down');
+                            header.classList.add(currentSortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                        } else {
+                            icon.classList.add('fa-sort');
+                            header.classList.remove('sorted-asc', 'sorted-desc');
+                        }
+                    }
                 }
             });
         }
@@ -601,7 +684,7 @@
         // Function to sort data
         function sortData(column) {
             if (filteredData.length === 0) {
-                 return;
+                return;
             }
 
             if (currentSortColumn === column) {
@@ -629,7 +712,6 @@
             calculateAndDisplaySummary();
         }
 
-
         // Function to render the table for the current page
         function renderTable() {
             invoiceTableBody.innerHTML = '';
@@ -638,13 +720,13 @@
             const dataToDisplay = filteredData.slice(startIndex, endIndex);
 
             if (filteredData.length === 0) {
-                 const message = searchInput.value.trim() === '' ? 'Enter a search term and press Enter or select a suggestion.' : 'No data found for your search.';
-                 invoiceTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
+                const message = searchInput.value.trim() === '' ? 'Enter a search term and press Enter or select a suggestion.' : 'No data found for your search.';
+                invoiceTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
 
-                 if (window.innerWidth <= 767) {
-                     tableContainer.style.display = 'none';
-                     paginationContainer.style.display = 'none';
-                 }
+                if (window.innerWidth <= 767) {
+                    tableContainer.style.display = 'none';
+                    paginationContainer.style.display = 'none';
+                }
 
             } else {
                 dataToDisplay.forEach(item => {
@@ -663,10 +745,10 @@
                     invoiceTableBody.appendChild(row);
                 });
 
-                 if (window.innerWidth <= 767) {
-                     tableContainer.style.display = 'block';
-                     paginationContainer.style.display = 'flex';
-                 }
+                if (window.innerWidth <= 767) {
+                    tableContainer.style.display = 'block';
+                    paginationContainer.style.display = 'flex';
+                }
             }
 
             updatePaginationControls();
@@ -674,14 +756,15 @@
             updateSortIcons();
         }
 
-
         // Function to fetch data from the JSON URL
         async function fetchData() {
-            invoiceTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Loading data...</td></tr>';
-             if (window.innerWidth <= 767) {
-                 tableContainer.style.display = 'none';
-                 paginationContainer.style.display = 'none';
-             }
+            // Show loading overlay immediately
+            loadingOverlay.classList.remove('hidden');
+            mainContent.classList.add('hidden');
+
+            // Hide table and pagination initially to prevent flicker if they were visible
+            tableContainer.style.display = 'none';
+            paginationContainer.style.display = 'none';
 
             try {
                 const response = await fetch(jsonUrl);
@@ -689,34 +772,42 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 allData = await response.json();
-                filteredData = [];
+                filteredData = []; // Reset filtered data on initial load
                 hideMessageBox();
-                renderTable();
                 quantitySummaryPanel.classList.add('hidden');
 
             } catch (error) {
                 console.error("Error fetching data:", error);
                 showMessage(`Failed to load data: ${error.message}`, 'error');
+                // Still hide overlay even on error, but show error message
                 invoiceTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>';
                 quantitySummaryPanel.classList.add('hidden');
-                 if (window.innerWidth <= 767) {
-                     tableContainer.style.display = 'none';
-                     paginationContainer.style.display = 'none';
-                 }
+                // Ensure main content is visible even on error
+                setTimeout(() => {
+                    loadingOverlay.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                }, 500); // Shorter delay for error
+                return; // Exit if data fetching failed
             } finally {
+                // After data is fetched (successfully or not), render the table and then hide the overlay
+                renderTable(); // This will show the table/pagination if data is present
+                // Add a slightly longer delay for the animation to play before hiding the overlay
+                setTimeout(() => {
+                    loadingOverlay.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                }, 3000); // Increased to 3 seconds for a longer animation
             }
         }
-
 
         // Function to perform the search
         // Accepts an optional searchValue to filter by a specific key value (used for suggestion clicks)
         function performSearch(searchValue = null) {
             if (searchValue !== null) {
-                 const searchConsignmentNumber = String(searchValue).toLowerCase();
-                 filteredData = allData.filter(item => {
-                     const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
-                     return consignmentOrderNumber === searchConsignmentNumber;
-                 });
+                const searchConsignmentNumber = String(searchValue).toLowerCase();
+                filteredData = allData.filter(item => {
+                    const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                    return consignmentOrderNumber === searchConsignmentNumber;
+                });
 
             } else {
                 const searchTerm = searchInput.value.toLowerCase();
@@ -740,35 +831,34 @@
                     }
 
                     if (exactMatchFound && exactMatchValue !== null) {
-                         const exactMatchSearchTerm = String(exactMatchValue).toLowerCase();
-                         filteredData = allData.filter(item => {
-                             const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
-                             const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
-                             const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
-                             return srId === exactMatchSearchTerm || consignmentOrderNumber === exactMatchSearchTerm || invoiceNo === exactMatchSearchTerm;
-                         });
+                        const exactMatchSearchTerm = String(exactMatchValue).toLowerCase();
+                        filteredData = allData.filter(item => {
+                            const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+                            const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                            const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+                            return srId === exactMatchSearchTerm || consignmentOrderNumber === exactMatchSearchTerm || invoiceNo === exactMatchSearchTerm;
+                        });
 
                     } else {
-                         filteredData = allData.filter(item => {
-                             const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
-                             const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
-                             const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+                        filteredData = allData.filter(item => {
+                            const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+                            const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                            const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
 
-                             return srId.includes(searchTerm) ||
-                                            consignmentOrderNumber.includes(searchTerm) ||
-                                            invoiceNo.includes(searchTerm);
-                         });
+                            return srId.includes(searchTerm) ||
+                                consignmentOrderNumber.includes(searchTerm) ||
+                                invoiceNo.includes(searchTerm);
+                        });
                     }
 
-
-                     if (filteredData.length === 0) {
-                         showMessage("No matching results found.", 'info');
-                     } else {
-                         hideMessageBox();
-                     }
+                    if (filteredData.length === 0) {
+                        showMessage("No matching results found.", 'info');
+                    } else {
+                        hideMessageBox();
+                    }
                 } else {
                     filteredData = [];
-                     hideMessageBox();
+                    hideMessageBox();
                 }
             }
 
@@ -776,7 +866,6 @@
             calculateAndDisplaySummary();
             renderTable();
         }
-
 
         // Optional: Allow pressing Enter in the search field to trigger search
         searchInput.addEventListener('keypress', (event) => {
@@ -803,15 +892,15 @@
                     const originalConsignmentNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']) : 'N/A';
 
                     if (srId.includes(searchTerm) || consignmentOrderNumber.includes(searchTerm) || invoiceNo.includes(searchTerm)) {
-                         const suggestionValue = originalConsignmentNumber;
-                         const suggestionKey = suggestionValue;
+                        const suggestionValue = originalConsignmentNumber;
+                        const suggestionKey = suggestionValue;
 
-                         if (suggestionValue !== 'N/A' && !matchedItems.has(suggestionKey)) {
-                             matchedItems.set(suggestionKey, {
-                                 display: `${companyName} – ${originalConsignmentNumber}`,
-                                 value: suggestionValue
-                             });
-                         }
+                        if (suggestionValue !== 'N/A' && !matchedItems.has(suggestionKey)) {
+                            matchedItems.set(suggestionKey, {
+                                display: `${companyName} – ${originalConsignmentNumber}`,
+                                value: suggestionValue
+                            });
+                        }
                     }
                 });
 
@@ -824,9 +913,9 @@
                         suggestionItem.setAttribute('data-value', suggestion.value);
                         suggestionItem.classList.add('px-4', 'py-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-700');
                         suggestionItem.addEventListener('click', () => {
-                             searchInput.value = suggestion.display;
-                             suggestionsList.classList.add('hidden');
-                             performSearch(suggestion.value);
+                            searchInput.value = suggestion.display;
+                            suggestionsList.classList.add('hidden');
+                            performSearch(suggestion.value);
                         });
                         suggestionsList.appendChild(suggestionItem);
                     });
@@ -839,31 +928,30 @@
             }
         });
 
+        // Event listener for the reset button
+        resetButton.addEventListener('click', () => {
+            searchInput.value = '';
+            filteredData = [];
+            currentPage = 1;
+            hideMessageBox();
+            currentSortColumn = null;
+            currentSortDirection = 'asc';
+            calculateAndDisplaySummary();
+            renderTable();
+            suggestionsList.classList.add('hidden');
+            suggestionsList.innerHTML = '';
 
-         // Event listener for the reset button
-         resetButton.addEventListener('click', () => {
-             searchInput.value = '';
-             filteredData = [];
-             currentPage = 1;
-             hideMessageBox();
-             currentSortColumn = null;
-             currentSortDirection = 'asc';
-             calculateAndDisplaySummary();
-             renderTable();
-             suggestionsList.classList.add('hidden');
-             suggestionsList.innerHTML = '';
-
-             if (window.innerWidth <= 767) {
-                 tableContainer.style.display = 'none';
-                 paginationContainer.style.display = 'none';
-             }
-         });
+            if (window.innerWidth <= 767) {
+                tableContainer.style.display = 'none';
+                paginationContainer.style.display = 'none';
+            }
+        });
 
         // Hide the dropdown if the user clicks outside of it
         window.addEventListener('click', (event) => {
             if (!exportButton.contains(event.target) && !exportDropdown.contains(event.target) && !searchInput.contains(event.target) && !suggestionsList.contains(event.target)) {
                 exportDropdown.classList.add('hidden');
-                 suggestionsList.classList.add('hidden');
+                suggestionsList.classList.add('hidden');
             }
         });
 
@@ -879,7 +967,6 @@
         // Update label on page load and window resize
         window.addEventListener('load', updateHtmlOptionLabel);
         window.addEventListener('resize', updateHtmlOptionLabel);
-
 
         // Event listener for the previous page button
         prevPageButton.addEventListener('click', () => {
@@ -921,7 +1008,6 @@
             });
         });
 
-
         // Function to export table data to CSV
         function exportTableToCSV() {
             if (filteredData.length === 0) {
@@ -960,69 +1046,68 @@
 
         // Function to export table data to HTML
         function exportTableToHTML() {
-             if (filteredData.length === 0) {
-                 showMessage("No data to export.", 'info');
-                 return;
-             }
+            if (filteredData.length === 0) {
+                showMessage("No data to export.", 'info');
+                return;
+            }
 
-             const headers = Object.keys(filteredData[0]);
-             let htmlString = `
-                 <!DOCTYPE html>
-                 <html lang="en">
-                 <head>
-                     <meta charset="UTF-8">
-                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                     <title>Invoice Data Export</title>
-                     <style>
-                         body { font-family: sans-serif; }
-                         table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-                         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                         th { background-color: #f2f2f2; }
-                         tr:nth-child(even) { background-color: #f9f9f9; }
-                     </style>
-                 </head>
-                 <body>
-                     <h1>Invoice Data Export</h1>
-                     <table>
-                         <thead>
-                             <tr>
-                                 ${headers.map(header => `<th>${header}</th>`).join('')}
-                             </tr>
-                         </thead>
-                         <tbody>
-             `;
+            const headers = Object.keys(filteredData[0]);
+            let htmlString = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Invoice Data Export</title>
+                    <style>
+                        body { font-family: sans-serif; }
+                        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                        tr:nth-child(even) { background-color: #f9f9f9; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Invoice Data Export</h1>
+                    <table>
+                        <thead>
+                            <tr>
+                                ${headers.map(header => `<th>${header}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
 
-             filteredData.forEach(item => {
-                 htmlString += '<tr>';
-                 headers.forEach(header => {
-                     const value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
-                     htmlString += `<td>${value}</td>`;
-                 });
-                 htmlString += '</tr>';
-             });
+            filteredData.forEach(item => {
+                htmlString += '<tr>';
+                headers.forEach(header => {
+                    const value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
+                    htmlString += `<td>${value}</td>`;
+                });
+                htmlString += '</tr>';
+            });
 
-             htmlString += `
-                         </tbody>
-                     </table>
-                 </body>
-                 </html>
-             `;
+            htmlString += `
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
 
-             const blob = new Blob([htmlString], { type: 'text/html;charset=utf-8;' });
-             const link = document.createElement('a');
+            const blob = new Blob([htmlString], { type: 'text/html;charset=utf-8;' });
+            const link = document.createElement('a');
 
-             link.href = URL.createObjectURL(blob);
-             link.setAttribute('download', 'invoice_data.html');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', 'invoice_data.html');
 
-             document.body.appendChild(link);
-             link.click();
-             document.body.removeChild(link);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
-             setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+            setTimeout(() => URL.revokeObjectURL(link.href), 10000);
 
-             showMessage("Data exported as HTML.", 'success');
-         }
-
+            showMessage("Data exported as HTML.", 'success');
+        }
 
         // Add event listeners for sortable headers
         sortableTableHeaders.forEach(header => {
@@ -1034,11 +1119,8 @@
             });
         });
 
-
-        // Initial data fetch when the page loads
-        fetchData();
-
-
+        // Initial data fetch when the page loads, wrapped in DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', fetchData);
     </script>
 
 </body>
