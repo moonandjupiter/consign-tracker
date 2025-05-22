@@ -79,6 +79,13 @@
                 font-weight: 700; /* Make the text bold */
             }
 
+            /* Highlight Voucher No. on mobile */
+            #invoiceTable td[data-label="Voucher No.:"].highlight-voucher {
+                /* Removed background-color */
+                color: #047857; /* Tailwind emerald-700 */
+                font-weight: 600; /* Semi-bold */
+            }
+
             /* Adjust button size and spacing on mobile */
             .mb-6.flex.flex-col.md\:flex-row.gap-4.items-center button {
                 width: 100%; /* Make buttons full width on mobile */
@@ -262,6 +269,13 @@
             /* Show sort icon when parent th has 'sortable' class and data is filtered */
             #invoiceTable thead th.sortable i {
                 visibility: visible;
+            }
+
+            /* Highlight Voucher No. on desktop */
+            #invoiceTable td.highlight-voucher {
+                /* Removed background-color */
+                color: #047857; /* Tailwind emerald-700 */
+                font-weight: 600; /* Semi-bold */
             }
 
             #invoiceTable tbody tr:last-child td {
@@ -676,11 +690,18 @@
             const consignmentTotals = filteredData.reduce((acc, item) => {
                 const consignmentNumber = item['Consignment Order Number'] || 'N/A';
                 const quantity = parseInt(item['Quantity Sold'], 10);
+                
+                // Initialize the accumulator for this consignmentNumber if it doesn't exist
+                if (!acc[consignmentNumber]) {
+                    acc[consignmentNumber] = 0;
+                }
+                
+                // Add the quantity to the accumulator for this consignmentNumber
                 if (!isNaN(quantity)) {
-                    acc[consignmentNumber] = (acc[consignmentNumber] || 0) + quantity;
+                    acc[consignmentNumber] += quantity;
                 }
                 return acc;
-            }, {});
+            }, {}); // Initial accumulator is an empty object
 
             consignmentSummaryList.innerHTML = '';
 
@@ -789,6 +810,13 @@
                 dataToDisplay.forEach(item => {
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-50';
+                    
+                    // Determine if voucher number exists to apply highlight class
+                    // A voucher is considered valid if it's not empty, not '0', and not '-'
+                    const voucherValue = String(item['Voucher No.'] || '').trim();
+                    const hasValidVoucher = voucherValue !== '' && voucherValue !== '0' && voucherValue !== '-';
+                    const voucherClass = hasValidVoucher ? 'highlight-voucher' : '';
+
                     row.innerHTML = `
                         <td data-label="SR ID:" class="px-6 py-3">${item['SR ID'] || ''}</td>
                         <td data-label="Company:" class="px-6 py-3">${item['Name of Company'] || ''}</td>
@@ -796,7 +824,7 @@
                         <td data-label="Quantity:" class="px-6 py-3">${item['Quantity Sold'] || ''}</td>
                         <td data-label="Amount:" class="px-6 py-3">${item['Amount'] || ''}</td>
                         <td data-label="Invoice No.:" class="px-6 py-3">${item['Invoice No.'] || ''}</td>
-                        <td data-label="Voucher No.:" class="px-6 py-3">${item['Voucher No.'] || ''}</td>
+                        <td data-label="Voucher No.:" class="px-6 py-3 ${voucherClass}">${item['Voucher No.'] || ''}</td>
                         <td data-label="Voucher Date:" class="px-6 py-3">${item['Voucher Date'] || ''}</td>
                     `;
                     invoiceTableBody.appendChild(row);
@@ -895,7 +923,6 @@
                         }
 
                         if (exactMatchFound && exactMatchValue !== null) {
-                            const exactMatchSearchTerm = String(exactMatchValue).toLowerCase();
                             filteredData = allData.filter(item => {
                                 const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
                                 const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
@@ -959,18 +986,17 @@
 
                 allData.forEach(item => {
                     const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
-                    const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                    const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']) : 'N/A';
                     const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
                     const companyName = item['Name of Company'] ? String(item['Name of Company']) : 'Unknown Company';
-                    const originalConsignmentNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']) : 'N/A';
 
-                    if (srId.includes(searchTerm) || consignmentOrderNumber.includes(searchTerm) || invoiceNo.includes(searchTerm)) {
-                        const suggestionValue = originalConsignmentNumber;
+                    if (srId.includes(searchTerm) || consignmentOrderNumber.toLowerCase().includes(searchTerm) || invoiceNo.includes(searchTerm)) {
+                        const suggestionValue = consignmentOrderNumber;
                         const suggestionKey = suggestionValue;
 
                         if (suggestionValue !== 'N/A' && !matchedItems.has(suggestionKey)) {
                             matchedItems.set(suggestionKey, {
-                                display: `${companyName} – ${originalConsignmentNumber}`,
+                                display: `${companyName} – ${consignmentOrderNumber}`,
                                 value: suggestionValue
                             });
                         }
