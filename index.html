@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* Existing styles remain the same, with additions for the status button */
+        /* Existing styles remain the same */
         body {
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
@@ -844,7 +844,7 @@
 </head>
 <body>
 
-    <div id="loadingOverlay">
+    <div id="loadingOverlay" class="hidden">
         <div class="loading-dots-container">
             <div class="loading-dot"></div>
             <div class="loading-dot"></div>
@@ -1196,7 +1196,7 @@
                 statusText = 'Processing Voucher';
                 statusClass = 'status-processing';
             } else {
-                statusText = 'Done';
+                statusText = 'Complete'; // Changed "Done" to "Complete"
                 statusClass = 'status-done';
             }
 
@@ -1642,7 +1642,7 @@
             } else if (voucherNo === '' || voucherNo === '-' || voucherNo === '0') {
                 return 'Processing Voucher';
             } else {
-                return 'Done';
+                return 'Complete'; // Changed "Done" to "Complete" for export
             }
         }
 
@@ -1954,6 +1954,10 @@
 
         // Initial data fetch and button label update when the page loads, wrapped in DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
+            // Initially hide mainContent and show loading overlay
+            mainContent.classList.add('hidden');
+            loadingOverlay.classList.remove('hidden');
+            
             fetchData();
             updatePrintButtonLabel(); // Set initial button label
         });
