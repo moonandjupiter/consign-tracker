@@ -9,16 +9,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* Ensure Poppins font is used and provide a fallback */
+        /* Styles remain largely the same as before */
         body {
             font-family: 'Poppins', sans-serif;
-            line-height: 1.6; /* Improve readability */
-            overflow-x: hidden; /* Prevent horizontal scroll on small screens */
+            line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        /* Custom styling for the responsive layout */
-        /* Hide table headers on small screens */
-        @media (max-width: 767px) { /* Tailwind's 'md' breakpoint is 768px, so this targets screens smaller than that */
+        @media (max-width: 767px) {
             #invoiceTable thead {
                 display: none;
             }
@@ -29,72 +27,64 @@
             }
 
             #invoiceTable tr {
-                margin-bottom: 15px; /* Add space between rows */
-                border: 1px solid #d1d5db; /* Add a border */
-                border-radius: 0.5rem; /* Rounded corners */
-                background-color: #ffffff; /* White background for default */
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08); /* Add a subtle shadow */
-                overflow: hidden; /* Ensure rounded corners apply */
+                margin-bottom: 15px;
+                border: 1px solid #d1d5db;
+                border-radius: 0.5rem;
+                background-color: #ffffff;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+                overflow: hidden;
             }
 
-            /* Add alternating background colors for rows in mobile view */
             #invoiceTable tbody tr:nth-child(even) {
-                background-color: #f9fafb; /* Tailwind gray-50 for even rows */
+                background-color: #f9fafb;
             }
 
             #invoiceTable td {
-                border-bottom: 1px solid #e5e7eb; /* Tailwind gray-200 */
+                border-bottom: 1px solid #e5e7eb;
                 position: relative;
-                padding: 12px 15px 12px 50%; /* Adjust padding for label and content */
-                text-align: right; /* Align data to the right */
-                font-size: 0.9rem; /* Slightly smaller text for card items */
-                min-height: 40px; /* Ensure a minimum height for the cell */
-                display: flex; /* Use flexbox for better label/value alignment */
-                align-items: center; /* Vertically center content */
-                justify-content: flex-end; /* Align content to the right */
+                padding: 12px 15px 12px 50%;
+                text-align: right;
+                font-size: 0.9rem;
+                min-height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
             }
 
             #invoiceTable td:last-child {
-                border-bottom: 0; /* No border on the last item in the card */
+                border-bottom: 0;
             }
 
-            /* Add data labels before the content on small screens */
             #invoiceTable td::before {
                 content: attr(data-label);
-                position: absolute; /* Keep absolute positioning for the label */
+                position: absolute;
                 left: 0;
                 width: 45%;
                 padding-left: 15px;
-                font-weight: 600; /* Semi-bold weight for labels */
-                text-align: left; /* Align label to the left */
-                color: #4b5563; /* Tailwind gray-600 */
-                /* Remove flex-related styles from pseudo-element if any were inherited */
+                font-weight: 600;
+                text-align: left;
+                color: #4b5563;
                 display: block;
                 align-items: initial;
                 justify-content: initial;
             }
 
-            /* Emphasize SR ID column in mobile view */
             #invoiceTable td[data-label="SR ID:"] {
-                background-color: #e0f2f7; /* A light blue background */
-                font-weight: 700; /* Make the text bold */
+                background-color: #e0f2f7;
+                font-weight: 700;
             }
 
-            /* Highlight Voucher No. on mobile */
             #invoiceTable td[data-label="Voucher No.:"].highlight-voucher {
-                /* Removed background-color */
-                color: #047857; /* Tailwind emerald-700 */
-                font-weight: 600; /* Semi-bold */
+                color: #047857;
+                font-weight: 600;
             }
 
-            /* Adjust button size and spacing on mobile */
             .mb-6.flex.flex-col.md\:flex-row.gap-4.items-center button {
-                width: 100%; /* Make buttons full width on mobile */
-                padding: 10px 15px; /* Adjust padding */
-                font-size: 1rem; /* Standard font size */
+                width: 100%;
+                padding: 10px 15px;
+                font-size: 1rem;
             }
 
-            /* Adjust search and reset button container on mobile */
             .search-reset-container {
                 flex-direction: column;
                 width: 100%;
@@ -102,16 +92,15 @@
 
             .search-input-container {
                 width: 100%;
-                margin-bottom: 10px; /* Space between search and reset on mobile */
-                position: relative; /* Ensure this is relative for absolute children */
-                z-index: 100; /* High z-index for the input container */
+                margin-bottom: 10px;
+                position: relative;
+                z-index: 100;
             }
 
             .search-reset-container button {
                 width: 100%;
             }
 
-            /* Adjust export options container on mobile */
             .export-options {
                 width: 100%;
             }
@@ -120,22 +109,20 @@
                 width: 100%;
             }
 
-            /* Mobile specific dropdown styling */
             .export-dropdown {
-                position: static; /* Remove absolute positioning on mobile */
+                position: static;
                 width: 100%;
-                margin-top: 10px; /* Space below the button */
-                box-shadow: none; /* Remove shadow on mobile */
-                border: 1px solid #d1d5db; /* Add border on mobile */
-                border-radius: 0.5rem; /* Add border-radius */
+                margin-top: 10px;
+                box-shadow: none;
+                border: 1px solid #d1d5db;
+                border-radius: 0.5rem;
             }
 
             .export-dropdown a {
-                padding: 10px; /* Adjust padding */
-                text-align: center; /* Center text */
+                padding: 10px;
+                text-align: center;
             }
 
-            /* Mobile header adjustments */
             .header-content {
                 flex-direction: column;
                 align-items: flex-start;
@@ -146,7 +133,6 @@
                 font-size: 0.8rem;
             }
 
-            /* Summary panel adjustments for mobile */
             #quantitySummaryPanel {
                 font-size: 0.9rem;
                 padding: 10px;
@@ -155,51 +141,47 @@
             #consignmentSummaryList {
                 margin-top: 5px;
                 font-size: 0.85rem;
-                list-style: disc; /* Add bullet points */
-                padding-left: 20px; /* Add padding for bullet points */
+                list-style: disc;
+                padding-left: 20px;
             }
 
             #consignmentSummaryList li {
                 margin-bottom: 3px;
             }
 
-            /* Mobile suggestion list styling */
             #suggestionsList {
-                position: absolute; /* Changed to absolute for better control */
+                position: absolute;
                 width: 100%;
-                margin-top: 0; /* Remove default margin-top */
+                margin-top: 0;
                 border-radius: 0.5rem;
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-                z-index: 99; /* High z-index, lower than input container */
-                background-color: white; /* Ensure background is white */
-                border: 1px solid #d1d5db; /* Add border */
-                border-top: none; /* No top border */
-                left: 0; /* Align with the left edge of the container */
-                top: 100%; /* Position directly below the input container */
-                max-height: 150px; /* Limit height */
-                overflow-y: auto; /* Add scroll if needed */
+                z-index: 99;
+                background-color: white;
+                border: 1px solid #d1d5db;
+                border-top: none;
+                left: 0;
+                top: 100%;
+                max-height: 150px;
+                overflow-y: auto;
             }
             #suggestionsList div {
                 padding: 8px 15px;
                 font-size: 0.9rem;
             }
 
-            /* Style for the empty table message on mobile */
             #invoiceTable td.empty-table-message {
-                text-align: left; /* Align text to the left */
-                justify-content: flex-start; /* Align flex content to the start */
-                padding-left: 15px; /* Restore left padding */
-                padding-right: 15px; /* Ensure right padding */
+                text-align: left;
+                justify-content: flex-start;
+                padding-left: 15px;
+                padding-right: 15px;
             }
 
-            /* Ensure the ::before pseudo-element is hidden for this specific cell */
             #invoiceTable td.empty-table-message::before {
                 content: none;
             }
 
-            /* Mobile specific input and icon positioning */
             .search-input-container input {
-                padding-left: 45px; /* Increased padding for icon */
+                padding-left: 45px;
             }
 
             .search-input-container i {
@@ -212,7 +194,6 @@
                 z-index: 101;
             }
 
-            /* Mobile adjustments for loading overlay */
             #loadingOverlay {
                 justify-content: center;
                 padding: 0 1rem;
@@ -233,7 +214,6 @@
             }
         }
 
-        /* Default table styling for larger screens (md and up) */
         @media (min-width: 768px) {
             #invoiceTable th,
             #invoiceTable td {
@@ -254,7 +234,6 @@
                 position: relative;
             }
 
-            /* Style for sort icons in table headers */
             #invoiceTable thead th i {
                 position: absolute;
                 right: 8px;
@@ -265,12 +244,10 @@
                 visibility: hidden;
             }
 
-            /* Show sort icon when parent th has 'sortable' class and data is filtered */
             #invoiceTable thead th.sortable i {
                 visibility: visible;
             }
 
-            /* Highlight Voucher No. on desktop */
             #invoiceTable td.highlight-voucher {
                 color: #047857;
                 font-weight: 600;
@@ -279,7 +256,6 @@
             #invoiceTable tbody tr:last-child td {
                 border-bottom: none;
             }
-            /* Optional: Add alternating row colors for better readability */
             #invoiceTable tbody tr:nth-child(even) {
                 background-color: #f9fafb;
             }
@@ -288,7 +264,6 @@
                 transition: background-color 0.2s ease-in-out;
             }
 
-            /* Desktop header adjustments */
             .header-content {
                 flex-direction: row;
                 justify-content: space-between;
@@ -298,7 +273,7 @@
             .version-number {
                 font-size: 0.9rem;
             }
-            /* Summary panel adjustments for desktop */
+
             #quantitySummaryPanel {
                 font-size: 1rem;
                 padding: 1rem;
@@ -315,7 +290,6 @@
                 margin-bottom: 4px;
             }
 
-            /* Desktop suggestion list styling */
             #suggestionsList {
                 position: absolute;
                 width: max-content;
@@ -348,7 +322,6 @@
             }
         }
 
-        /* General button styling improvements */
         button {
             transition: all 0.15s ease-in-out;
             display: inline-flex;
@@ -360,25 +333,21 @@
             margin-right: 8px;
         }
 
-        /* Style for disabled export button */
         #exportButton:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
 
-        /* Style for the search input container and icon */
         .search-input-container {
             position: relative;
             flex-grow: 1;
             overflow: visible;
         }
 
-        /* Default padding for input (desktop and general) */
         .search-input-container input {
             padding-left: 40px;
         }
 
-        /* Default icon positioning (desktop and general) */
         .search-input-container i {
             position: absolute;
             left: 12px;
@@ -389,7 +358,6 @@
             z-index: 1;
         }
 
-        /* Header styling */
         .header {
             background-color: #1d4ed8;
             color: white;
@@ -409,7 +377,6 @@
             font-weight: 400;
         }
 
-        /* Styling for the summary panel content */
         .summary-content {
             display: flex;
             align-items: center;
@@ -421,7 +388,6 @@
             color: #1e3a8a;
         }
 
-        /* Loading Overlay Styles */
         #loadingOverlay {
             position: fixed;
             top: 0;
@@ -445,12 +411,12 @@
         }
 
         .loading-text {
-            font-size: 2rem; /* Adjusted font size */
+            font-size: 2rem;
             font-weight: 700;
             margin-top: 40px;
-            animation: fadeInOut 5s infinite alternate; /* Increased animation duration */
-            padding: 0 1rem; /* Added horizontal padding */
-            white-space: nowrap; /* Prevent text from wrapping */
+            animation: fadeInOut 5s infinite alternate;
+            padding: 0 1rem;
+            white-space: nowrap;
         }
 
         .version-suffix {
@@ -475,14 +441,11 @@
             animation: bounce 1.4s infinite ease-in-out;
         }
 
-        /* Specific colors for each dot */
         .loading-dot:nth-child(1) { background-color: #4285F4; }
         .loading-dot:nth-child(2) { background-color: #EA4335; animation-delay: 0.1s; }
         .loading-dot:nth-child(3) { background-color: #FBBC05; animation-delay: 0.2s; }
         .loading-dot:nth-child(4) { background-color: #34A853; animation-delay: 0.3s; }
 
-
-        /* Keyframe Animations */
         @keyframes fadeInOut {
             0% { opacity: 0.5; }
             100% { opacity: 1; }
@@ -497,7 +460,6 @@
             }
         }
 
-        /* New CSS for loading dots in message box */
         .loading-message-dots {
             display: inline-block;
             margin-left: 8px;
@@ -518,18 +480,17 @@
             50% { opacity: 1; transform: scale(1.2); }
         }
 
-        /* Styles for the Details Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
+            background-color: rgba(0, 0, 0, 0.6);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000; /* Ensure it's on top */
+            z-index: 1000;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
@@ -541,24 +502,23 @@
         }
 
         .modal-content {
-            background-color: white; /* Pure white background */
-            background-image: none; /* Removed gradient */
-            padding: 1.5rem; /* Reduced padding for a more compact receipt feel */
-            border-radius: 0.25rem; /* Minimal border-radius for sharp edges like a receipt */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Lighter, less spread shadow */
+            background-color: white;
+            background-image: none;
+            padding: 1.5rem;
+            border-radius: 0.25rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             width: 90%;
-            max-width: 380px; /* Narrower for receipt-like feel */
-            transform: translateY(-10px) scale(0.99); /* Subtle animation */
-            transition: transform 0.2s ease-out; /* Quicker animation */
+            max-width: 380px;
+            transform: translateY(-10px) scale(0.99);
+            transition: transform 0.2s ease-out;
             position: relative;
-            color: #1f2937; /* Dark gray for main text, good for print */
-            border: 1px solid #e5e7eb; /* Subtle light gray border */
+            color: #1f2937;
+            border: 1px solid #e5e7eb;
             
-            /* Added for button positioning */
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Distributes space between items, pushing footer to bottom */
-            min-height: 250px; /* Ensure enough height for space-between to work */
+            justify-content: space-between;
+            min-height: 250px;
         }
 
         .modal-overlay.show .modal-content {
@@ -567,28 +527,28 @@
 
         .modal-header {
             display: flex;
-            flex-direction: column; /* Stack title and close button */
-            align-items: flex-start; /* Align header content to the left */
-            border-bottom: 1px dashed #d1d5db; /* Dashed line for receipt feel */
-            padding: 1.5rem 1.5rem 1rem 1.5rem; /* Increased top padding for clearance */
+            flex-direction: column;
+            align-items: flex-start;
+            border-bottom: 1px dashed #d1d5db;
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
             margin-bottom: 1.25rem;
-            position: relative; /* For positioning close button */
+            position: relative;
         }
 
         .modal-header h2 {
-            font-size: 1.25rem; /* Adjusted for readability */
+            font-size: 1.25rem;
             font-weight: 700;
-            color: #1f2937; /* Darker title color */
+            color: #1f2937;
             text-shadow: none;
-            margin-bottom: 0.5rem; /* Space between title and close button */
-            text-align: left; /* Ensure title is left-aligned */
-            width: calc(100% - 2.5rem); /* Adjust width to account for close button */
+            margin-bottom: 0.5rem;
+            text-align: left;
+            width: calc(100% - 2.5rem);
         }
 
         .modal-close-button {
             position: absolute;
-            top: 0.75rem; /* Adjusted top for more clearance */
-            right: 0.75rem; /* Adjusted right for more clearance */
+            top: 0.75rem;
+            right: 0.75rem;
             background: none;
             border: none;
             font-size: 1.2rem;
@@ -599,57 +559,57 @@
         }
 
         .modal-close-button:hover {
-            color: #dc2626; /* Red-600 on hover */
+            color: #dc2626;
             transform: rotate(90deg);
         }
 
         .modal-body {
-            flex-grow: 1; /* Allow modal body to take up available space */
+            flex-grow: 1;
         }
 
         .modal-body p {
-            margin-bottom: 0.25rem; /* Reduced space between lines */
-            font-size: 0.85rem; /* Slightly smaller text for receipt */
+            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            padding: 0.1rem 0; /* Minimal vertical padding */
-            border-bottom: none; /* No border for each line */
+            padding: 0.1rem 0;
+            border-bottom: none;
         }
 
         .modal-body strong {
-            color: #4b5563; /* Tailwind gray-600 */
-            font-weight: normal; /* No bold for labels */
+            color: #4b5563;
+            font-weight: normal;
             flex-shrink: 0;
-            margin-right: 0.5rem; /* Reduced space */
-            width: 55%; /* Give more space to label */
-            text-align: left; /* Ensure labels are left-aligned */
+            margin-right: 0.5rem;
+            width: 55%;
+            text-align: left;
         }
 
         .modal-body span {
-            color: #1f2937; /* Dark gray for values, good for print */
-            font-weight: 600; /* Semi-bold for values to stand out slightly */
+            color: #1f2937;
+            font-weight: 600;
             text-align: right;
-            flex-grow: 1; /* Allow value to take remaining space */
+            flex-grow: 1;
         }
 
         .modal-footer {
             display: flex;
-            flex-direction: column; /* Stack content in footer */
-            align-items: center; /* Center footer content */
+            flex-direction: column;
+            align-items: center;
             gap: 1rem;
-            border-top: 1px dashed #d1d5db; /* Dashed line for receipt feel */
+            border-top: 1px dashed #d1d5db;
             padding-top: 1.25rem;
             margin-top: 1.5rem;
         }
 
         .modal-footer button {
-            padding: 0.6rem 1.2rem; /* Smaller buttons */
-            border-radius: 0.375rem; /* Slightly less rounded */
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.375rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease-in-out;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Even lighter shadow */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .modal-print-button {
@@ -670,15 +630,15 @@
         }
 
         .modal-cancel-button:hover {
-            background-color: #f9fafb; /* Lighter hover background */
+            background-color: #f9fafb;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .modal-note {
-            font-size: 0.75rem; /* Adjusted for readability */
-            color: #6b7280; /* Gray text for notes */
-            text-align: left; /* Aligned left as requested */
-            margin-top: 0.75rem; /* Space above the note */
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-align: left;
+            margin-top: 0.75rem;
             line-height: 1.4;
         }
         /* Print specific styles */
@@ -695,125 +655,122 @@
                 overflow: visible;
             }
             body.print-active .modal-content {
-                width: 80mm; /* A common width for thermal receipts */
-                max-width: 80mm; /* Ensure it doesn't expand beyond this */
+                width: 80mm;
+                max-width: 80mm;
                 box-shadow: none;
                 border: none;
-                padding: 8mm; /* Increased padding for margin on all sides */
+                padding: 8mm;
                 transform: none;
-                border-radius: 0; /* No rounded corners for print */
-                margin: 0; /* Remove auto margins to align left */
-                float: left; /* Float left to ensure it's on the left side of the paper */
-                min-height: auto; /* Remove min-height for print */
+                border-radius: 0;
+                margin: 0;
+                float: left;
+                min-height: auto;
             }
             body.print-active .modal-header {
-                border-bottom: 1px dashed #d1d5db; /* Keep dashed border for header */
-                padding-bottom: 0.5rem; /* Reduced padding for header */
-                margin-bottom: 0.5rem; /* Reduced margin for header */
-                align-items: flex-start; /* Align header content to the left */
+                border-bottom: 1px dashed #d1d5db;
+                padding-bottom: 0.5rem;
+                margin-bottom: 0.5rem;
+                align-items: flex-start;
             }
             body.print-active .modal-footer {
-                border-top: none; /* Remove existing border-top */
-                padding-top: 0; /* Adjust padding as separator will handle spacing */
-                margin-top: 0; /* Adjust margin as separator will handle spacing */
-                align-items: flex-start; /* Align footer content to the left */
+                border-top: none;
+                padding-top: 0;
+                margin-top: 0;
+                align-items: flex-start;
             }
             body.print-active .modal-close-button,
             body.print-active .modal-footer button {
-                display: none; /* Hide buttons when printing */
+                display: none;
             }
             body.print-active .modal-header h2 {
-                font-size: 1.1rem; /* Even smaller for print */
-                margin-bottom: 0; /* Remove margin-bottom from h2 in print */
-                font-family: 'Courier New', Courier, monospace; /* Changed font to courier-like */
-                font-weight: 600; /* Adjusted weight for courier font */
-                text-align: left; /* Ensure title is left-aligned in print */
+                font-size: 1.1rem;
+                margin-bottom: 0;
+                font-family: 'Courier New', Courier, monospace;
+                font-weight: 600;
+                text-align: left;
             }
             body.print-active .modal-body p {
-                font-size: 0.75rem; /* Slightly smaller for print to make it lighter */
-                margin-bottom: 0.1rem; /* Very little space between lines */
+                font-size: 0.75rem;
+                margin-bottom: 0.1rem;
                 padding: 0.1rem 0;
-                font-family: 'Poppins', sans-serif; /* Reverted to Poppins */
+                font-family: 'Poppins', sans-serif;
             }
             body.print-active .modal-body strong {
-                font-weight: 400; /* Lighter font weight for labels */
-                margin-right: 0.5rem; /* Reduced margin for labels */
-                width: 55%; /* Allocate more width to labels */
-                flex-shrink: 0; /* Prevent labels from shrinking */
-                text-align: left; /* Ensure labels are left-aligned */
-                font-family: 'Poppins', sans-serif; /* Reverted to Poppins */
+                font-weight: 400;
+                margin-right: 0.5rem;
+                width: 55%;
+                flex-shrink: 0;
+                text-align: left;
+                font-family: 'Poppins', sans-serif;
             }
             body.print-active .modal-body span {
-                font-weight: 500; /* Slightly lighter bold for values */
-                flex-grow: 1; /* Allow values to take remaining space */
-                text-align: right; /* Ensure values are right-aligned */
-                font-family: 'Poppins', sans-serif; /* Reverted to Poppins */
+                font-weight: 500;
+                flex-grow: 1;
+                text-align: right;
+                font-family: 'Poppins', sans-serif;
             }
             body.print-active .modal-note {
-                font-size: 0.55rem; /* Adjusted for PNG output readability */
-                font-style: italic; /* Italicize the note */
-                margin-top: 1rem; /* Space after date line */
-                text-align: left; /* Align note to the left */
-                color: #a1a1aa; /* Even lighter gray for notes (tailwind gray-400) */
-                line-height: 1.3; /* Slightly tighter line height */
+                font-size: 0.55rem;
+                font-style: italic;
+                margin-top: 1rem;
+                text-align: left;
+                color: #a1a1aa;
+                line-height: 1.3;
             }
 
-            /* Styles for the new print separator */
             .print-separator {
-                display: block; /* Show only when printing */
+                display: block;
                 width: 100%;
-                margin-top: 1.5rem; /* Space above the separator */
-                margin-bottom: 1rem; /* Space below the separator */
-                border-bottom: 1px dashed #d1d5db; /* Dashed line */
+                margin-top: 1.5rem;
+                margin-bottom: 1rem;
+                border-bottom: 1px dashed #d1d5db;
             }
 
-            /* Styles for signature section */
             .signature-section {
-                display: flex; /* Show only when printing */
+                display: flex;
                 flex-direction: column;
-                align-items: flex-start; /* Left-align the whole section */
+                align-items: flex-start;
                 width: 100%;
-                margin-top: 0; /* Controlled by print-separator */
-                padding-top: 0; /* No top padding */
-                border-top: none; /* No border here */
+                margin-top: 0;
+                padding-top: 0;
+                border-top: none;
                 font-family: 'Poppins', sans-serif;
                 color: #1f2937;
             }
 
-            .signature-block-centered { /* Wrapper for line and text to center them */
+            .signature-block-centered {
                 display: flex;
                 flex-direction: column;
-                align-items: flex-start; /* Left-align its children (line and text) */
-                width: 100%; /* Take full width of its centered parent */
-                margin: 0; /* Remove auto margins, alignment handled by parent */
-                margin-top: 0.75rem; /* Reduced space from the separator */
+                align-items: flex-start;
+                width: 100%;
+                margin: 0;
+                margin-top: 0.75rem;
             }
 
             .signature-line {
-                border-bottom: 1px solid #a1a1aa; /* Changed to gray-400 for lighter appearance */
-                width: 75%; /* Adjusted width to make it shorter */
-                margin-bottom: 0.15rem; /* Reduced space below the line */
+                border-bottom: 1px solid #a1a1aa;
+                width: 75%;
+                margin-bottom: 0.15rem;
             }
 
             .signature-text {
-                font-size: 0.6rem; /* Adjusted font size for "Signature over Printed Name" */
-                color: #4b5563; /* Medium gray */
-                text-align: left; /* Align text to the left */
-                width: 75%; /* Adjusted width to match line */
-                margin-top: 0; /* No extra top margin */
-                line-height: 1.1; /* Tighter line height */
+                font-size: 0.6rem;
+                color: #4b5563;
+                text-align: left;
+                width: 75%;
+                margin-top: 0;
+                line-height: 1.1;
             }
 
             .date-line {
-                margin-top: 0.75rem; /* Reduced space above date */
-                font-size: 0.6rem; /* Adjusted font size for date */
-                color: #4b5563; /* Changed to match signature-text color */
-                width: 100%; /* Ensure it takes full width */
-                text-align: left; /* Left-align the date line */
+                margin-top: 0.75rem;
+                font-size: 0.6rem;
+                color: #4b5563;
+                width: 100%;
+                text-align: left;
             }
         }
 
-        /* Hide signature section by default for both desktop and mobile modal views */
         .signature-section {
             display: none;
         }
@@ -951,10 +908,11 @@
         const jsonUrl = "https://raw.githubusercontent.com/moonandjupiter/my-json-data/refs/heads/main/Sheet1_data.json";
         const itemsPerPage = 5;
         let currentPage = 1;
-        let allData = [];
-        let filteredData = []; // This will now only be updated on search/reset
-        let currentSortColumn = null;
-        let currentSortDirection = 'asc'; // 'asc' or 'desc'
+        let allData = []; // Raw data from JSON
+        let processedData = []; // Merged/processed data
+        let filteredData = []; // Filtered subset of processedData
+        let currentSortColumn = null; // Initialize here
+        let currentSortDirection = 'asc'; // Initialize here
         let lastClickedConsignmentOrder = null; // New global variable to store the consignment order of the last clicked button
 
         const searchInput = document.getElementById('searchInput');
@@ -1031,6 +989,7 @@
             overallSummaryDiv.textContent = `Found ${totalResults} ${resultWord}:`;
 
             // Aggregate by Consignment Order Number only for the summary panel
+            // This now operates on `filteredData` which is already merged per SR ID/CO number
             const consignmentTotals = filteredData.reduce((acc, item) => {
                 const consignmentNumber = String(item['Consignment Order Number'] || 'N/A');
                 const quantity = parseInt(item['Quantity Sold'], 10);
@@ -1235,6 +1194,36 @@
             addAcknowledgeButtonListeners(); // New listener for the buttons
         }
 
+        // New function to merge data
+        function mergeData(data) {
+            const mergedMap = new Map();
+
+            data.forEach(item => {
+                const srId = item['SR ID'] || '';
+                const consignmentOrderNumber = item['Consignment Order Number'] || '';
+                const key = `${srId}-${consignmentOrderNumber}`; // Unique key for merging
+
+                const quantity = parseInt(item['Quantity Sold'], 10) || 0;
+                const amount = parseFloat(String(item['Amount'] || '0').replace(/[^0-9.-]+/g,"")) || 0;
+
+                if (mergedMap.has(key)) {
+                    const existing = mergedMap.get(key);
+                    existing['Quantity Sold'] += quantity;
+                    existing['Amount'] += amount;
+                    // Retain other fields from the first occurrence, or merge as needed.
+                    // For simplicity, we'll keep the first encountered values for other fields.
+                } else {
+                    // Create a copy to avoid modifying the original data directly
+                    const newItem = { ...item };
+                    newItem['Quantity Sold'] = quantity; // Ensure it's a number
+                    newItem['Amount'] = amount; // Ensure it's a number
+                    mergedMap.set(key, newItem);
+                }
+            });
+
+            return Array.from(mergedMap.values());
+        }
+
         // Function to fetch data from the JSON URL
         async function fetchData() {
             // Show loading overlay immediately
@@ -1250,8 +1239,9 @@
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                allData = await response.json();
-                filteredData = []; // Reset filtered data on initial load
+                allData = await response.json(); // Store raw data
+                processedData = mergeData(allData); // Process and merge data
+                filteredData = []; // Initialize filteredData as empty on initial load
                 hideMessageBox();
                 quantitySummaryPanel.classList.add('hidden');
 
@@ -1268,8 +1258,12 @@
                 }, 500); // Shorter delay for error
                 return; // Exit if data fetching failed
             } finally {
+                // Ensure sorting state is initialized before rendering the table
+                currentSortColumn = null;
+                currentSortDirection = 'asc';
+
                 // After data is fetched (successfully or not), render the table and then hide the overlay
-                renderTable(); // This will show the table/pagination if data is present
+                renderTable(); // This will now use filteredData (which is empty initially)
                 // Add a slightly longer delay for the animation to play before hiding the overlay
                 setTimeout(() => {
                     loadingOverlay.classList.add('hidden');
@@ -1291,7 +1285,7 @@
             setTimeout(() => {
                 if (searchValue !== null) {
                     const searchConsignmentNumber = String(searchValue).toLowerCase();
-                    filteredData = allData.filter(item => {
+                    filteredData = processedData.filter(item => { // Filter processedData
                         const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
                         return consignmentOrderNumber === searchConsignmentNumber;
                     });
@@ -1303,7 +1297,7 @@
                         let exactMatchFound = false;
                         let exactMatchValue = null;
 
-                        for (const item of allData) {
+                        for (const item of processedData) { // Search processedData
                             const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
                             const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
                             const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
@@ -1318,7 +1312,7 @@
                         }
 
                         if (exactMatchFound && exactMatchValue !== null) {
-                            filteredData = allData.filter(item => {
+                            filteredData = processedData.filter(item => { // Filter processedData
                                 const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
                                 const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
                                 const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
@@ -1326,7 +1320,7 @@
                             });
 
                         } else {
-                            filteredData = allData.filter(item => {
+                            filteredData = processedData.filter(item => { // Filter processedData
                                 const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
                                 const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
                                 const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
@@ -1337,15 +1331,13 @@
                             });
                         }
                     } else {
-                        filteredData = [];
+                        filteredData = []; // If no search term, keep filtered data empty
                     }
                 }
 
                 currentPage = 1;
                 calculateAndDisplaySummary();
                 renderTable();
-                
-                // Ensure message box is hidden after search completes, regardless of results
                 hideMessageBox();
 
                 // If no results for a non-empty search, show "No matching results found."
@@ -1370,10 +1362,10 @@
             const searchTerm = searchInput.value.toLowerCase();
             suggestionsList.innerHTML = '';
 
-            if (searchTerm.length > 2 && allData.length > 0) {
+            if (searchTerm.length > 2 && processedData.length > 0) { // Use processedData for suggestions
                 const matchedItems = new Map();
 
-                allData.forEach(item => {
+                processedData.forEach(item => {
                     const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
                     const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']) : 'N/A';
                     const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
@@ -1421,21 +1413,19 @@
         // Event listener for the reset button
         resetButton.addEventListener('click', () => {
             searchInput.value = '';
-            filteredData = [];
+            filteredData = []; // Reset filteredData to empty
             currentPage = 1;
             hideMessageBox();
             currentSortColumn = null;
             currentSortDirection = 'asc';
-            calculateAndDisplaySummary();
-            // Clear acknowledged state on reset
-            acknowledgedConsignments.clear(); 
-            renderTable();
+            calculateAndDisplaySummary(); // This will show summary based on empty filteredData
+            acknowledgedConsignments.clear();
+            renderTable(); // This will now render based on an empty filteredData, showing the initial message
             suggestionsList.classList.add('hidden');
             suggestionsList.innerHTML = '';
 
-            // Ensure table and pagination are hidden on reset
-            tableContainer.style.display = 'none';
-            paginationContainer.style.display = 'none';
+            tableContainer.style.display = 'none'; // Ensure table is hidden on reset
+            paginationContainer.style.display = 'none'; // Ensure pagination is hidden on reset
         });
 
         // Hide the dropdown if the user clicks outside of it
@@ -1612,33 +1602,17 @@
 
         // Function to show the details modal
         function showDetailsModal(srId, consignmentOrder) {
-            // Find the specific item that was clicked to display its SR ID
-            const clickedItem = allData.find(item => 
+            // Find the specific item that was clicked in the PROCESSED data
+            const clickedItem = processedData.find(item => 
                 String(item['SR ID'] || 'N/A') === String(srId) &&
                 String(item['Consignment Order Number'] || 'N/A') === String(consignmentOrder)
             );
 
-            // Filter all data by the Consignment Order Number to get all related records for the summary
-            const relatedRecordsForConsignment = allData.filter(item => 
-                String(item['Consignment Order Number'] || 'N/A') === String(consignmentOrder)
-            );
+            // The modal details should reflect the *merged* totals for that consignment order
+            // So, we use the quantity and amount directly from the clickedItem (which is already merged)
+            const totalQuantity = clickedItem ? (clickedItem['Quantity Sold'] || 0) : 0;
+            const totalAmount = clickedItem ? (clickedItem['Amount'] || 0) : 0;
 
-            let totalQuantity = 0;
-            let totalAmount = 0;
-
-            relatedRecordsForConsignment.forEach(item => {
-                const quantity = parseInt(item['Quantity Sold'], 10);
-                const amount = parseFloat(String(item['Amount'] || '0').replace(/[^0-9.-]+/g,""));
-
-                if (!isNaN(quantity)) {
-                    totalQuantity += quantity;
-                }
-                if (!isNaN(amount)) {
-                    totalAmount += amount;
-                }
-            });
-
-            // Ensure srId is displayed correctly from the clicked item, even if it was blank in data
             const displaySrId = clickedItem ? (clickedItem['SR ID'] || 'N/A') : srId;
 
             modalDetailsBody.innerHTML = `
