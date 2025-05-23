@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* Ensure Poppins font is used and provide a fallback */
         body {
@@ -126,6 +127,7 @@
                 margin-top: 10px; /* Space below the button */
                 box-shadow: none; /* Remove shadow on mobile */
                 border: 1px solid #d1d5db; /* Add border on mobile */
+                border-radius: 0.5rem; /* Add border-radius */
             }
 
             .export-dropdown a {
@@ -549,6 +551,12 @@
             position: relative;
             color: #1f2937; /* Dark gray for main text, good for print */
             border: 1px solid #e5e7eb; /* Subtle light gray border */
+            
+            /* Added for button positioning */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Distributes space between items, pushing footer to bottom */
+            min-height: 250px; /* Ensure enough height for space-between to work */
         }
 
         .modal-overlay.show .modal-content {
@@ -591,13 +599,17 @@
             transform: rotate(90deg);
         }
 
+        .modal-body {
+            flex-grow: 1; /* Allow modal body to take up available space */
+        }
+
         .modal-body p {
-            margin-bottom: 0.5rem; /* Reduced space between lines */
-            font-size: 0.95rem; /* Slightly smaller text for receipt */
+            margin-bottom: 0.25rem; /* Reduced space between lines */
+            font-size: 0.85rem; /* Slightly smaller text for receipt */
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            padding: 0.25rem 0; /* Minimal vertical padding */
+            padding: 0.1rem 0; /* Minimal vertical padding */
             border-bottom: none; /* No border for each line */
         }
 
@@ -605,14 +617,16 @@
             color: #4b5563; /* Tailwind gray-600 */
             font-weight: normal; /* No bold for labels */
             flex-shrink: 0;
-            margin-right: 0.75rem; /* Reduced space */
+            margin-right: 0.5rem; /* Reduced space */
+            width: 55%; /* Give more space to label */
+            text-align: left; /* Ensure labels are left-aligned */
         }
 
         .modal-body span {
             color: #1f2937; /* Dark gray for values, good for print */
             font-weight: 600; /* Semi-bold for values to stand out slightly */
             text-align: right;
-            flex-grow: 1;
+            flex-grow: 1; /* Allow value to take remaining space */
         }
 
         .modal-footer {
@@ -659,11 +673,10 @@
         .modal-note {
             font-size: 0.8rem; /* Smaller font for the note */
             color: #6b7280; /* Gray text for notes */
-            text-align: center;
+            text-align: left; /* Aligned left as requested */
             margin-top: 0.75rem; /* Space above the note */
             line-height: 1.4;
         }
-
         /* Print specific styles */
         @media print {
             body.print-active > *:not(.modal-overlay) {
@@ -682,11 +695,12 @@
                 max-width: 80mm; /* Ensure it doesn't expand beyond this */
                 box-shadow: none;
                 border: none;
-                padding: 5mm; /* Minimal padding for print */
+                padding: 8mm; /* Increased padding for margin on all sides */
                 transform: none;
                 border-radius: 0; /* No rounded corners for print */
                 margin: 0; /* Remove auto margins to align left */
                 float: left; /* Float left to ensure it's on the left side of the paper */
+                min-height: auto; /* Remove min-height for print */
             }
             body.print-active .modal-header {
                 border-bottom: 1px dashed #d1d5db; /* Keep dashed border for header */
@@ -765,33 +779,39 @@
             .signature-block-centered { /* Wrapper for line and text to center them */
                 display: flex;
                 flex-direction: column;
-                align-items: center; /* Center its children (line and text) */
-                width: 80%; /* Width of the signature area */
+                align-items: flex-start; /* Left-align its children (line and text) */
+                width: 100%; /* Take full width of its centered parent */
                 margin: 0; /* Remove auto margins, alignment handled by parent */
-                margin-top: 1rem; /* Space from the separator */
+                margin-top: 0.75rem; /* Reduced space from the separator */
             }
 
             .signature-line {
-                border-bottom: 1px solid #4b5563; /* Changed to gray-600 */
-                width: 100%; /* Take full width of its centered parent */
-                margin-bottom: 0.25rem; /* Space below the line */
+                border-bottom: 1px solid #a1a1aa; /* Changed to gray-400 for lighter appearance */
+                width: 75%; /* Adjusted width to make it shorter */
+                margin-bottom: 0.15rem; /* Reduced space below the line */
             }
 
             .signature-text {
-                font-size: 0.65rem; /* Smaller text for "Signature over Printed Name" */
+                font-size: 0.4rem; /* Further reduced font size for "Signature over Printed Name" */
                 color: #4b5563; /* Medium gray */
-                text-align: center; /* Center text within its 100% width of parent */
-                width: 100%; /* Take full width of its centered parent */
+                text-align: left; /* Align text to the left */
+                width: 75%; /* Adjusted width to match line */
                 margin-top: 0; /* No extra top margin */
+                line-height: 1; /* Tighter line height */
             }
 
             .date-line {
-                margin-top: 1rem; /* Space above date */
-                font-size: 0.7rem; /* Font size for date */
-                color: #1f2937; /* Dark gray */
+                margin-top: 0.75rem; /* Reduced space above date */
+                font-size: 0.4rem; /* Further reduced font size for date */
+                color: #4b5563; /* Changed to match signature-text color */
                 width: 100%; /* Ensure it takes full width */
                 text-align: left; /* Left-align the date line */
             }
+        }
+
+        /* Hide signature section by default for both desktop and mobile modal views */
+        .signature-section {
+            display: none;
         }
     </style>
 </head>
@@ -863,7 +883,7 @@
                                 <th class="py-3 px-6 text-left sortable" data-sort="Consignment Order Number">Consignment Order Number <i class="fas fa-sort"></i></th>
                                 <th class="py-3 px-6 text-left" data-sort="Quantity Sold">Quantity Sold</th>
                                 <th class="py-3 px-6 text-left" data-sort="Amount">Amount</th>
-                                <th class="py-3 px-6 text-left sortable" data-sort="Invoice No.">Invoice No. <i class="fas fa-sort"></i></th>
+                                <th class="py-3 px-6 text-left" data-sort="Invoice No.">Invoice No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher No.">Voucher No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher Date">Voucher Date</th>
                                 <th class="py-3 px-6 text-left">Details</th> </tr>
@@ -905,7 +925,6 @@
             <div class="modal-body" id="modalDetailsBody">
                 </div>
             <div class="modal-footer">
-                <button class="modal-cancel-button" id="cancelPrintButton">Close</button>
                 <button class="modal-print-button" id="printDetailsButton"><i class="fas fa-print"></i> Print</button>
                 
                 <div class="print-separator"></div>
@@ -924,7 +943,7 @@
         </div>
     </div>
 
-    <script>
+<script>
         const jsonUrl = "https://raw.githubusercontent.com/moonandjupiter/my-json-data/refs/heads/main/Sheet1_data.json";
         const itemsPerPage = 5;
         let currentPage = 1;
@@ -958,9 +977,10 @@
         const closeModalButton = document.getElementById('closeModalButton');
         const modalDetailsBody = document.getElementById('modalDetailsBody');
         const printDetailsButton = document.getElementById('printDetailsButton');
-        const cancelPrintButton = document.getElementById('cancelPrintButton');
-
-
+        const signatureSection = document.querySelector('.signature-section'); // Get signature section
+        const modalNote = document.querySelector('.modal-note'); // Get modal note
+        const printSeparator = document.querySelector('.print-separator'); // Get print separator
+        
         // Function to show messages
         function showMessage(message, type = 'info') {
             // Clear all relevant classes first to ensure a clean slate
@@ -1367,6 +1387,8 @@
             } else {
                 suggestionsList.classList.add('hidden');
             }
+            // Ensure message box is hidden when suggestions appear
+            hideMessageBox();
         });
 
         // Event listener for the reset button
@@ -1596,6 +1618,72 @@
             detailsModalOverlay.classList.remove('show');
         }
 
+        // Function to update the print/download button label and icon
+        function updatePrintButtonLabel() {
+            if (window.innerWidth <= 767) { // Mobile view
+                printDetailsButton.innerHTML = '<i class="fas fa-download"></i> Download';
+            } else { // Desktop view
+                printDetailsButton.innerHTML = '<i class="fas fa-print"></i> Print';
+            }
+        }
+
+        // Function to download the modal content as a PNG image
+        async function downloadModalAsPng() {
+            const modalContent = document.querySelector('.modal-content');
+            
+            // Temporarily hide elements that should not appear in the screenshot
+            const closeButton = modalContent.querySelector('.modal-close-button');
+            const printButton = modalContent.querySelector('#printDetailsButton');
+            
+            // Store original display styles
+            const originalCloseButtonDisplay = closeButton.style.display;
+            const originalPrintButtonDisplay = printButton.style.display;
+            const originalSignatureSectionDisplay = signatureSection.style.display;
+            const originalModalNoteDisplay = modalNote.style.display;
+            const originalPrintSeparatorDisplay = printSeparator.style.display;
+
+            closeButton.style.display = 'none';
+            printButton.style.display = 'none';
+            
+            // Ensure signature section, note, and separator are visible for the PNG capture
+            signatureSection.style.display = 'flex'; 
+            modalNote.style.display = 'block';
+            printSeparator.style.display = 'block';
+
+            try {
+                // Use html2canvas to render the modal content to a canvas
+                const canvas = await html2canvas(modalContent, {
+                    scale: 2, // Increase scale for better resolution
+                    useCORS: true, // Enable cross-origin images if any (though not used here)
+                    logging: false // Disable logging for cleaner console
+                });
+
+                // Convert canvas to PNG data URL
+                const imageUrl = canvas.toDataURL('image/png');
+
+                // Create a temporary link element to trigger the download
+                const link = document.createElement('a');
+                link.href = imageUrl;
+                link.setAttribute('download', 'acknowledgement_slip.png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showMessage("Acknowledgement slip downloaded as PNG.", 'success');
+
+            } catch (error) {
+                console.error("Error generating PNG:", error);
+                showMessage("Failed to download image. Please try again.", 'error');
+            } finally {
+                // Restore the hidden elements to their original display states
+                closeButton.style.display = originalCloseButtonDisplay;
+                printButton.style.display = originalPrintButtonDisplay;
+                signatureSection.style.display = originalSignatureSectionDisplay;
+                modalNote.style.display = originalModalNoteDisplay;
+                printSeparator.style.display = originalPrintSeparatorDisplay;
+            }
+        }
+
         // Event listener for details buttons (delegated for dynamic content)
         function addDetailsButtonListeners() {
             document.querySelectorAll('.details-button').forEach(button => {
@@ -1609,23 +1697,37 @@
 
         // Event listeners for modal buttons
         closeModalButton.addEventListener('click', hideDetailsModal);
-        cancelPrintButton.addEventListener('click', hideDetailsModal);
+        
         printDetailsButton.addEventListener('click', () => {
-            // Add a class to the body to trigger print-specific styles
-            document.body.classList.add('print-active');
-            
-            // Call the browser's print function
-            window.print();
-            
-            // Remove the class after printing (or immediately after print dialog opens)
-            // Using setTimeout to ensure the print dialog has a chance to open before class is removed
-            setTimeout(() => {
-                document.body.classList.remove('print-active');
-            }, 500); // A small delay to allow print dialog to initialize
+            if (window.innerWidth <= 767) { // Mobile view, download as PNG
+                downloadModalAsPng();
+            } else { // Desktop view, print
+                // Add a class to the body to trigger print-specific styles
+                document.body.classList.add('print-active');
+                // Temporarily ensure signature section is visible for printing
+                const originalSignatureDisplay = signatureSection.style.display;
+                signatureSection.style.display = 'flex'; // Ensure it's visible for printing
+
+                // Call the browser's print function
+                window.print();
+                
+                // Remove the class after printing (or immediately after print dialog opens)
+                setTimeout(() => {
+                    document.body.classList.remove('print-active');
+                    signatureSection.style.display = originalSignatureDisplay; // Restore original display
+                    hideDetailsModal(); // Close modal after print dialog
+                }, 500); // A small delay to allow print dialog to initialize
+            }
         });
 
-        // Initial data fetch when the page loads, wrapped in DOMContentLoaded
-        document.addEventListener('DOMContentLoaded', fetchData);
+        // Initial data fetch and button label update when the page loads, wrapped in DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData();
+            updatePrintButtonLabel(); // Set initial button label
+        });
+
+        // Update button label on window resize
+        window.addEventListener('resize', updatePrintButtonLabel);
     </script>
 
 </body>
