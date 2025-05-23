@@ -566,25 +566,27 @@
         .modal-header {
             display: flex;
             flex-direction: column; /* Stack title and close button */
-            align-items: center; /* Center header content */
+            align-items: flex-start; /* Align header content to the left */
             border-bottom: 1px dashed #d1d5db; /* Dashed line for receipt feel */
-            padding-bottom: 1rem;
+            padding: 1.5rem 1.5rem 1rem 1.5rem; /* Increased top padding for clearance */
             margin-bottom: 1.25rem;
             position: relative; /* For positioning close button */
         }
 
         .modal-header h2 {
-            font-size: 1.5rem; /* Slightly smaller title for receipt */
+            font-size: 1.25rem; /* Adjusted for readability */
             font-weight: 700;
             color: #1f2937; /* Darker title color */
             text-shadow: none;
             margin-bottom: 0.5rem; /* Space between title and close button */
+            text-align: left; /* Ensure title is left-aligned */
+            width: calc(100% - 2.5rem); /* Adjust width to account for close button */
         }
 
         .modal-close-button {
             position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
+            top: 0.75rem; /* Adjusted top for more clearance */
+            right: 0.75rem; /* Adjusted right for more clearance */
             background: none;
             border: none;
             font-size: 1.2rem;
@@ -671,7 +673,7 @@
         }
 
         .modal-note {
-            font-size: 0.8rem; /* Smaller font for the note */
+            font-size: 0.75rem; /* Adjusted for readability */
             color: #6b7280; /* Gray text for notes */
             text-align: left; /* Aligned left as requested */
             margin-top: 0.75rem; /* Space above the note */
@@ -746,7 +748,7 @@
                 font-family: 'Poppins', sans-serif; /* Reverted to Poppins */
             }
             body.print-active .modal-note {
-                font-size: 0.6rem; /* Made smaller */
+                font-size: 0.55rem; /* Adjusted for PNG output readability */
                 font-style: italic; /* Italicize the note */
                 margin-top: 1rem; /* Space after date line */
                 text-align: left; /* Align note to the left */
@@ -792,17 +794,17 @@
             }
 
             .signature-text {
-                font-size: 0.4rem; /* Further reduced font size for "Signature over Printed Name" */
+                font-size: 0.6rem; /* Adjusted font size for "Signature over Printed Name" */
                 color: #4b5563; /* Medium gray */
                 text-align: left; /* Align text to the left */
                 width: 75%; /* Adjusted width to match line */
                 margin-top: 0; /* No extra top margin */
-                line-height: 1; /* Tighter line height */
+                line-height: 1.1; /* Tighter line height */
             }
 
             .date-line {
                 margin-top: 0.75rem; /* Reduced space above date */
-                font-size: 0.4rem; /* Further reduced font size for date */
+                font-size: 0.6rem; /* Adjusted font size for date */
                 color: #4b5563; /* Changed to match signature-text color */
                 width: 100%; /* Ensure it takes full width */
                 text-align: left; /* Left-align the date line */
@@ -1631,6 +1633,14 @@
         async function downloadModalAsPng() {
             const modalContent = document.querySelector('.modal-content');
             
+            // Get references to the elements within the modalContent for styling
+            const signatureSection = modalContent.querySelector('.signature-section'); 
+            const signatureBlockCentered = modalContent.querySelector('.signature-block-centered'); 
+            const signatureText = modalContent.querySelector('.signature-text'); 
+            const dateLine = modalContent.querySelector('.date-line'); 
+            const modalNote = modalContent.querySelector('.modal-note'); 
+            const printSeparator = modalContent.querySelector('.print-separator'); 
+
             // Temporarily hide elements that should not appear in the screenshot
             const closeButton = modalContent.querySelector('.modal-close-button');
             const printButton = modalContent.querySelector('#printDetailsButton');
@@ -1638,30 +1648,72 @@
             // Store original display styles
             const originalCloseButtonDisplay = closeButton.style.display;
             const originalPrintButtonDisplay = printButton.style.display;
+            
+            // Store original styles of signature/date elements
             const originalSignatureSectionDisplay = signatureSection.style.display;
+            const originalSignatureSectionFlexDirection = signatureSection.style.flexDirection;
+            const originalSignatureSectionAlignItems = signatureSection.style.alignItems;
+            const originalSignatureSectionWidth = signatureSection.style.width;
+            const originalSignatureSectionMarginTop = signatureSection.style.marginTop;
+
+            const originalSignatureBlockCenteredDisplay = signatureBlockCentered.style.display; 
+            const originalSignatureBlockCenteredFlexDirection = signatureBlockCentered.style.flexDirection;
+            const originalSignatureBlockCenteredAlignItems = signatureBlockCentered.style.alignItems;
+            const originalSignatureBlockCenteredWidth = signatureBlockCentered.style.width;
+            const originalSignatureBlockCenteredMarginTop = signatureBlockCentered.style.marginTop;
+
+            const originalSignatureTextFontSize = signatureText.style.fontSize; 
+            const originalSignatureTextLineHeight = signatureText.style.lineHeight; 
+            const originalSignatureTextWidth = signatureText.style.width; 
+            const originalSignatureTextAlign = signatureText.style.textAlign; 
+
+            const originalDateLineFontSize = dateLine.style.fontSize; 
+            const originalDateLineMarginTop = dateLine.style.marginTop; 
+            const originalDateLineTextAlign = dateLine.style.textAlign; 
+
             const originalModalNoteDisplay = modalNote.style.display;
+            const originalModalNoteFontSize = modalNote.style.fontSize; // Store original font size for modal note
             const originalPrintSeparatorDisplay = printSeparator.style.display;
 
             closeButton.style.display = 'none';
             printButton.style.display = 'none';
             
-            // Ensure signature section, note, and separator are visible for the PNG capture
-            signatureSection.style.display = 'flex'; 
+            // Apply specific styles for PNG capture
+            signatureSection.style.display = 'flex';
+            signatureSection.style.flexDirection = 'column'; 
+            signatureSection.style.alignItems = 'flex-start'; 
+            signatureSection.style.width = '100%'; 
+            signatureSection.style.marginTop = '0'; 
+
+            signatureBlockCentered.style.display = 'flex';
+            signatureBlockCentered.style.flexDirection = 'column';
+            signatureBlockCentered.style.alignItems = 'flex-start';
+            signatureBlockCentered.style.width = '100%'; 
+            signatureBlockCentered.style.marginTop = '0.75rem'; 
+
+            signatureText.style.fontSize = '0.6rem'; /* Adjusted for readability */
+            signatureText.style.lineHeight = '1.1'; /* Adjusted for readability */
+            signatureText.style.textAlign = 'left'; 
+            signatureText.style.width = '75%'; 
+
+            dateLine.style.fontSize = '0.6rem'; /* Adjusted for readability */
+            dateLine.style.marginTop = '0.75rem'; 
+            dateLine.style.textAlign = 'left'; 
+
             modalNote.style.display = 'block';
+            modalNote.style.fontSize = '0.55rem'; // Apply smaller font size for PNG capture
             printSeparator.style.display = 'block';
 
             try {
-                // Use html2canvas to render the modal content to a canvas
                 const canvas = await html2canvas(modalContent, {
-                    scale: 2, // Increase scale for better resolution
-                    useCORS: true, // Enable cross-origin images if any (though not used here)
-                    logging: false // Disable logging for cleaner console
+                    scale: 2, 
+                    useCORS: true,
+                    logging: false,
+                    windowWidth: modalContent.offsetWidth 
                 });
 
-                // Convert canvas to PNG data URL
                 const imageUrl = canvas.toDataURL('image/png');
 
-                // Create a temporary link element to trigger the download
                 const link = document.createElement('a');
                 link.href = imageUrl;
                 link.setAttribute('download', 'acknowledgement_slip.png');
@@ -1678,8 +1730,30 @@
                 // Restore the hidden elements to their original display states
                 closeButton.style.display = originalCloseButtonDisplay;
                 printButton.style.display = originalPrintButtonDisplay;
+                
                 signatureSection.style.display = originalSignatureSectionDisplay;
+                signatureSection.style.flexDirection = originalSignatureSectionFlexDirection;
+                signatureSection.style.alignItems = originalSignatureSectionAlignItems;
+                signatureSection.style.width = originalSignatureSectionWidth;
+                signatureSection.style.marginTop = originalSignatureSectionMarginTop;
+
+                signatureBlockCentered.style.display = originalSignatureBlockCenteredDisplay; 
+                signatureBlockCentered.style.flexDirection = originalSignatureBlockCenteredFlexDirection;
+                signatureBlockCentered.style.alignItems = originalSignatureBlockCenteredAlignItems;
+                signatureBlockCentered.style.width = originalSignatureBlockCenteredWidth;
+                signatureBlockCentered.style.marginTop = originalSignatureBlockCenteredMarginTop;
+
+                signatureText.style.fontSize = originalSignatureTextFontSize; 
+                signatureText.style.lineHeight = originalSignatureTextLineHeight; 
+                signatureText.style.width = originalSignatureTextWidth; 
+                signatureText.style.textAlign = originalSignatureTextAlign; 
+
+                dateLine.style.fontSize = originalDateLineFontSize; 
+                dateLine.style.marginTop = originalDateLineMarginTop; 
+                dateLine.style.textAlign = originalDateLineTextAlign; 
+
                 modalNote.style.display = originalModalNoteDisplay;
+                modalNote.style.fontSize = originalModalNoteFontSize; // Restore original font size for modal note
                 printSeparator.style.display = originalPrintSeparatorDisplay;
             }
         }
