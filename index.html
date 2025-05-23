@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* Styles remain largely the same as before */
+        /* Existing styles remain the same, with additions for the status button */
         body {
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
@@ -77,6 +77,40 @@
             #invoiceTable td[data-label="Voucher No.:"].highlight-voucher {
                 color: #047857;
                 font-weight: 600;
+            }
+
+            /* Mobile specific alignment for Status column - now right-aligned */
+            #invoiceTable td[data-label="Status:"] {
+                justify-content: flex-end; /* Align right */
+                text-align: right; /* Ensure text alignment is also right */
+            }
+
+            .status-button {
+                padding: 0.3em 0.6em;
+                border-radius: 0.5em;
+                font-size: 0.8em;
+                font-weight: bold;
+                color: white;
+                border: none;
+                white-space: nowrap; /* Prevent text wrapping */
+            }
+
+            .status-waiting {
+                background-color: #dc2626; /* Pure Red for critical status */
+            }
+
+            .status-processing {
+                background-color: #3b82f6; /* Light blue */
+            }
+
+            .status-done {
+                background-color: #16a34a; /* Light green */
+            }
+
+            /* Mobile specific style for Acknowledge button */
+            .acknowledge-button {
+                font-size: 0.8em; /* Smaller font size */
+                padding: 0.3em 0.6em; /* Adjust padding to match status button */
             }
 
             .mb-6.flex.flex-col.md\:flex-row.gap-4.items-center button {
@@ -319,6 +353,38 @@
 
             #suggestionsList div:hover {
                 background-color: #f3f4f6;
+            }
+
+            #invoiceTable td[data-label="Status:"] {
+                justify-content: center; /* Center the status button in desktop view */
+            }
+
+            .status-button {
+                padding: 0.3em 0.6em;
+                border-radius: 0.5em;
+                font-size: 0.8em;
+                font-weight: bold;
+                color: white;
+                border: none;
+                white-space: nowrap; /* Prevent text wrapping */
+            }
+
+            .status-waiting {
+                background-color: #dc2626; /* Pure Red for critical status */
+            }
+
+            .status-processing {
+                background-color: #3b82f6; /* Light blue */
+            }
+
+            .status-done {
+                background-color: #16a34a; /* Light green */
+            }
+
+            /* Desktop specific style for Acknowledge button */
+            .acknowledge-button {
+                font-size: 0.8em; /* Smaller font size */
+                padding: 0.3em 0.6em; /* Adjust padding to match status button */
             }
         }
 
@@ -847,11 +913,12 @@
                                 <th class="py-3 px-6 text-left" data-sort="Invoice No.">Invoice No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher No.">Voucher No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher Date">Voucher Date</th>
+                                <th class="py-3 px-6 text-left" data-sort="Status">Status</th>
                             </tr>
                         </thead>
                         <tbody id="invoiceTableBody" class="text-gray-700 text-sm font-light">
                             <tr>
-                                <td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
+                                <td colspan="9" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -911,8 +978,8 @@
         let allData = []; // Raw data from JSON
         let processedData = []; // Merged/processed data
         let filteredData = []; // Filtered subset of processedData
-        let currentSortColumn = null; // Initialize here
-        let currentSortDirection = 'asc'; // Initialize here
+        let currentSortColumn = null;
+        let currentSortDirection = 'asc';
         let lastClickedConsignmentOrder = null; // New global variable to store the consignment order of the last clicked button
 
         const searchInput = document.getElementById('searchInput');
@@ -940,18 +1007,17 @@
         const closeModalButton = document.getElementById('closeModalButton');
         const modalDetailsBody = document.getElementById('modalDetailsBody');
         const printDetailsButton = document.getElementById('printDetailsButton');
-        const signatureSection = document.querySelector('.signature-section'); // Get signature section
-        const modalNote = document.querySelector('.modal-note'); // Get modal note
-        const printSeparator = document.querySelector('.print-separator'); // Get print separator
+        const signatureSection = document.querySelector('.signature-section');
+        const modalNote = document.querySelector('.modal-note');
+        const printSeparator = document.querySelector('.print-separator');
         
         // This Set will store consignment order numbers that have been "acknowledged" in the current session
         const acknowledgedConsignments = new Set();
 
         // Function to show messages
         function showMessage(message, type = 'info') {
-            // Clear all relevant classes first to ensure a clean slate
             messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-center');
-            messageBox.innerHTML = ''; // Clear previous content
+            messageBox.innerHTML = '';
 
             if (message === "Loading results, please wait..." && type === 'info') {
                 messageBox.classList.add('bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-content-center');
@@ -964,22 +1030,22 @@
                     </span>
                 `;
             } else {
-                messageBox.classList.add('mt-4', 'p-4', 'rounded-md'); // Re-add base styling
+                messageBox.classList.add('mt-4', 'p-4', 'rounded-md');
                 if (type === 'error') {
                     messageBox.classList.add('bg-red-100', 'text-red-800');
                 } else {
                     messageBox.classList.add('bg-blue-100', 'text-blue-800');
                 }
-                messageBox.textContent = message; // Use textContent for simple messages
+                messageBox.textContent = message;
             }
-            messageBox.classList.remove('hidden'); // Ensure message box is visible
+            messageBox.classList.remove('hidden');
         }
 
         // Function to hide messages
         function hideMessageBox() {
             messageBox.classList.add('hidden');
-            messageBox.innerHTML = ''; // Clear content when hidden
-            messageBox.classList.remove('bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-content-center'); // Also remove styling classes
+            messageBox.innerHTML = '';
+            messageBox.classList.remove('bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-content-center');
         }
 
         // Function to calculate and display the total quantity of the filtered data and per consignment
@@ -988,8 +1054,6 @@
             const resultWord = totalResults === 1 ? 'result' : 'results';
             overallSummaryDiv.textContent = `Found ${totalResults} ${resultWord}:`;
 
-            // Aggregate by Consignment Order Number only for the summary panel
-            // This now operates on `filteredData` which is already merged per SR ID/CO number
             const consignmentTotals = filteredData.reduce((acc, item) => {
                 const consignmentNumber = String(item['Consignment Order Number'] || 'N/A');
                 const quantity = parseInt(item['Quantity Sold'], 10);
@@ -1117,6 +1181,29 @@
             calculateAndDisplaySummary();
         }
 
+        // Function to determine the status and return appropriate HTML
+        function getStatusHtml(item) {
+            const invoiceNo = String(item['Invoice No.'] || '').trim();
+            const voucherNo = String(item['Voucher No.'] || '').trim();
+
+            let statusText = '';
+            let statusClass = '';
+
+            if (invoiceNo === '' || invoiceNo === '-') {
+                statusText = 'Waiting for Invoice';
+                statusClass = 'status-waiting';
+            } else if (voucherNo === '' || voucherNo === '-' || voucherNo === '0') {
+                statusText = 'Processing Voucher';
+                statusClass = 'status-processing';
+            } else {
+                statusText = 'Done';
+                statusClass = 'status-done';
+            }
+
+            return `<span class="status-button ${statusClass}">${statusText}</span>`;
+        }
+
+
         // Function to render the table for the current page
         function renderTable() {
             invoiceTableBody.innerHTML = '';
@@ -1126,8 +1213,8 @@
 
             if (filteredData.length === 0) {
                 const message = searchInput.value.trim() === '' ? 'Enter a search term and press Enter or select a suggestion.' : 'No data found for your search.';
-                // Changed colspan from 9 to 8 due to removed column
-                invoiceTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
+                // Changed colspan from 8 to 9 due to new Status column
+                invoiceTableBody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
 
                 // Explicitly hide table and pagination when no data is found
                 tableContainer.style.display = 'none';
@@ -1147,7 +1234,7 @@
                     // Check if Invoice No. is blank or dash AND if it's not already acknowledged
                     if ((invoiceNo.trim() === '' || invoiceNo.trim() === '-') && !isAcknowledged) {
                         invoiceNoCellContent = `
-                            <button class="acknowledge-button text-sm bg-yellow-300 hover:bg-yellow-400 text-gray-800 font-semibold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
+                            <button class="acknowledge-button bg-yellow-300 hover:bg-yellow-400 text-gray-800 font-semibold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
                                 data-sr-id="${item['SR ID'] || ''}"
                                 data-consignment-order="${item['Consignment Order Number'] || ''}">
                                 Acknowledge
@@ -1156,29 +1243,38 @@
                     } else if (isAcknowledged) {
                         // If it's already acknowledged, display the acknowledged state
                         invoiceNoCellContent = `
-                            <button class="acknowledge-button text-sm bg-green-200 text-green-800 font-normal py-1 px-2 rounded cursor-not-allowed" disabled>
+                            <button class="acknowledge-button bg-green-200 text-green-800 font-normal py-1 px-2 rounded cursor-not-allowed" disabled>
                                 <i class="fas fa-check mr-1"></i> Acknowledged
                             </button>
                         `;
                     }
                     // If invoiceNo is not blank/dash and not acknowledged, it will just display invoiceNo as is.
 
-
                     // Determine if voucher number exists to apply highlight class
-                    // A voucher is considered valid if it's not empty, not '0', and not '-'
                     const voucherValue = String(item['Voucher No.'] || '').trim();
                     const hasValidVoucher = voucherValue !== '' && voucherValue !== '0' && voucherValue !== '-';
                     const voucherClass = hasValidVoucher ? 'highlight-voucher' : '';
+
+                    // Get status HTML
+                    const statusHtml = getStatusHtml(item);
+
+                    // Format Quantity Sold
+                    const quantitySold = item['Quantity Sold'] ? parseInt(item['Quantity Sold'], 10).toLocaleString() : '';
+
+                    // Format Amount
+                    const amount = item['Amount'] ? parseFloat(String(item['Amount']).replace(/[^0-9.-]+/g,"")).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+
 
                     row.innerHTML = `
                         <td data-label="SR ID:" class="px-6 py-3">${item['SR ID'] || ''}</td>
                         <td data-label="Company:" class="px-6 py-3">${item['Name of Company'] || ''}</td>
                         <td data-label="Order Number:" class="px-6 py-3">${item['Consignment Order Number'] || ''}</td>
-                        <td data-label="Quantity:" class="px-6 py-3">${item['Quantity Sold'] || ''}</td>
-                        <td data-label="Amount:" class="px-6 py-3">${item['Amount'] || ''}</td>
+                        <td data-label="Quantity:" class="px-6 py-3">${quantitySold}</td>
+                        <td data-label="Amount:" class="px-6 py-3">${amount}</td>
                         <td data-label="Invoice No.:" class="px-6 py-3">${invoiceNoCellContent}</td>
                         <td data-label="Voucher No.:" class="px-6 py-3 ${voucherClass}">${item['Voucher No.'] || ''}</td>
                         <td data-label="Voucher Date:" class="px-6 py-3">${item['Voucher Date'] || ''}</td>
+                        <td data-label="Status:" class="px-6 py-3">${statusHtml}</td>
                     `;
                     invoiceTableBody.appendChild(row);
                 });
@@ -1210,8 +1306,9 @@
                     const existing = mergedMap.get(key);
                     existing['Quantity Sold'] += quantity;
                     existing['Amount'] += amount;
-                    // Retain other fields from the first occurrence, or merge as needed.
-                    // For simplicity, we'll keep the first encountered values for other fields.
+                    // For other fields, we primarily want the first encountered value or a representative one.
+                    // For 'Invoice No.', 'Voucher No.', 'Voucher Date', we'll keep the first one encountered.
+                    // This is acceptable because the merging is primarily for quantity/amount.
                 } else {
                     // Create a copy to avoid modifying the original data directly
                     const newItem = { ...item };
@@ -1249,7 +1346,7 @@
                 console.error("Error fetching data:", error);
                 showMessage(`Failed to load data: ${error.message}`, 'error');
                 // Still hide overlay even on error, but show error message
-                invoiceTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>'; // Changed colspan
+                invoiceTableBody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>'; // Changed colspan to 9
                 quantitySummaryPanel.classList.add('hidden');
                 // Ensure main content is visible even on error
                 setTimeout(() => {
@@ -1496,14 +1593,24 @@
                 return;
             }
 
-            const headers = Object.keys(filteredData[0]);
+            // Include "Status" in headers for export
+            const headers = [...Object.keys(filteredData[0]), 'Status'];
             const csvRows = [];
 
             csvRows.push(headers.map(header => `"${header.replace(/"/g, '""')}"`).join(','));
 
             filteredData.forEach(item => {
                 const values = headers.map(header => {
-                    const value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
+                    let value = '';
+                    if (header === 'Status') {
+                        value = getStatusTextForExport(item); // Get plain text status for export
+                    } else if (header === 'Quantity Sold') {
+                        value = item[header] ? parseInt(item[header], 10).toLocaleString() : '';
+                    } else if (header === 'Amount') {
+                        value = item[header] ? parseFloat(String(item[header]).replace(/[^0-9.-]+/g,"")).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+                    } else {
+                        value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
+                    }
                     return `"${value.replace(/"/g, '""')}"`;
                 });
                 csvRows.push(values.join(','));
@@ -1525,6 +1632,20 @@
             showMessage("Data exported as CSV.", 'success');
         }
 
+        // Helper function to get plain text status for export
+        function getStatusTextForExport(item) {
+            const invoiceNo = String(item['Invoice No.'] || '').trim();
+            const voucherNo = String(item['Voucher No.'] || '').trim();
+
+            if (invoiceNo === '' || invoiceNo === '-') {
+                return 'Waiting for Invoice';
+            } else if (voucherNo === '' || voucherNo === '-' || voucherNo === '0') {
+                return 'Processing Voucher';
+            } else {
+                return 'Done';
+            }
+        }
+
         // Function to export table data to HTML
         function exportTableToHTML() {
             if (filteredData.length === 0) {
@@ -1532,7 +1653,8 @@
                 return;
             }
 
-            const headers = Object.keys(filteredData[0]);
+            // Include "Status" in headers for export
+            const headers = [...Object.keys(filteredData[0]), 'Status'];
             let htmlString = `
                 <!DOCTYPE html>
                 <html lang="en">
@@ -1562,7 +1684,16 @@
             filteredData.forEach(item => {
                 htmlString += '<tr>';
                 headers.forEach(header => {
-                    const value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
+                    let value = '';
+                    if (header === 'Status') {
+                        value = getStatusTextForExport(item); // Get plain text status for export
+                    } else if (header === 'Quantity Sold') {
+                        value = item[header] ? parseInt(item[header], 10).toLocaleString() : '';
+                    } else if (header === 'Amount') {
+                        value = item[header] ? parseFloat(String(item[header]).replace(/[^0-9.-]+/g,"")).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+                    } else {
+                        value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
+                    }
                     htmlString += `<td>${value}</td>`;
                 });
                 htmlString += '</tr>';
