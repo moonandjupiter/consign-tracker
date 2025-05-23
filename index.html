@@ -910,9 +910,9 @@
                                 <th class="py-3 px-6 text-left sortable" data-sort="Consignment Order Number">Consignment Order Number <i class="fas fa-sort"></i></th>
                                 <th class="py-3 px-6 text-left" data-sort="Quantity Sold">Quantity Sold</th>
                                 <th class="py-3 px-6 text-left" data-sort="Amount">Amount</th>
-                                <th class="py-3 px-6 text-left" data-sort="Invoice No.">Invoice No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher No.">Voucher No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher Date">Voucher Date</th>
+                                <th class="py-3 px-6 text-left" data-sort="Invoice No.">Invoice No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Status">Status</th>
                             </tr>
                         </thead>
@@ -953,7 +953,7 @@
             <div class="modal-body" id="modalDetailsBody">
                 </div>
             <div class="modal-footer">
-                <button class="modal-print-button" id="printDetailsButton"><i class="fas fa-print"></i> Print</button>
+                <button class="modal-print-button" id="printDetailsButton"></button>
                 
                 <div class="print-separator"></div>
 
@@ -1237,7 +1237,7 @@
                             <button class="acknowledge-button bg-yellow-300 hover:bg-yellow-400 text-gray-800 font-semibold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
                                 data-sr-id="${item['SR ID'] || ''}"
                                 data-consignment-order="${item['Consignment Order Number'] || ''}">
-                                Acknowledge
+                                Click here
                             </button>
                         `;
                     } else if (isAcknowledged) {
@@ -1758,34 +1758,21 @@
         // Function to hide the details modal
         function hideDetailsModal() {
             detailsModalOverlay.classList.remove('show');
-            // Call updateAcknowledgeButtonsState when the modal is closed
-            if (lastClickedConsignmentOrder) {
-                updateAcknowledgeButtonsState(lastClickedConsignmentOrder);
-                lastClickedConsignmentOrder = null; // Clear the stored value
-            }
+            // Acknowledge button state update is now handled in printDetailsButton click
         }
 
         // Function to update the print/download button label and icon
         function updatePrintButtonLabel() {
             if (window.innerWidth <= 767) { // Mobile view
-                printDetailsButton.innerHTML = '<i class="fas fa-download"></i> Download';
+                printDetailsButton.innerHTML = '<i class="fas fa-share-alt"></i> Confirm and Share';
             } else { // Desktop view
-                printDetailsButton.innerHTML = '<i class="fas fa-print"></i> Print';
+                printDetailsButton.innerHTML = '<i class="fas fa-print"></i> Confirm and Print';
             }
         }
 
-        // Function to download the modal content as a PNG image
-        async function downloadModalAsPng() {
+        // New function to generate PNG Blob
+        async function generateModalPngBlob() {
             const modalContent = document.querySelector('.modal-content');
-            
-            // Get references to the elements within the modalContent for styling
-            const signatureSection = modalContent.querySelector('.signature-section'); 
-            const signatureBlockCentered = modalContent.querySelector('.signature-block-centered'); 
-            const signatureText = modalContent.querySelector('.signature-text'); 
-            const dateLine = modalContent.querySelector('.date-line'); 
-            const modalNote = modalContent.querySelector('.modal-note'); 
-            const printSeparator = modalContent.querySelector('.print-separator'); 
-
             // Temporarily hide elements that should not appear in the screenshot
             const closeButton = modalContent.querySelector('.modal-close-button');
             const printButton = modalContent.querySelector('#printDetailsButton');
@@ -1794,113 +1781,118 @@
             const originalCloseButtonDisplay = closeButton.style.display;
             const originalPrintButtonDisplay = printButton.style.display;
             
-            // Store original styles of signature/date elements
+            // Apply specific styles for PNG capture (same as before)
+            const signatureSection = modalContent.querySelector('.signature-section');
+            const signatureBlockCentered = modalContent.querySelector('.signature-block-centered');
+            const signatureText = modalContent.querySelector('.signature-text');
+            const dateLine = modalContent.querySelector('.date-line');
+            const modalNote = modalContent.querySelector('.modal-note');
+            const printSeparator = modalContent.querySelector('.print-separator');
+
             const originalSignatureSectionDisplay = signatureSection.style.display;
             const originalSignatureSectionFlexDirection = signatureSection.style.flexDirection;
             const originalSignatureSectionAlignItems = signatureSection.style.alignItems;
             const originalSignatureSectionWidth = signatureSection.style.width;
             const originalSignatureSectionMarginTop = signatureSection.style.marginTop;
 
-            const originalSignatureBlockCenteredDisplay = signatureBlockCentered.style.display; 
+            const originalSignatureBlockCenteredDisplay = signatureBlockCentered.style.display;
             const originalSignatureBlockCenteredFlexDirection = signatureBlockCentered.style.flexDirection;
             const originalSignatureBlockCenteredAlignItems = signatureBlockCentered.style.alignItems;
             const originalSignatureBlockCenteredWidth = signatureBlockCentered.style.width;
             const originalSignatureBlockCenteredMarginTop = signatureBlockCentered.style.marginTop;
 
-            const originalSignatureTextFontSize = signatureText.style.fontSize; 
-            const originalSignatureTextLineHeight = signatureText.style.lineHeight; 
-            const originalSignatureTextWidth = signatureText.style.width; 
-            const originalSignatureTextAlign = signatureText.style.textAlign; 
+            const originalSignatureTextFontSize = signatureText.style.fontSize;
+            const originalSignatureTextLineHeight = signatureText.style.lineHeight;
+            const originalSignatureTextWidth = signatureText.style.width;
+            const originalSignatureTextAlign = signatureText.style.textAlign;
 
-            const originalDateLineFontSize = dateLine.style.fontSize; 
-            const originalDateLineMarginTop = dateLine.style.marginTop; 
-            const originalDateLineTextAlign = dateLine.style.textAlign; 
+            const originalDateLineFontSize = dateLine.style.fontSize;
+            const originalDateLineMarginTop = dateLine.style.marginTop;
+            const originalDateLineTextAlign = dateLine.style.textAlign;
 
             const originalModalNoteDisplay = modalNote.style.display;
-            const originalModalNoteFontSize = modalNote.style.fontSize; // Store original font size for modal note
+            const originalModalNoteFontSize = modalNote.style.fontSize;
             const originalPrintSeparatorDisplay = printSeparator.style.display;
 
             closeButton.style.display = 'none';
             printButton.style.display = 'none';
-            
-            // Apply specific styles for PNG capture
+
             signatureSection.style.display = 'flex';
-            signatureSection.style.flexDirection = 'column'; 
-            signatureSection.style.alignItems = 'flex-start'; 
-            signatureSection.style.width = '100%'; 
-            signatureSection.style.marginTop = '0'; 
+            signatureSection.style.flexDirection = 'column';
+            signatureSection.style.alignItems = 'flex-start';
+            signatureSection.style.width = '100%';
+            signatureSection.style.marginTop = '0';
 
             signatureBlockCentered.style.display = 'flex';
             signatureBlockCentered.style.flexDirection = 'column';
             signatureBlockCentered.style.alignItems = 'flex-start';
-            signatureBlockCentered.style.width = '100%'; 
-            signatureBlockCentered.style.marginTop = '0.75rem'; 
+            signatureBlockCentered.style.width = '100%';
+            signatureBlockCentered.style.marginTop = '0.75rem';
 
-            signatureText.style.fontSize = '0.6rem'; /* Adjusted for readability */
-            signatureText.style.lineHeight = '1.1'; /* Adjusted for readability */
-            signatureText.style.textAlign = 'left'; 
-            signatureText.style.width = '75%'; 
+            signatureText.style.fontSize = '0.6rem';
+            signatureText.style.lineHeight = '1.1';
+            signatureText.style.textAlign = 'left';
+            signatureText.style.width = '75%';
 
-            dateLine.style.fontSize = '0.6rem'; /* Adjusted for readability */
-            dateLine.style.marginTop = '0.75rem'; 
-            dateLine.style.textAlign = 'left'; 
+            dateLine.style.fontSize = '0.6rem';
+            dateLine.style.marginTop = '0.75rem';
+            dateLine.style.textAlign = 'left';
 
             modalNote.style.display = 'block';
-            modalNote.style.fontSize = '0.55rem'; // Apply smaller font size for PNG capture
+            modalNote.style.fontSize = '0.55rem';
             printSeparator.style.display = 'block';
 
             try {
                 const canvas = await html2canvas(modalContent, {
-                    scale: 2, 
+                    scale: 2,
                     useCORS: true,
                     logging: false,
-                    windowWidth: modalContent.offsetWidth 
+                    windowWidth: modalContent.offsetWidth
                 });
 
-                const imageUrl = canvas.toDataURL('image/png');
-
-                const link = document.createElement('a');
-                link.href = imageUrl;
-                link.setAttribute('download', 'acknowledgement_slip.png');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                showMessage("Acknowledgement slip downloaded as PNG.", 'success');
-
-            } catch (error) {
-                console.error("Error generating PNG:", error);
-                showMessage("Failed to download image. Please try again.", 'error');
-            } finally {
-                // Restore the hidden elements to their original display states
+                // Restore elements immediately after canvas capture
                 closeButton.style.display = originalCloseButtonDisplay;
                 printButton.style.display = originalPrintButtonDisplay;
-                
                 signatureSection.style.display = originalSignatureSectionDisplay;
                 signatureSection.style.flexDirection = originalSignatureSectionFlexDirection;
                 signatureSection.style.alignItems = originalSignatureSectionAlignItems;
                 signatureSection.style.width = originalSignatureSectionWidth;
                 signatureSection.style.marginTop = originalSignatureSectionMarginTop;
-
-                signatureBlockCentered.style.display = originalSignatureBlockCenteredDisplay; 
+                signatureBlockCentered.style.display = originalSignatureBlockCenteredDisplay;
                 signatureBlockCentered.style.flexDirection = originalSignatureBlockCenteredFlexDirection;
                 signatureBlockCentered.style.alignItems = originalSignatureBlockCenteredAlignItems;
                 signatureBlockCentered.style.width = originalSignatureBlockCenteredWidth;
                 signatureBlockCentered.style.marginTop = originalSignatureBlockCenteredMarginTop;
-
-                signatureText.style.fontSize = originalSignatureTextFontSize; 
-                signatureText.style.lineHeight = originalSignatureTextLineHeight; 
-                signatureText.style.width = originalSignatureTextWidth; 
-                signatureText.style.textAlign = originalSignatureTextAlign; 
-
-                dateLine.style.fontSize = originalDateLineFontSize; 
-                dateLine.style.marginTop = originalDateLineMarginTop; 
-                dateLine.style.textAlign = originalDateLineTextAlign; 
-
+                signatureText.style.fontSize = originalSignatureTextFontSize;
+                signatureText.style.lineHeight = originalSignatureTextLineHeight;
+                signatureText.style.width = originalSignatureTextWidth;
+                signatureText.style.textAlign = originalSignatureTextAlign;
+                dateLine.style.fontSize = originalDateLineFontSize;
+                dateLine.style.marginTop = originalDateLineMarginTop;
+                dateLine.style.textAlign = originalDateLineTextAlign;
                 modalNote.style.display = originalModalNoteDisplay;
-                modalNote.style.fontSize = originalModalNoteFontSize; // Restore original font size for modal note
+                modalNote.style.fontSize = originalModalNoteFontSize;
                 printSeparator.style.display = originalPrintSeparatorDisplay;
+
+                return new Promise(resolve => {
+                    canvas.toBlob(resolve, 'image/png');
+                });
+            } catch (error) {
+                console.error("Error generating PNG:", error);
+                throw error; // Re-throw to be caught by the caller
             }
+        }
+
+        // Helper function to trigger download (for fallback)
+        function triggerDownload(blob, filename, mimeType) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(url), 10000);
         }
 
         // Function to update the state of acknowledge buttons
@@ -1930,26 +1922,47 @@
         // Event listeners for modal buttons
         closeModalButton.addEventListener('click', hideDetailsModal);
         
-        printDetailsButton.addEventListener('click', () => {
-            if (window.innerWidth <= 767) { // Mobile view, download as PNG
-                downloadModalAsPng();
-            } else { // Desktop view, print
-                // Add a class to the body to trigger print-specific styles
-                document.body.classList.add('print-active');
-                // Temporarily ensure signature section is visible for printing
-                const originalSignatureDisplay = signatureSection.style.display;
-                signatureSection.style.display = 'flex'; // Ensure it's visible for printing
+        printDetailsButton.addEventListener('click', async () => {
+            // Update acknowledge state before print/download/share
+            if (lastClickedConsignmentOrder) {
+                updateAcknowledgeButtonsState(lastClickedConsignmentOrder);
+                lastClickedConsignmentOrder = null; // Clear the stored value
+            }
 
-                // Call the browser's print function
+            if (window.innerWidth <= 767) { // Mobile view
+                try {
+                    const pngBlob = await generateModalPngBlob(); // New function to get the blob
+                    const file = new File([pngBlob], 'acknowledgement_slip.png', { type: 'image/png' });
+
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        // Use Web Share API
+                        await navigator.share({
+                            files: [file],
+                            title: 'Acknowledgement Slip',
+                            text: 'Here is your acknowledgement slip.'
+                        });
+                        showMessage("Acknowledgement slip shared successfully.", 'success');
+                    } else {
+                        // Fallback to download if Web Share API is not available or cannot share files
+                        triggerDownload(pngBlob, 'acknowledgement_slip.png', 'image/png');
+                        showMessage("Acknowledgement slip downloaded as PNG.", 'success');
+                    }
+                } catch (error) {
+                    console.error("Error handling share/download:", error);
+                    showMessage("Failed to share or download image. Please try again.", 'error');
+                }
+            } else { // Desktop view, print
+                // Existing print logic
+                document.body.classList.add('print-active');
+                const originalSignatureDisplay = signatureSection.style.display;
+                signatureSection.style.display = 'flex';
                 window.print();
-                
-                // Remove the class after printing (or immediately after print dialog opens)
                 setTimeout(() => {
                     document.body.classList.remove('print-active');
-                    signatureSection.style.display = originalSignatureDisplay; // Restore original display
-                    hideDetailsModal(); // Close modal after print dialog
-                }, 500); // A small delay to allow print dialog to initialize
+                    signatureSection.style.display = originalSignatureDisplay;
+                }, 500);
             }
+            hideDetailsModal(); // Close modal after action
         });
 
         // Initial data fetch and button label update when the page loads, wrapped in DOMContentLoaded
