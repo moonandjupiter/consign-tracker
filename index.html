@@ -445,10 +445,12 @@
         }
 
         .loading-text {
-            font-size: 2.5rem;
+            font-size: 2rem; /* Adjusted font size */
             font-weight: 700;
             margin-top: 40px;
-            animation: fadeInOut 2s infinite alternate;
+            animation: fadeInOut 5s infinite alternate; /* Increased animation duration */
+            padding: 0 1rem; /* Added horizontal padding */
+            white-space: nowrap; /* Prevent text from wrapping */
         }
 
         .version-suffix {
@@ -888,11 +890,11 @@
                                 <th class="py-3 px-6 text-left" data-sort="Invoice No.">Invoice No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher No.">Voucher No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher Date">Voucher Date</th>
-                                <th class="py-3 px-6 text-left">Details</th> </tr>
+                            </tr>
                         </thead>
                         <tbody id="invoiceTableBody" class="text-gray-700 text-sm font-light">
                             <tr>
-                                <td colspan="9" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
+                                <td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -953,6 +955,7 @@
         let filteredData = []; // This will now only be updated on search/reset
         let currentSortColumn = null;
         let currentSortDirection = 'asc'; // 'asc' or 'desc'
+        let lastClickedConsignmentOrder = null; // New global variable to store the consignment order of the last clicked button
 
         const searchInput = document.getElementById('searchInput');
         const resetButton = document.getElementById('resetButton');
@@ -983,6 +986,9 @@
         const modalNote = document.querySelector('.modal-note'); // Get modal note
         const printSeparator = document.querySelector('.print-separator'); // Get print separator
         
+        // This Set will store consignment order numbers that have been "acknowledged" in the current session
+        const acknowledgedConsignments = new Set();
+
         // Function to show messages
         function showMessage(message, type = 'info') {
             // Clear all relevant classes first to ensure a clean slate
@@ -1144,7 +1150,7 @@
                 if (valueA > valueB) {
                     return currentSortDirection === 'asc' ? 1 : -1;
                 }
-                return 0;
+                    return 0;
             });
 
             currentPage = 1;
@@ -1161,8 +1167,8 @@
 
             if (filteredData.length === 0) {
                 const message = searchInput.value.trim() === '' ? 'Enter a search term and press Enter or select a suggestion.' : 'No data found for your search.';
-                // Changed colspan from 8 to 9 due to new column
-                invoiceTableBody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
+                // Changed colspan from 9 to 8 due to removed column
+                invoiceTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
 
                 // Explicitly hide table and pagination when no data is found
                 tableContainer.style.display = 'none';
@@ -1173,6 +1179,32 @@
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-50';
                     
+                    const invoiceNo = item['Invoice No.'] || '';
+                    let invoiceNoCellContent = invoiceNo;
+                    
+                    const consignmentOrderNumber = String(item['Consignment Order Number'] || 'N/A');
+                    const isAcknowledged = acknowledgedConsignments.has(consignmentOrderNumber);
+
+                    // Check if Invoice No. is blank or dash AND if it's not already acknowledged
+                    if ((invoiceNo.trim() === '' || invoiceNo.trim() === '-') && !isAcknowledged) {
+                        invoiceNoCellContent = `
+                            <button class="acknowledge-button text-sm bg-yellow-300 hover:bg-yellow-400 text-gray-800 font-semibold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
+                                data-sr-id="${item['SR ID'] || ''}"
+                                data-consignment-order="${item['Consignment Order Number'] || ''}">
+                                Acknowledge
+                            </button>
+                        `;
+                    } else if (isAcknowledged) {
+                        // If it's already acknowledged, display the acknowledged state
+                        invoiceNoCellContent = `
+                            <button class="acknowledge-button text-sm bg-green-200 text-green-800 font-normal py-1 px-2 rounded cursor-not-allowed" disabled>
+                                <i class="fas fa-check mr-1"></i> Acknowledged
+                            </button>
+                        `;
+                    }
+                    // If invoiceNo is not blank/dash and not acknowledged, it will just display invoiceNo as is.
+
+
                     // Determine if voucher number exists to apply highlight class
                     // A voucher is considered valid if it's not empty, not '0', and not '-'
                     const voucherValue = String(item['Voucher No.'] || '').trim();
@@ -1185,16 +1217,9 @@
                         <td data-label="Order Number:" class="px-6 py-3">${item['Consignment Order Number'] || ''}</td>
                         <td data-label="Quantity:" class="px-6 py-3">${item['Quantity Sold'] || ''}</td>
                         <td data-label="Amount:" class="px-6 py-3">${item['Amount'] || ''}</td>
-                        <td data-label="Invoice No.:" class="px-6 py-3">${item['Invoice No.'] || ''}</td>
+                        <td data-label="Invoice No.:" class="px-6 py-3">${invoiceNoCellContent}</td>
                         <td data-label="Voucher No.:" class="px-6 py-3 ${voucherClass}">${item['Voucher No.'] || ''}</td>
                         <td data-label="Voucher Date:" class="px-6 py-3">${item['Voucher Date'] || ''}</td>
-                        <td data-label="Details:" class="px-6 py-3 text-center">
-                            <button class="details-button text-blue-600 hover:text-blue-800 transition-colors duration-150"
-                                data-sr-id="${item['SR ID'] || ''}"
-                                data-consignment-order="${item['Consignment Order Number'] || ''}">
-                                <i class="fas fa-print"></i>
-                            </button>
-                        </td>
                     `;
                     invoiceTableBody.appendChild(row);
                 });
@@ -1207,7 +1232,7 @@
             updatePaginationControls();
             exportButton.disabled = filteredData.length === 0;
             updateSortIcons();
-            addDetailsButtonListeners(); // Add listeners after rendering
+            addAcknowledgeButtonListeners(); // New listener for the buttons
         }
 
         // Function to fetch data from the JSON URL
@@ -1234,7 +1259,7 @@
                 console.error("Error fetching data:", error);
                 showMessage(`Failed to load data: ${error.message}`, 'error');
                 // Still hide overlay even on error, but show error message
-                invoiceTableBody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>'; // Changed colspan
+                invoiceTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>'; // Changed colspan
                 quantitySummaryPanel.classList.add('hidden');
                 // Ensure main content is visible even on error
                 setTimeout(() => {
@@ -1249,7 +1274,7 @@
                 setTimeout(() => {
                     loadingOverlay.classList.add('hidden');
                     mainContent.classList.remove('hidden');
-                }, 5000); // Increased to 3 seconds for a longer animation
+                }, 5000); // Increased to 5 seconds for a longer animation
             }
         }
 
@@ -1402,6 +1427,8 @@
             currentSortColumn = null;
             currentSortDirection = 'asc';
             calculateAndDisplaySummary();
+            // Clear acknowledged state on reset
+            acknowledgedConsignments.clear(); 
             renderTable();
             suggestionsList.classList.add('hidden');
             suggestionsList.innerHTML = '';
@@ -1585,16 +1612,21 @@
 
         // Function to show the details modal
         function showDetailsModal(srId, consignmentOrder) {
-            // Filter all data (not just current filteredData) to ensure we get all related records
-            const relatedRecords = allData.filter(item => 
+            // Find the specific item that was clicked to display its SR ID
+            const clickedItem = allData.find(item => 
                 String(item['SR ID'] || 'N/A') === String(srId) &&
+                String(item['Consignment Order Number'] || 'N/A') === String(consignmentOrder)
+            );
+
+            // Filter all data by the Consignment Order Number to get all related records for the summary
+            const relatedRecordsForConsignment = allData.filter(item => 
                 String(item['Consignment Order Number'] || 'N/A') === String(consignmentOrder)
             );
 
             let totalQuantity = 0;
             let totalAmount = 0;
 
-            relatedRecords.forEach(item => {
+            relatedRecordsForConsignment.forEach(item => {
                 const quantity = parseInt(item['Quantity Sold'], 10);
                 const amount = parseFloat(String(item['Amount'] || '0').replace(/[^0-9.-]+/g,""));
 
@@ -1606,8 +1638,11 @@
                 }
             });
 
+            // Ensure srId is displayed correctly from the clicked item, even if it was blank in data
+            const displaySrId = clickedItem ? (clickedItem['SR ID'] || 'N/A') : srId;
+
             modalDetailsBody.innerHTML = `
-                <p><strong>SR ID:</strong> <span>${srId}</span></p>
+                <p><strong>SR ID:</strong> <span>${displaySrId}</span></p>
                 <p><strong>Consignment Order Number:</strong> <span>${consignmentOrder}</span></p>
                 <p><strong>Total Quantity Sold:</strong> <span>${totalQuantity.toLocaleString()} pcs</span></p>
                 <p><strong>Total Amount:</strong> <span>${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>
@@ -1618,6 +1653,11 @@
         // Function to hide the details modal
         function hideDetailsModal() {
             detailsModalOverlay.classList.remove('show');
+            // Call updateAcknowledgeButtonsState when the modal is closed
+            if (lastClickedConsignmentOrder) {
+                updateAcknowledgeButtonsState(lastClickedConsignmentOrder);
+                lastClickedConsignmentOrder = null; // Clear the stored value
+            }
         }
 
         // Function to update the print/download button label and icon
@@ -1758,14 +1798,27 @@
             }
         }
 
-        // Event listener for details buttons (delegated for dynamic content)
-        function addDetailsButtonListeners() {
-            document.querySelectorAll('.details-button').forEach(button => {
-                button.onclick = (event) => {
-                    const srId = event.currentTarget.dataset.srId;
-                    const consignmentOrder = event.currentTarget.dataset.consignmentOrder;
-                    showDetailsModal(srId, consignmentOrder);
-                };
+        // Function to update the state of acknowledge buttons
+        function updateAcknowledgeButtonsState(consignmentOrder) {
+            // Add the consignment order to the set of acknowledged ones
+            acknowledgedConsignments.add(consignmentOrder);
+
+            // Re-render the table to reflect the updated button states
+            renderTable();
+        }
+
+        // Event listener for acknowledge buttons (delegated for dynamic content)
+        function addAcknowledgeButtonListeners() {
+            document.querySelectorAll('.acknowledge-button').forEach(button => {
+                // Only add click listener if the button is not already disabled
+                if (!button.disabled) {
+                    button.onclick = (event) => {
+                        const srId = event.currentTarget.dataset.srId;
+                        const consignmentOrder = event.currentTarget.dataset.consignmentOrder;
+                        lastClickedConsignmentOrder = consignmentOrder; // Store the consignment order
+                        showDetailsModal(srId, consignmentOrder);
+                    };
+                }
             });
         }
 
