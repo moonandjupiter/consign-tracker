@@ -16,15 +16,15 @@
             overflow-x: hidden;
         }
 
-        /* General style for Acknowledge button (applies to both mobile and desktop by default) */
+        /* General style for Acknowledge button */
         .acknowledge-button {
             background-color: #dc2626; /* Pure Red for critical status */
             color: white;
-            font-weight: 600; /* Ensure font weight is consistent */
-            border-radius: 0.375rem; /* Consistent border-radius */
+            font-weight: 600;
+            border-radius: 0.375rem;
             transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-            border: none; /* Ensure no default button border */
-            cursor: pointer; /* Indicate interactivity */
+            border: none;
+            cursor: pointer;
         }
 
         .acknowledge-button:hover:not([disabled]) {
@@ -39,6 +39,27 @@
             color: #e5e7eb; /* Lighter text for disabled state */
         }
 
+        /* Style for the clear button inside the search input */
+        .search-clear-button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            opacity: 0.6;
+            font-size: 1rem;
+            color: #6b7280;
+            padding: 0;
+            margin: 0;
+            z-index: 102; /* Ensure it's above the search icon */
+        }
+
+        .search-clear-button:hover {
+            opacity: 1;
+            color: #4b5563;
+        }
 
         @media (max-width: 767px) {
             #invoiceTable thead {
@@ -52,7 +73,6 @@
 
             #invoiceTable tr {
                 margin-bottom: 15px;
-                /* Reintroduced border and box-shadow for card separation */
                 border: 1px solid #d1d5db;
                 border-radius: 0.5rem;
                 background-color: #ffffff;
@@ -104,7 +124,7 @@
                 font-weight: 600;
             }
 
-            /* Mobile specific alignment for Status column - now right-aligned */
+            /* Mobile specific alignment for Status column */
             #invoiceTable td[data-label="Status:"] {
                 justify-content: flex-end; /* Align right */
                 text-align: right; /* Ensure text alignment is also right */
@@ -124,7 +144,6 @@
                 font-weight: normal; /* No longer bold */
             }
 
-            /* Explicitly add cursor pointer for clickable status buttons */
             .status-waiting-clickable {
                 cursor: pointer;
             }
@@ -147,30 +166,20 @@
                 padding: 0.3em 0.6em; /* Adjust padding to match status button */
             }
 
-            .mb-6.flex.flex-col.md\:flex-row.gap-4.items-center button {
-                width: 100%;
-                padding: 10px 15px;
-                font-size: 1rem;
+            .mb-6.flex.flex-col.md\:flex-row.gap-4.items-center {
+                flex-direction: column;
             }
 
             .search-reset-container {
-                flex-direction: column;
                 width: 100%;
-            }
-
-            .search-input-container {
-                width: 100%;
-                margin-bottom: 10px;
+                margin-bottom: 0; /* No margin as reset button is gone */
                 position: relative;
                 z-index: 100;
             }
 
-            .search-reset-container button {
-                width: 100%;
-            }
-
             .export-options {
                 width: 100%;
+                margin-top: 10px; /* Add some space below the search on mobile */
             }
 
             .export-options button {
@@ -248,11 +257,18 @@
                 content: none;
             }
 
-            .search-input-container input {
-                padding-left: 45px;
+            .search-input-container {
+                width: 100%; /* Make search input fill the width on mobile */
+                position: relative;
             }
 
-            .search-input-container i {
+            .search-input-container input {
+                padding-left: 45px;
+                padding-right: 35px; /* Added space for clear button */
+                width: 100%; /* Ensure input fills the container */
+            }
+
+            .search-input-container i.fa-search {
                 position: absolute;
                 left: 15px;
                 top: 50%;
@@ -429,6 +445,39 @@
                 padding: 0.3em 0.6em; /* Adjust padding to match status button */
                 white-space: nowrap; /* Prevent text from wrapping */
             }
+
+            .mb-6.flex.flex-col.md\:flex-row.gap-4.items-center {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .search-reset-container {
+                width: auto;
+                margin-bottom: 0;
+                position: relative;
+                flex-grow: 1;
+            }
+
+            .export-options {
+                width: auto;
+            }
+
+            .export-options button {
+                width: auto;
+            }
+
+            .export-dropdown {
+                position: absolute;
+                width: 150px;
+                margin-top: 2px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                border: 1px solid #d1d5db;
+                border-radius: 0.5rem;
+            }
+
+            .search-input-container input {
+                padding-right: 35px; /* Added space for clear button */
+            }
         }
 
         button {
@@ -453,11 +502,7 @@
             overflow: visible;
         }
 
-        .search-input-container input {
-            padding-left: 40px;
-        }
-
-        .search-input-container i {
+        .search-input-container i.fa-search {
             position: absolute;
             left: 12px;
             top: 50%;
@@ -601,7 +646,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
-            display: none; /* Hidden by default */
+            display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000; /* Ensure it's on top */
@@ -613,7 +658,6 @@
         .modal-overlay.show {
             opacity: 1;
             visibility: visible;
-            display: flex; /* Show when 'show' class is added */
         }
 
         .modal-content {
@@ -664,6 +708,7 @@
             margin-bottom: 0;
             color: #1f2937; /* Darker text */
             flex-grow: 1; /* Allow h2 to grow and take available space */
+            /* Removed white-space, overflow, and text-overflow to allow wrapping */
         }
 
         #messageModalOverlay .modal-header i.fas {
@@ -1003,21 +1048,19 @@
 
             <div class="p-6">
                 <div class="mb-6 flex flex-col md:flex-row gap-4 items-center">
-                    <div class="flex gap-4 flex-grow search-reset-container">
+                    <div class="flex-grow search-reset-container">
                         <div class="search-input-container">
                             <input type="text" id="searchInput" placeholder="Search by, Consignment Order Number, SR ID, or Invoice No."
                                 class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-gray-700 shadow-sm">
                             <i class="fas fa-search"></i>
+                            <button id="clearSearchButton" class="search-clear-button hidden" title="Clear search">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
                             <div id="suggestionsList" class="hidden"></div>
                         </div>
-                        <button id="resetButton"
-                                class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 transition duration-150 ease-in-out shadow-sm">
-                            <i class="fas fa-sync-alt"></i> Reset
-                        </button>
                     </div>
 
-                    <div class="export-options relative">
-                        <button id="exportButton" disabled
+                    <div class="export-options relative hidden"> <button id="exportButton" disabled
                                 class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 transition duration-150 ease-in-out shadow-sm">
                             <i class="fas fa-download"></i> Export <i class="fas fa-caret-down ml-2"></i>
                         </button>
@@ -1036,7 +1079,7 @@
                     </ul>
                     </div>
 
-                <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4 py-4">
+                <div id="messageBox" class="mt-4 p-4 rounded-md hidden"></div> <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4 py-4">
                     <table id="invoiceTable" class="min-w-full bg-white">
                         <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                             <tr>
@@ -1072,8 +1115,6 @@
                     </div>
                     <span id="pageInfo" class="text-gray-700 text-sm"></span>
                 </div>
-
-                <div id="messageBox" class="mt-4 p-4 rounded-md hidden"></div>
 
             </div>
         </div>
@@ -1132,7 +1173,8 @@
         let lastClickedConsignmentOrder = null; // New global variable to store the consignment order of the last clicked button
 
         const searchInput = document.getElementById('searchInput');
-        const resetButton = document.getElementById('resetButton');
+        // const resetButton = document.getElementById('resetButton'); // Removed reset button
+        const clearSearchButton = document.getElementById('clearSearchButton'); // New clear button
         const exportButton = document.getElementById('exportButton');
         const exportDropdown = document.getElementById('exportDropdown');
         const exportHtmlOption = document.getElementById('exportHtmlOption');
@@ -1150,6 +1192,7 @@
         const paginationContainer = document.getElementById('paginationContainer');
         const loadingOverlay = document.getElementById('loadingOverlay');
         const mainContent = document.getElementById('mainContent');
+        const exportOptionsDiv = document.querySelector('.export-options'); // Get the export options div
 
         // Modal elements
         const detailsModalOverlay = document.getElementById('detailsModalOverlay');
@@ -1396,12 +1439,10 @@
 
             if (filteredData.length === 0) {
                 const message = searchInput.value.trim() === '' ? 'Enter a search term and press Enter or select a suggestion.' : 'No data found for your search.';
-                // Changed colspan from 8 to 9 due to new Status column
                 invoiceTableBody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
 
-                // Explicitly hide table and pagination when no data is found
-                tableContainer.style.display = 'none';
-                paginationContainer.style.display = 'none';
+                // Hide export options when no data
+                exportOptionsDiv.classList.add('hidden');
 
             } else {
                 dataToDisplay.forEach(item => {
@@ -1462,10 +1503,13 @@
                     invoiceTableBody.appendChild(row);
                 });
 
-                // Explicitly show table and pagination when data is present
-                tableContainer.style.display = 'block';
-                paginationContainer.style.display = 'flex';
+                // Show export options when data is present
+                exportOptionsDiv.classList.remove('hidden');
             }
+
+            // Ensure table and pagination containers are always visible
+            tableContainer.style.display = 'block';
+            paginationContainer.style.display = 'flex';
 
             updatePaginationControls();
             exportButton.disabled = filteredData.length === 0;
@@ -1511,10 +1555,6 @@
             loadingOverlay.classList.remove('hidden');
             mainContent.classList.add('hidden');
 
-            // Hide table and pagination initially to prevent flicker if they were visible
-            tableContainer.style.display = 'none';
-            paginationContainer.style.display = 'none';
-
             try {
                 const response = await fetch(jsonUrl);
                 if (!response.ok) {
@@ -1545,11 +1585,11 @@
 
                 // After data is fetched (successfully or not), render the table and then hide the overlay
                 renderTable(); // This will now use filteredData (which is empty initially)
-                // Add a slightly longer delay for the animation to play before hiding the overlay
+                // Reverted to 5 seconds for initial load
                 setTimeout(() => {
                     loadingOverlay.classList.add('hidden');
                     mainContent.classList.remove('hidden');
-                }, 5000); // Increased to 5 seconds for a longer animation
+                }, 5000); // Changed to 5 seconds for a longer animation
             }
         }
 
@@ -1560,8 +1600,9 @@
             hideMessageBox();
             // Show loading message in the general message box
             showMessage("Loading results, please wait...", 'info');
-            tableContainer.style.display = 'none';
-            paginationContainer.style.display = 'none';
+            // Ensure table and pagination containers are visible immediately
+            tableContainer.style.display = 'block';
+            paginationContainer.style.display = 'flex';
             quantitySummaryPanel.classList.add('hidden'); // Hide summary panel during loading
 
             // Delay the actual search and rendering
@@ -1640,10 +1681,17 @@
             }
         });
 
-        // Event listener for input changes in the search field for suggestions
+        // Event listener for input changes in the search field for suggestions and clear button
         searchInput.addEventListener('input', () => {
             const searchTerm = searchInput.value.toLowerCase();
             suggestionsList.innerHTML = '';
+
+            // Toggle clear button visibility
+            if (searchInput.value.length > 0) {
+                clearSearchButton.classList.remove('hidden');
+            } else {
+                clearSearchButton.classList.add('hidden');
+            }
 
             if (searchTerm.length > 2 && processedData.length > 0) { // Use processedData for suggestions
                 const matchedItems = new Map();
@@ -1694,9 +1742,10 @@
             hideMessageBox();
         });
 
-        // Event listener for the reset button
-        resetButton.addEventListener('click', () => {
+        // Event listener for the clear search button
+        clearSearchButton.addEventListener('click', () => {
             searchInput.value = '';
+            clearSearchButton.classList.add('hidden'); // Hide clear button after clearing
             filteredData = []; // Reset filteredData to empty
             currentPage = 1;
             hideMessageBox();
@@ -1707,16 +1756,14 @@
             renderTable(); // This will now render based on an empty filteredData, showing the initial message
             suggestionsList.classList.add('hidden');
             suggestionsList.innerHTML = '';
-
-            tableContainer.style.display = 'none'; // Ensure table is hidden on reset
-            paginationContainer.style.display = 'none'; // Ensure pagination is hidden on reset
+            // No need to explicitly hide tableContainer/paginationContainer here, renderTable handles it
         });
 
         // Hide the dropdown if the user clicks outside of it
         window.addEventListener('click', (event) => {
             // Check if the click is outside the export button, dropdown, search input, suggestions list, and message modal
             const isClickOutsideExport = !exportButton.contains(event.target) && !exportDropdown.contains(event.target);
-            const isClickOutsideSearch = !searchInput.contains(event.target) && !suggestionsList.contains(event.target);
+            const isClickOutsideSearch = !searchInput.contains(event.target) && !suggestionsList.contains(event.target) && !clearSearchButton.contains(event.target);
             // Check if the modal is currently displayed before trying to hide it
             const isClickOutsideMessageModal = messageModalOverlay.style.display === 'flex' && !messageModalOverlay.contains(event.target);
             const isClickOutsideDetailsModal = detailsModalOverlay.style.display === 'flex' && !detailsModalOverlay.contains(event.target);
@@ -2108,7 +2155,10 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+
             setTimeout(() => URL.revokeObjectURL(url), 10000);
+
+            showMessage("Acknowledgement slip downloaded as PNG.", 'success'); // Show success message after download
         }
 
         // Function to update the state of acknowledge buttons
@@ -2194,7 +2244,6 @@
                         // Fallback to download if Web Share API is not available or cannot share files
                         console.log('Web Share API not available, falling back to download.');
                         triggerDownload(pngBlob, 'acknowledgement_slip.png', 'image/png');
-                        showMessage("Acknowledgement slip downloaded as PNG.", 'success');
                     }
                 } catch (error) {
                     console.error("Error handling share/download:", error);
