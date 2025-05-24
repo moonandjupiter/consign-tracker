@@ -655,6 +655,7 @@
             flex-direction: row; /* Explicitly set to row */
             align-items: center; /* Vertically align icon and title */
             gap: 0.5rem; /* Space between icon and title */
+            position: relative; /* Crucial for positioning the close button */
         }
 
         #messageModalOverlay .modal-header h2 {
@@ -670,6 +671,26 @@
             color: #3b82f6; /* Blue color for info icon */
             margin-right: 0.25rem; /* Add a small margin to the right of the icon */
         }
+
+        /* Positioning for the close button in the message modal */
+        #messageModalOverlay .modal-close-button {
+            position: absolute;
+            top: 0.5rem; /* Adjusted top for better alignment */
+            right: 0.5rem; /* Adjusted right for better alignment */
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            padding: 0.25rem;
+        }
+
+        #messageModalOverlay .modal-close-button:hover {
+            color: #dc2626;
+            transform: rotate(90deg);
+        }
+
 
         #messageModalOverlay .modal-body {
             font-size: 0.9rem;
@@ -1015,23 +1036,24 @@
                     </ul>
                     </div>
 
-                <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4">
+                <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4 py-4">
                     <table id="invoiceTable" class="min-w-full bg-white">
                         <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                             <tr>
                                 <th class="py-3 px-6 text-left" data-sort="SR ID">SR ID</th>
                                 <th class="py-3 px-6 text-left" data-sort="Name of Company">Name of Company</th>
-                                <th class="py-3 px-6 text-left sortable" data-sort="Consignment Order Number">Consignment Order Number <i class="fas fa-sort"></i></th>
+                                <th class="py-3 px-6 text-left sortable" data-sort="Consignment Order Number">C.O. Number <i class="fas fa-sort"></i></th>
                                 <th class="py-3 px-6 text-left" data-sort="Quantity Sold">Quantity Sold</th>
                                 <th class="py-3 px-6 text-left" data-sort="Amount">Amount</th>
                                 <th class="py-3 px-6 text-left" data-sort="Invoice No.">Invoice No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher No.">Voucher No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher Date">Voucher Date</th>
+                                <th class="py-3 px-6 text-left" data-sort="Status">Status</th>
                             </tr>
                         </thead>
                         <tbody id="invoiceTableBody" class="text-gray-700 text-sm font-light">
                             <tr>
-                                <td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
+                                <td colspan="9" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1066,7 +1088,7 @@
             <div class="modal-body" id="modalDetailsBody">
                 </div>
             <div class="modal-footer">
-                <button class="modal-print-button" id="printDetailsButton"><i class="fas fa-print"></i> Print</button>
+                <button class="modal-print-button" id="printDetailsButton"></button>
                 
                 <div class="print-separator"></div>
 
