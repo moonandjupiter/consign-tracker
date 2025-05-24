@@ -1728,7 +1728,7 @@
                     } else {
                         value = item[header] === null || item[header] === undefined ? '' : String(item[header]);
                     }
-                    htmlString += `<td>${value}</td>`;
+                    return `<td>${value}</td>`;
                 });
                 htmlString += '</tr>';
             });
@@ -1773,16 +1773,15 @@
                 String(item['Consignment Order Number'] || 'N/A') === String(consignmentOrder)
             );
 
-            // The modal details should reflect the *merged* totals for that consignment order
-            // So, we use the quantity and amount directly from the clickedItem (which is already merged)
+            const companyName = clickedItem ? (clickedItem['Name of Company'] || 'N/A') : 'N/A';
             const totalQuantity = clickedItem ? (clickedItem['Quantity Sold'] || 0) : 0;
             const totalAmount = clickedItem ? (clickedItem['Amount'] || 0) : 0;
-
             const displaySrId = clickedItem ? (clickedItem['SR ID'] || 'N/A') : srId;
 
             modalDetailsBody.innerHTML = `
+                <p><strong>Company:</strong> <span>${companyName}</span></p>
                 <p><strong>SR ID:</strong> <span>${displaySrId}</span></p>
-                <p><strong>Consignment Order Number:</strong> <span>${consignmentOrder}</span></p>
+                <p><strong>C.O.#:</strong> <span>${consignmentOrder}</span></p>
                 <p><strong>Total Quantity Sold:</strong> <span>${totalQuantity.toLocaleString()} pcs</span></p>
                 <p><strong>Total Amount:</strong> <span>${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>
             `;
