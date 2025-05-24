@@ -649,7 +649,7 @@
         }
 
         #messageModalOverlay .modal-header {
-            padding: 0 0 0.75rem 0; /* Adjusted padding for message modal header */
+            padding: 0.75rem 1.25rem 0.75rem 1.25rem; /* Added top and right padding for better X button placement */
             margin-bottom: 1rem;
             display: flex; /* Ensure flex for icon and title */
             flex-direction: row; /* Explicitly set to row */
@@ -675,8 +675,8 @@
         /* Positioning for the close button in the message modal */
         #messageModalOverlay .modal-close-button {
             position: absolute;
-            top: 0.5rem; /* Adjusted top for better alignment */
-            right: 0.5rem; /* Adjusted right for better alignment */
+            top: 0.5rem; /* Adjusted to be within the new padding */
+            right: 0.5rem; /* Adjusted to be within the new padding */
             background: none;
             border: none;
             font-size: 1.2rem;
@@ -2152,7 +2152,7 @@
                         console.log('Condition met: statusText is "Waiting for Invoice". Calling showInfoModal...'); // Debugging log
                         showInfoModal(
                             "Invoice Status Information",
-                            "No invoice has been received in the past 42 hours. If already submitted, you may ignore this message or call local 3019 for support."
+                            "No invoice has been received in the past 42 hours. If already submitted, you may ignore this message or call local 3018 for assistance."
                         );
                     } else {
                         console.log('Clicked status button is not "Waiting for Invoice". Text:', statusText);
