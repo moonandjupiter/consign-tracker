@@ -124,6 +124,11 @@
                 font-weight: normal; /* No longer bold */
             }
 
+            /* Explicitly add cursor pointer for clickable status buttons */
+            .status-waiting-clickable {
+                cursor: pointer;
+            }
+
             .status-processing {
                 background-color: #3b82f6; /* Light blue */
                 color: white;
@@ -402,6 +407,10 @@
                 font-weight: normal; /* No longer bold */
             }
 
+            .status-waiting-clickable {
+                cursor: pointer; /* Explicitly make it clickable */
+            }
+
             .status-processing {
                 background-color: #3b82f6; /* Light blue */
                 color: white;
@@ -541,11 +550,14 @@
             animation: bounce 1.4s infinite ease-in-out;
         }
 
+        /* Specific colors for each dot */
         .loading-dot:nth-child(1) { background-color: #4285F4; }
         .loading-dot:nth-child(2) { background-color: #EA4335; animation-delay: 0.1s; }
         .loading-dot:nth-child(3) { background-color: #FBBC05; animation-delay: 0.2s; }
         .loading-dot:nth-child(4) { background-color: #34A853; animation-delay: 0.3s; }
 
+
+        /* Keyframe Animations */
         @keyframes fadeInOut {
             0% { opacity: 0.5; }
             100% { opacity: 1; }
@@ -560,6 +572,7 @@
             }
         }
 
+        /* New CSS for loading dots in message box */
         .loading-message-dots {
             display: inline-block;
             margin-left: 8px;
@@ -580,17 +593,18 @@
             50% { opacity: 1; transform: scale(1.2); }
         }
 
+        /* Styles for the Details Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: flex;
+            background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
+            display: none; /* Hidden by default */
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 1000; /* Ensure it's on top */
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
@@ -599,32 +613,96 @@
         .modal-overlay.show {
             opacity: 1;
             visibility: visible;
+            display: flex; /* Show when 'show' class is added */
         }
 
         .modal-content {
-            background-color: white;
-            background-image: none;
-            padding: 1.5rem;
-            border-radius: 0.25rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background-color: white; /* Pure white background */
+            background-image: none; /* Removed gradient */
+            padding: 1.5rem; /* Reduced padding for a more compact receipt feel */
+            border-radius: 0.25rem; /* Minimal border-radius for sharp edges like a receipt */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Lighter, less spread shadow */
             width: 90%;
-            max-width: 380px;
-            transform: translateY(-10px) scale(0.99);
-            transition: transform 0.2s ease-out;
+            max-width: 380px; /* Narrower for receipt-like feel */
+            transform: translateY(-10px) scale(0.99); /* Subtle animation */
+            transition: transform 0.2s ease-out; /* Quicker animation */
             position: relative;
-            color: #1f2937;
-            border: 1px solid #e5e7eb;
+            color: #1f2937; /* Dark gray for main text, good for print */
+            border: 1px solid #e5e7eb; /* Subtle light gray border */
             
+            /* Added for button positioning */
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            min-height: 250px;
+            justify-content: space-between; /* Distributes space between items, pushing footer to bottom */
+            min-height: 250px; /* Ensure enough height for space-between to work */
         }
 
         .modal-overlay.show .modal-content {
             transform: translateY(0) scale(1);
         }
 
+        /* Specific styles for the new message modal */
+        #messageModalOverlay .modal-content {
+            min-height: unset; /* Remove min-height for simpler message modal */
+            max-width: 350px; /* Slightly smaller for message */
+            padding: 1.25rem;
+        }
+
+        #messageModalOverlay .modal-header {
+            padding: 0 0 0.75rem 0; /* Adjusted padding for message modal header */
+            margin-bottom: 1rem;
+            display: flex; /* Ensure flex for icon and title */
+            flex-direction: row; /* Explicitly set to row */
+            align-items: center; /* Vertically align icon and title */
+            gap: 0.5rem; /* Space between icon and title */
+        }
+
+        #messageModalOverlay .modal-header h2 {
+            font-size: 1.1rem; /* Slightly smaller title for message modal */
+            font-weight: 700; /* Made bolder */
+            margin-bottom: 0;
+            color: #1f2937; /* Darker text */
+            flex-grow: 1; /* Allow h2 to grow and take available space */
+        }
+
+        #messageModalOverlay .modal-header i.fas {
+            font-size: 1.2rem; /* Size for the icon */
+            color: #3b82f6; /* Blue color for info icon */
+            margin-right: 0.25rem; /* Add a small margin to the right of the icon */
+        }
+
+        #messageModalOverlay .modal-body {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #374151;
+            flex-grow: unset; /* Don't let it grow */
+            padding: 0 0.5rem; /* Add horizontal padding */
+        }
+
+        #messageModalOverlay .modal-footer {
+            border-top: none; /* No footer border for message modal */
+            padding-top: 0;
+            margin-top: 1rem;
+            justify-content: flex-end; /* Align button to the right */
+            align-items: flex-end; /* Align button to the right */
+        }
+
+        #messageModalOverlay .modal-footer button {
+            background-color: #1d4ed8; /* Blue button for message modal */
+            color: white;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 0.375rem; /* Rounded corners */
+        }
+
+        #messageModalOverlay .modal-footer button:hover {
+            background-color: #1e40af;
+            box-shadow: 0 2px 5px rgba(29, 78, 216, 0.2);
+        }
+
+
+        /* General Modal Header Styles */
         .modal-header {
             display: flex;
             flex-direction: column;
@@ -663,6 +741,7 @@
             transform: rotate(90deg);
         }
 
+        /* Details Modal Body Styles */
         .modal-body {
             flex-grow: 1;
         }
@@ -693,6 +772,7 @@
             flex-grow: 1;
         }
 
+        /* Details Modal Footer Styles */
         .modal-footer {
             display: flex;
             flex-direction: column;
@@ -878,7 +958,7 @@
 </head>
 <body>
 
-    <div id="loadingOverlay" class="hidden">
+    <div id="loadingOverlay">
         <div class="loading-dots-container">
             <div class="loading-dot"></div>
             <div class="loading-dot"></div>
@@ -935,24 +1015,23 @@
                     </ul>
                     </div>
 
-                <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4 py-4">
+                <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4">
                     <table id="invoiceTable" class="min-w-full bg-white">
                         <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                             <tr>
                                 <th class="py-3 px-6 text-left" data-sort="SR ID">SR ID</th>
                                 <th class="py-3 px-6 text-left" data-sort="Name of Company">Name of Company</th>
-                                <th class="py-3 px-6 text-left sortable" data-sort="Consignment Order Number">C.O. Number <i class="fas fa-sort"></i></th>
+                                <th class="py-3 px-6 text-left sortable" data-sort="Consignment Order Number">Consignment Order Number <i class="fas fa-sort"></i></th>
                                 <th class="py-3 px-6 text-left" data-sort="Quantity Sold">Quantity Sold</th>
                                 <th class="py-3 px-6 text-left" data-sort="Amount">Amount</th>
                                 <th class="py-3 px-6 text-left" data-sort="Invoice No.">Invoice No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher No.">Voucher No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher Date">Voucher Date</th>
-                                <th class="py-3 px-6 text-left" data-sort="Status">Status</th>
                             </tr>
                         </thead>
                         <tbody id="invoiceTableBody" class="text-gray-700 text-sm font-light">
                             <tr>
-                                <td colspan="9" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
+                                <td colspan="8" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -987,7 +1066,7 @@
             <div class="modal-body" id="modalDetailsBody">
                 </div>
             <div class="modal-footer">
-                <button class="modal-print-button" id="printDetailsButton"></button>
+                <button class="modal-print-button" id="printDetailsButton"><i class="fas fa-print"></i> Print</button>
                 
                 <div class="print-separator"></div>
 
@@ -1001,6 +1080,20 @@
                 <p class="modal-note">
                     <strong>Note to Supplier:</strong> Please attach this form to your sales invoice upon submission. Failure to attach may result in delays in verifying and processing your invoice.
                 </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="messageModalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-info-circle"></i><h2 id="messageModalTitle"></h2>
+                <button class="modal-close-button" id="closeMessageModalButton">&times;</button>
+            </div>
+            <div class="modal-body" id="messageModalBody">
+            </div>
+            <div class="modal-footer">
+                <button id="messageModalOkButton">OK</button>
             </div>
         </div>
     </div>
@@ -1025,7 +1118,7 @@
         const prevPageButton = document.getElementById('prevPageButton');
         const nextPageButton = document.getElementById('nextPageButton');
         const pageInfoSpan = document.getElementById('pageInfo');
-        const messageBox = document.getElementById('messageBox');
+        const messageBox = document.getElementById('messageBox'); // This is the old message box, now used for general info/errors
         const quantitySummaryPanel = document.getElementById('quantitySummaryPanel');
         const overallSummaryDiv = document.getElementById('overallSummary');
         const consignmentSummaryList = document.getElementById('consignmentSummaryList');
@@ -1044,11 +1137,18 @@
         const signatureSection = document.querySelector('.signature-section');
         const modalNote = document.querySelector('.modal-note');
         const printSeparator = document.querySelector('.print-separator');
+
+        // New Message Modal elements
+        const messageModalOverlay = document.getElementById('messageModalOverlay');
+        const messageModalTitle = document.getElementById('messageModalTitle');
+        const messageModalBody = document.getElementById('messageModalBody');
+        const closeMessageModalButton = document.getElementById('closeMessageModalButton');
+        const messageModalOkButton = document.getElementById('messageModalOkButton');
         
         // This Set will store consignment order numbers that have been "acknowledged" in the current session
         const acknowledgedConsignments = new Set();
 
-        // Function to show messages
+        // Function to show messages (for the general message box at the bottom)
         function showMessage(message, type = 'info') {
             messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-center');
             messageBox.innerHTML = '';
@@ -1075,11 +1175,36 @@
             messageBox.classList.remove('hidden');
         }
 
-        // Function to hide messages
+        // Function to hide messages (for the general message box at the bottom)
         function hideMessageBox() {
             messageBox.classList.add('hidden');
             messageBox.innerHTML = '';
             messageBox.classList.remove('bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-content-center');
+        }
+
+        // Function to show the new message modal
+        function showInfoModal(title, message) {
+            console.log('Attempting to show info modal...');
+            messageModalTitle.textContent = title;
+            messageModalBody.textContent = message;
+            // Directly set display properties
+            messageModalOverlay.style.display = 'flex';
+            messageModalOverlay.style.opacity = '1';
+            messageModalOverlay.style.visibility = 'visible';
+            console.log('Modal display properties set: display=flex, opacity=1, visibility=visible');
+        }
+
+        // Function to hide the new message modal
+        function hideInfoModal() {
+            console.log('Attempting to hide info modal...');
+            // Directly set display properties to hide
+            messageModalOverlay.style.opacity = '0';
+            messageModalOverlay.style.visibility = 'hidden';
+            // Use a slight delay before setting display to 'none' to allow transition (if any)
+            setTimeout(() => {
+                messageModalOverlay.style.display = 'none';
+                console.log('Modal display properties reset: display=none, opacity=0, visibility=hidden');
+            }, 300); // Match this with your CSS transition duration if you re-enable it
         }
 
         // Function to calculate and display the total quantity of the filtered data and per consignment
@@ -1222,10 +1347,12 @@
 
             let statusText = '';
             let statusClass = '';
+            let clickableClass = ''; // New variable for clickable class
 
             if (invoiceNo === '' || invoiceNo === '-') {
                 statusText = 'Waiting for Invoice';
                 statusClass = 'status-waiting';
+                clickableClass = 'status-waiting-clickable'; // Add specific class for click event
             } else if (voucherNo === '' || voucherNo === '-' || voucherNo === '0') {
                 statusText = 'Processing Voucher';
                 statusClass = 'status-processing';
@@ -1234,7 +1361,7 @@
                 statusClass = 'status-done';
             }
 
-            return `<span class="status-button ${statusClass}">${statusText}</span>`;
+            return `<span class="status-button ${statusClass} ${clickableClass}">${statusText}</span>`;
         }
 
 
@@ -1322,6 +1449,7 @@
             exportButton.disabled = filteredData.length === 0;
             updateSortIcons();
             addAcknowledgeButtonListeners(); // New listener for the buttons
+            // Removed addStatusButtonListeners() call from here, as it's now handled by delegation
         }
 
         // New function to merge data
@@ -1406,7 +1534,9 @@
         // Function to perform the search
         // Accepts an optional searchValue to filter by a specific key value (used for suggestion clicks)
         function performSearch(searchValue = null) {
-            // Show loading message and hide table/pagination immediately
+            // Hide general message box when a search is performed
+            hideMessageBox();
+            // Show loading message in the general message box
             showMessage("Loading results, please wait...", 'info');
             tableContainer.style.display = 'none';
             paginationContainer.style.display = 'none';
@@ -1469,7 +1599,7 @@
                 currentPage = 1;
                 calculateAndDisplaySummary();
                 renderTable();
-                hideMessageBox();
+                hideMessageBox(); // Hide loading message after results are rendered
 
                 // If no results for a non-empty search, show "No matching results found."
                 if (filteredData.length === 0 && searchInput.value.trim() !== '') {
@@ -1523,7 +1653,8 @@
                         suggestionItem.textContent = suggestion.display;
                         suggestionItem.setAttribute('data-value', suggestion.value);
                         suggestionItem.classList.add('px-4', 'py-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-700');
-                        suggestionItem.addEventListener('click', () => {
+                        suggestionItem.addEventListener('click', (event) => { // Added event parameter
+                            event.stopPropagation(); // Stop propagation for suggestion click
                             searchInput.value = suggestion.display;
                             suggestionsList.classList.add('hidden');
                             performSearch(suggestion.value); // Trigger search with animation
@@ -1561,9 +1692,27 @@
 
         // Hide the dropdown if the user clicks outside of it
         window.addEventListener('click', (event) => {
-            if (!exportButton.contains(event.target) && !exportDropdown.contains(event.target) && !searchInput.contains(event.target) && !suggestionsList.contains(event.target)) {
+            // Check if the click is outside the export button, dropdown, search input, suggestions list, and message modal
+            const isClickOutsideExport = !exportButton.contains(event.target) && !exportDropdown.contains(event.target);
+            const isClickOutsideSearch = !searchInput.contains(event.target) && !suggestionsList.contains(event.target);
+            // Check if the modal is currently displayed before trying to hide it
+            const isClickOutsideMessageModal = messageModalOverlay.style.display === 'flex' && !messageModalOverlay.contains(event.target);
+            const isClickOutsideDetailsModal = detailsModalOverlay.style.display === 'flex' && !detailsModalOverlay.contains(event.target);
+
+
+            if (isClickOutsideExport) {
                 exportDropdown.classList.add('hidden');
+            }
+            if (isClickOutsideSearch) {
                 suggestionsList.classList.add('hidden');
+            }
+            if (isClickOutsideMessageModal) {
+                console.log('Click outside message modal detected. Hiding message modal.');
+                hideInfoModal();
+            }
+            if (isClickOutsideDetailsModal) {
+                console.log('Click outside details modal detected. Hiding details modal.');
+                hideDetailsModal();
             }
         });
 
@@ -1767,6 +1916,7 @@
 
         // Function to show the details modal
         function showDetailsModal(srId, consignmentOrder) {
+            console.log('Attempting to show details modal...');
             // Find the specific item that was clicked in the PROCESSED data
             const clickedItem = processedData.find(item => 
                 String(item['SR ID'] || 'N/A') === String(srId) &&
@@ -1785,13 +1935,24 @@
                 <p><strong>Total Quantity Sold:</strong> <span>${totalQuantity.toLocaleString()} pcs</span></p>
                 <p><strong>Total Amount:</strong> <span>${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>
             `;
-            detailsModalOverlay.classList.add('show');
+            // Directly set display properties
+            detailsModalOverlay.style.display = 'flex';
+            detailsModalOverlay.style.opacity = '1';
+            detailsModalOverlay.style.visibility = 'visible';
+            console.log('Details Modal display properties set: display=flex, opacity=1, visibility=visible');
         }
 
         // Function to hide the details modal
         function hideDetailsModal() {
-            detailsModalOverlay.classList.remove('show');
-            // Acknowledge button state update is now handled in printDetailsButton click
+            console.log('Attempting to hide details modal...');
+            // Directly set display properties to hide
+            detailsModalOverlay.style.opacity = '0';
+            detailsModalOverlay.style.visibility = 'hidden';
+            // Use a slight delay before setting display to 'none' to allow transition (if any)
+            setTimeout(() => {
+                detailsModalOverlay.style.display = 'none';
+                console.log('Details Modal display properties reset: display=none, opacity=0, visibility=hidden');
+            }, 300); // Match this with your CSS transition duration if you re-enable it
         }
 
         // Function to update the print/download button label and icon
@@ -1805,7 +1966,7 @@
 
         // New function to generate PNG Blob
         async function generateModalPngBlob() {
-            const modalContent = document.querySelector('.modal-content');
+            const modalContent = document.querySelector('#detailsModalOverlay .modal-content'); // Target specific modal content
             // Temporarily hide elements that should not appear in the screenshot
             const closeButton = modalContent.querySelector('.modal-close-button');
             const printButton = modalContent.querySelector('#printDetailsButton');
@@ -1943,6 +2104,8 @@
                 // Only add click listener if the button is not already disabled
                 if (!button.disabled) {
                     button.onclick = (event) => {
+                        console.log('Acknowledge button clicked:', event.currentTarget);
+                        event.stopPropagation(); // Stop propagation to prevent window click listener from immediately hiding
                         const srId = event.currentTarget.dataset.srId;
                         const consignmentOrder = event.currentTarget.dataset.consignmentOrder;
                         lastClickedConsignmentOrder = consignmentOrder; // Store the consignment order
@@ -1952,10 +2115,38 @@
             });
         }
 
+        // New function to set up event delegation for status buttons
+        function setupStatusButtonDelegation() {
+            invoiceTableBody.addEventListener('click', (event) => {
+                console.log('Click on invoiceTableBody detected. Event target:', event.target); // Debugging log
+                const clickedButton = event.target.closest('.status-waiting-clickable');
+                if (clickedButton) {
+                    console.log('Clicked element has class status-waiting-clickable:', clickedButton); // Debugging log
+                    event.stopPropagation(); // Stop propagation to prevent window click listener from immediately hiding
+                    const statusText = clickedButton.textContent.trim();
+                    console.log('Status button text (trimmed):', statusText); // Debugging log
+
+                    if (statusText === 'Waiting for Invoice') {
+                        console.log('Condition met: statusText is "Waiting for Invoice". Calling showInfoModal...'); // Debugging log
+                        showInfoModal(
+                            "Invoice Status Information",
+                            "No invoice has been received in the past 42 hours. If already submitted, you may ignore this message or call local 3019 for support."
+                        );
+                    } else {
+                        console.log('Clicked status button is not "Waiting for Invoice". Text:', statusText);
+                    }
+                } else {
+                    console.log('Clicked element is not a status-waiting-clickable button.');
+                }
+            });
+        }
+
         // Event listeners for modal buttons
         closeModalButton.addEventListener('click', hideDetailsModal);
         
-        printDetailsButton.addEventListener('click', async () => {
+        printDetailsButton.addEventListener('click', async (event) => {
+            console.log('Print/Confirm button clicked.');
+            event.stopPropagation(); // Stop propagation to prevent window click listener from immediately hiding
             // Update acknowledge state before print/download/share
             if (lastClickedConsignmentOrder) {
                 updateAcknowledgeButtonsState(lastClickedConsignmentOrder);
@@ -1964,11 +2155,13 @@
 
             if (window.innerWidth <= 767) { // Mobile view
                 try {
+                    console.log('Generating PNG blob for mobile share...');
                     const pngBlob = await generateModalPngBlob(); // New function to get the blob
                     const file = new File([pngBlob], 'acknowledgement_slip.png', { type: 'image/png' });
 
                     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                         // Use Web Share API
+                        console.log('Using Web Share API.');
                         await navigator.share({
                             files: [file],
                             title: 'Acknowledgement Slip',
@@ -1977,6 +2170,7 @@
                         showMessage("Acknowledgement slip shared successfully.", 'success');
                     } else {
                         // Fallback to download if Web Share API is not available or cannot share files
+                        console.log('Web Share API not available, falling back to download.');
                         triggerDownload(pngBlob, 'acknowledgement_slip.png', 'image/png');
                         showMessage("Acknowledgement slip downloaded as PNG.", 'success');
                     }
@@ -1985,6 +2179,7 @@
                     showMessage("Failed to share or download image. Please try again.", 'error');
                 }
             } else { // Desktop view, print
+                console.log('Initiating print for desktop.');
                 // Existing print logic
                 document.body.classList.add('print-active');
                 const originalSignatureDisplay = signatureSection.style.display;
@@ -1998,6 +2193,10 @@
             hideDetailsModal(); // Close modal after action
         });
 
+        // Event listeners for the new message modal
+        closeMessageModalButton.addEventListener('click', hideInfoModal);
+        messageModalOkButton.addEventListener('click', hideInfoModal);
+
         // Initial data fetch and button label update when the page loads, wrapped in DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
             // Initially hide mainContent and show loading overlay
@@ -2006,6 +2205,7 @@
             
             fetchData();
             updatePrintButtonLabel(); // Set initial button label
+            setupStatusButtonDelegation(); // Setup the delegated listener once on load
         });
 
         // Update button label on window resize
