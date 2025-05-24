@@ -16,6 +16,30 @@
             overflow-x: hidden;
         }
 
+        /* General style for Acknowledge button (applies to both mobile and desktop by default) */
+        .acknowledge-button {
+            background-color: #dc2626; /* Pure Red for critical status */
+            color: white;
+            font-weight: 600; /* Ensure font weight is consistent */
+            border-radius: 0.375rem; /* Consistent border-radius */
+            transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            border: none; /* Ensure no default button border */
+            cursor: pointer; /* Indicate interactivity */
+        }
+
+        .acknowledge-button:hover:not([disabled]) {
+            background-color: #b91c1c; /* Darker red on hover */
+            box-shadow: 0 2px 5px rgba(220, 38, 38, 0.2);
+        }
+
+        .acknowledge-button[disabled] {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background-color: #a1a1aa; /* Grey for disabled state */
+            color: #e5e7eb; /* Lighter text for disabled state */
+        }
+
+
         @media (max-width: 767px) {
             #invoiceTable thead {
                 display: none;
@@ -90,22 +114,26 @@
                 padding: 0.3em 0.6em;
                 border-radius: 0.5em;
                 font-size: 0.8em;
-                font-weight: bold;
-                color: white;
                 border: none;
                 white-space: nowrap; /* Prevent text wrapping */
             }
 
             .status-waiting {
-                background-color: #dc2626; /* Pure Red for critical status */
+                background-color: #fde047; /* Yellow for waiting */
+                color: black; /* Changed font color to black for readability */
+                font-weight: normal; /* No longer bold */
             }
 
             .status-processing {
                 background-color: #3b82f6; /* Light blue */
+                color: white;
+                font-weight: bold; /* Keep bold */
             }
 
             .status-done {
                 background-color: #16a34a; /* Light green */
+                color: white;
+                font-weight: bold; /* Keep bold */
             }
 
             /* Mobile specific style for Acknowledge button */
@@ -364,22 +392,26 @@
                 padding: 0.3em 0.6em;
                 border-radius: 0.5em;
                 font-size: 0.8em;
-                font-weight: bold;
-                color: white;
                 border: none;
                 white-space: nowrap; /* Prevent text wrapping */
             }
 
             .status-waiting {
-                background-color: #dc2626; /* Pure Red for critical status */
+                background-color: #fde047; /* Yellow for waiting */
+                color: black; /* Changed font color to black for readability */
+                font-weight: normal; /* No longer bold */
             }
 
             .status-processing {
                 background-color: #3b82f6; /* Light blue */
+                color: white;
+                font-weight: bold; /* Keep bold */
             }
 
             .status-done {
                 background-color: #16a34a; /* Light green */
+                color: white;
+                font-weight: bold; /* Keep bold */
             }
 
             /* Desktop specific style for Acknowledge button */
@@ -1236,7 +1268,7 @@
                     // Check if Invoice No. is blank or dash AND if it's not already acknowledged
                     if ((invoiceNo.trim() === '' || invoiceNo.trim() === '-') && !isAcknowledged) {
                         invoiceNoCellContent = `
-                            <button class="acknowledge-button bg-yellow-300 hover:bg-yellow-400 text-gray-800 font-semibold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
+                            <button class="acknowledge-button py-1 px-2 focus:outline-none focus:shadow-outline"
                                 data-sr-id="${item['SR ID'] || ''}"
                                 data-consignment-order="${item['Consignment Order Number'] || ''}">
                                 Click here
