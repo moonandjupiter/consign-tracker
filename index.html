@@ -28,6 +28,7 @@
 
             #invoiceTable tr {
                 margin-bottom: 15px;
+                /* Reintroduced border and box-shadow for card separation */
                 border: 1px solid #d1d5db;
                 border-radius: 0.5rem;
                 background-color: #ffffff;
@@ -75,7 +76,7 @@
             }
 
             #invoiceTable td[data-label="Voucher No.:"].highlight-voucher {
-                color: #047857;
+                color: #dc2626; /* Changed to red */
                 font-weight: 600;
             }
 
@@ -283,7 +284,7 @@
             }
 
             #invoiceTable td.highlight-voucher {
-                color: #047857;
+                color: #dc2626; /* Changed to red */
                 font-weight: 600;
             }
 
@@ -385,6 +386,7 @@
             .acknowledge-button {
                 font-size: 0.8em; /* Smaller font size */
                 padding: 0.3em 0.6em; /* Adjust padding to match status button */
+                white-space: nowrap; /* Prevent text from wrapping */
             }
         }
 
@@ -901,18 +903,18 @@
                     </ul>
                     </div>
 
-                <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4">
+                <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4 py-4">
                     <table id="invoiceTable" class="min-w-full bg-white">
                         <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                             <tr>
                                 <th class="py-3 px-6 text-left" data-sort="SR ID">SR ID</th>
                                 <th class="py-3 px-6 text-left" data-sort="Name of Company">Name of Company</th>
-                                <th class="py-3 px-6 text-left sortable" data-sort="Consignment Order Number">Consignment Order Number <i class="fas fa-sort"></i></th>
+                                <th class="py-3 px-6 text-left sortable" data-sort="Consignment Order Number">C.O. Number <i class="fas fa-sort"></i></th>
                                 <th class="py-3 px-6 text-left" data-sort="Quantity Sold">Quantity Sold</th>
                                 <th class="py-3 px-6 text-left" data-sort="Amount">Amount</th>
+                                <th class="py-3 px-6 text-left" data-sort="Invoice No.">Invoice No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher No.">Voucher No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Voucher Date">Voucher Date</th>
-                                <th class="py-3 px-6 text-left" data-sort="Invoice No.">Invoice No.</th>
                                 <th class="py-3 px-6 text-left" data-sort="Status">Status</th>
                             </tr>
                         </thead>
@@ -1268,7 +1270,7 @@
                     row.innerHTML = `
                         <td data-label="SR ID:" class="px-6 py-3">${item['SR ID'] || ''}</td>
                         <td data-label="Company:" class="px-6 py-3">${item['Name of Company'] || ''}</td>
-                        <td data-label="Order Number:" class="px-6 py-3">${item['Consignment Order Number'] || ''}</td>
+                        <td data-label="C.O. Number:" class="px-6 py-3">${item['Consignment Order Number'] || ''}</td>
                         <td data-label="Quantity:" class="px-6 py-3">${quantitySold}</td>
                         <td data-label="Amount:" class="px-6 py-3">${amount}</td>
                         <td data-label="Invoice No.:" class="px-6 py-3">${invoiceNoCellContent}</td>
