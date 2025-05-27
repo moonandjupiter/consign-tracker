@@ -1821,17 +1821,10 @@
         clearSearchButton.addEventListener('click', () => {
             searchInput.value = '';
             clearSearchButton.classList.add('hidden'); // Hide clear button after clearing
-            filteredData = []; // Reset filteredData to empty
-            currentPage = 1;
-            hideMessageBox();
-            currentSortColumn = null;
-            currentSortDirection = 'asc';
-            calculateAndDisplaySummary(); // This will show summary based on empty filteredData
-            acknowledgedConsignments.clear();
-            renderTable(); // This will now render based on an empty filteredData, showing the initial message
             suggestionsList.classList.add('hidden');
             suggestionsList.innerHTML = '';
-            // No need to explicitly hide tableContainer/paginationContainer here, renderTable handles it
+            // Importantly, we are NOT clearing filteredData, currentPage, or re-rendering the table.
+            // The current search results will remain visible.
         });
 
         // Hide the dropdown if the user clicks outside of it
