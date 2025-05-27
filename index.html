@@ -296,6 +296,71 @@
                 vertical-align: super;
                 margin-left: 0.2em;
             }
+
+            /* START: Mobile Acknowledgement Slip Specific Styles */
+            .modal-content {
+                padding: 1rem; /* Reduced overall padding */
+                max-width: 95%; /* Allow it to take more width on smaller screens */
+            }
+
+            .modal-header {
+                padding: 1rem 1rem 0.5rem 1rem; /* Adjust header padding */
+                margin-bottom: 0.75rem; /* Less margin below header */
+            }
+
+            .print-header {
+                font-size: 0.7rem; /* Slightly smaller print header font */
+                margin-bottom: 0.5rem;
+            }
+
+            .print-header p {
+                line-height: 1.1;
+            }
+
+            .modal-header h2 {
+                font-size: 1rem; /* Smaller main title */
+                margin-bottom: 0.25rem;
+            }
+
+            .modal-body p {
+                font-size: 0.8rem; /* Slightly smaller body text */
+                margin-bottom: 0.1rem;
+                display: block; /* Stack label and value on separate lines */
+            }
+
+            .modal-body strong {
+                display: block; /* Make labels take full width */
+                margin-bottom: 0.1rem; /* Add a little space below the label */
+                width: 100%;
+                text-align: left;
+                font-weight: normal; /* Less emphasis on labels */
+            }
+
+            .modal-body span {
+                display: block; /* Make values take full width */
+                font-weight: 600; /* Keep values bold */
+                text-align: left;
+            }
+
+            .modal-note {
+                font-size: 0.65rem; /* Smaller note text */
+                margin-top: 0.5rem;
+                line-height: 1.3;
+            }
+
+            .signature-block-centered {
+                margin-top: 0.5rem;
+            }
+
+            .signature-text {
+                font-size: 0.6rem;
+            }
+
+            .date-line {
+                font-size: 0.6rem;
+                margin-top: 0.5rem;
+            }
+            /* END: Mobile Acknowledgement Slip Specific Styles */
         }
 
         @media (min-width: 768px) {
