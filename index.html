@@ -1117,6 +1117,52 @@
         .signature-section {
             display: none;
         }
+
+        /* NEW: Table specific loading overlay */
+        .table-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white overlay */
+            z-index: 50; /* Above the table content */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease-out; /* Smooth fade in/out */
+        }
+
+        .table-loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none; /* Allow clicks through when hidden */
+        }
+
+        /* Adjust dot sizes for the table overlay if needed, or reuse existing */
+        .table-loading-overlay .loading-dots-container {
+            display: flex;
+            gap: 10px; /* Smaller gap for table */
+            margin-bottom: 0; /* No margin at the bottom */
+        }
+
+        .table-loading-overlay .loading-dot {
+            width: 15px; /* Smaller dots for table */
+            height: 15px; /* Smaller dots for table */
+            border-radius: 50%;
+            background-color: #93c5fd; /* Default blue for dots */
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        /* Specific colors for each dot (reusing from main overlay) */
+        .table-loading-overlay .loading-dot:nth-child(1) { background-color: #4285F4; }
+        .table-loading-overlay .loading-dot:nth-child(2) { background-color: #EA4335; animation-delay: 0.1s; }
+        .table-loading-overlay .loading-dot:nth-child(3) { background-color: #FBBC05; animation-delay: 0.2s; }
+        .table-loading-overlay .loading-dot:nth-child(4) { background-color: #34A853; animation-delay: 0.3s; }
+
+        /* Ensure tableContainer is relative for absolute positioning of overlay */
+        #tableContainer {
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -1196,6 +1242,14 @@
                             </tr>
                         </tbody>
                     </table>
+                    <div id="tableLoadingOverlay" class="table-loading-overlay hidden">
+                        <div class="loading-dots-container">
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="paginationContainer" class="mt-6 flex flex-col md:flex-row justify-between items-center">
@@ -1273,7 +1327,6 @@
         let lastClickedConsignmentOrder = null; // New global variable to store the consignment order of the last clicked button
 
         const searchInput = document.getElementById('searchInput');
-        // const resetButton = document.getElementById('resetButton'); // Removed reset button
         const clearSearchButton = document.getElementById('clearSearchButton'); // New clear button
         const exportButton = document.getElementById('exportButton');
         const exportDropdown = document.getElementById('exportDropdown');
@@ -1293,6 +1346,9 @@
         const loadingOverlay = document.getElementById('loadingOverlay');
         const mainContent = document.getElementById('mainContent');
         const exportOptionsDiv = document.querySelector('.export-options'); // Get the export options div
+
+        // NEW: Table specific loading overlay element
+        const tableLoadingOverlay = document.getElementById('tableLoadingOverlay');
 
         // Modal elements
         const detailsModalOverlay = document.getElementById('detailsModalOverlay');
@@ -1705,6 +1761,10 @@
             quantitySummaryPanel.classList.add('hidden');
 
             setTimeout(() => {
+                // Clear the table body here before rendering new results
+                invoiceTableBody.innerHTML = '';
+                tableLoadingOverlay.classList.add('hidden'); // Remove loading class from table
+
                 let searchTerm;
                 if (searchValue !== null) {
                     searchTerm = String(searchValue).toLowerCase();
@@ -1802,7 +1862,8 @@
                             event.stopPropagation(); // Stop propagation for suggestion click
                             searchInput.value = suggestion.display;
                             suggestionsList.classList.add('hidden');
-                            performSearch(suggestion.value); // Trigger search with animation
+                            tableLoadingOverlay.classList.remove('hidden'); // Add loading class to table overlay
+                            performSearch(suggestion.value);
                         });
                         suggestionsList.appendChild(suggestionItem);
                     });
@@ -1821,10 +1882,9 @@
         clearSearchButton.addEventListener('click', () => {
             searchInput.value = '';
             clearSearchButton.classList.add('hidden'); // Hide clear button after clearing
+            hideMessageBox();
             suggestionsList.classList.add('hidden');
             suggestionsList.innerHTML = '';
-            // Importantly, we are NOT clearing filteredData, currentPage, or re-rendering the table.
-            // The current search results will remain visible.
         });
 
         // Hide the dropdown if the user clicks outside of it
