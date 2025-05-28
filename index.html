@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Existing styles remain the same */
         body {
@@ -60,6 +61,266 @@
             opacity: 1;
             color: #4b5563;
         }
+
+        /* Dashboard card specific styles (retained for general use, but main summary cards are different) */
+        .summary-card {
+            background-color: #f8fafc; /* Light background for cards */
+            border: 1px solid #e2e8f0; /* Subtle border */
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 180px; /* Ensure consistent card height */
+        }
+
+        .summary-card h3 {
+            font-size: 1.125rem; /* lg text */
+            font-weight: 600; /* semi-bold */
+            color: #1a202c; /* dark gray */
+            margin-bottom: 0.75rem;
+        }
+
+        .summary-card p {
+            font-size: 0.875rem; /* sm text */
+            color: #4a5568; /* medium gray */
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-card .value {
+            font-weight: 700; /* bold */
+            color: #2d3748; /* darker gray */
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px; /* Full rounded for pill shape */
+            font-size: 0.75rem; /* xs text */
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 0.75rem;
+        }
+
+        .status-badge.completed {
+            background-color: #d1fae5; /* green-100 */
+            color: #065f46; /* green-800 */
+        }
+
+        .status-badge.pending-voucher {
+            background-color: #fef3c7; /* yellow-100 */
+            color: #92400e; /* yellow-800 */
+        }
+
+        .status-badge.pending-invoice {
+            background-color: #fee2e2; /* red-100 */
+            color: #991b1b; /* red-800 */
+        }
+
+        .flow-indicator {
+            display: flex;
+            align-items: center;
+            margin-top: 0.75rem;
+            gap: 0.5rem;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.875rem; /* sm text */
+            color: #718096; /* gray-600 */
+        }
+
+        .flow-circle {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.6rem;
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+
+        .flow-circle.active {
+            background-color: #3b82f6; /* blue-500 */
+        }
+
+        .flow-circle.inactive {
+            background-color: #cbd5e0; /* gray-300 */
+        }
+
+        .flow-arrow {
+            color: #a0aec0; /* gray-400 */
+            font-size: 0.75rem;
+        }
+
+        /* New Dashboard Specific Styles */
+        .dashboard-section {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .dashboard-card-item {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .dashboard-card-item .icon {
+            font-size: 1.5rem;
+            color: #3b82f6; /* blue-500 */
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-card-item .label {
+            font-size: 0.875rem; /* sm */
+            color: #64748b; /* slate-600 */
+            font-weight: 500;
+        }
+
+        .dashboard-card-item .count {
+            font-size: 1.5rem; /* xl */
+            font-weight: 700; /* bold */
+            color: #1e293b; /* slate-900 */
+        }
+
+        /* Progress Bar Styles */
+        .progress-bar-container {
+            margin-bottom: 1rem;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-bar-header h4 {
+            font-size: 1.1rem; /* Slightly larger for prominence */
+            font-weight: 600;
+            color: #333; /* Dark grey for headings */
+            display: flex; /* To align SR ID and badge */
+            align-items: center;
+        }
+
+        .progress-bar-header .status-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .progress-bar-stages {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            padding-top: 0.5rem; /* Added padding for spacing */
+        }
+
+        .progress-stage-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+            color: #666; /* Lighter grey for subtext */
+            font-weight: 500; /* Medium font weight */
+        }
+
+        .progress-stage-circle {
+            width: 0.8rem;
+            height: 0.8rem;
+            border-radius: 50%;
+        }
+
+        /* New styles for the status badge within the progress bar header */
+        .status-badge-progress {
+            padding: 0.2rem 0.6rem; /* Adjusted padding */
+            border-radius: 9999px; /* Pill shape */
+            font-size: 0.7rem; /* Smaller font size */
+            font-weight: 600; /* Semi-bold */
+            display: inline-block;
+            margin-left: 0.6rem; /* Increased space from SR ID */
+            white-space: nowrap; /* Prevent wrapping */
+            text-transform: uppercase; /* Make text uppercase */
+            letter-spacing: 0.025em; /* Slight letter spacing */
+        }
+
+        /* Specific colors for the progress badges */
+        .status-badge-progress.pending-invoice {
+            background-color: #fee2e2; /* red-100 */
+            color: #991b1b; /* red-800 */
+        }
+        .status-badge-progress.pending-voucher {
+            background-color: #fef3c7; /* yellow-100 */
+            color: #92400e; /* yellow-800 */
+        }
+        .status-badge-progress.completed {
+            background-color: #d1fae5; /* green-100 */
+            color: #065f46; /* green-800 */
+        }
+
+        /* Progress stage circle colors */
+        .progress-stage-circle.active-sr,
+        .progress-stage-circle.active-invoice {
+            background-color: #22c55e; /* green-500 */
+        }
+        .progress-stage-circle.active-voucher-pending {
+            background-color: #f59e0b; /* amber-500 */
+        }
+        .progress-stage-circle.active-voucher-complete {
+            background-color: #22c55e; /* green-500 */
+        }
+        /* New class for inactive invoice dot (red) */
+        .progress-stage-circle.inactive-invoice-red {
+            background-color: #ef4444; /* red-500 */
+        }
+        /* Inactive remains gray-300 */
+        .progress-stage-circle.inactive {
+            background-color: #cbd5e0; /* gray-300 */
+        }
+
+
+        .progress-bar-line {
+            width: 100%;
+            height: 0.35rem; /* Slimmer progress bar */
+            background-color: #e2e8f0;
+            border-radius: 9999px; /* Fully rounded */
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%; /* Controlled by JS */
+            background-color: #3b82f6; /* blue-500 default */
+            border-radius: 9999px; /* Fully rounded */
+            transition: width 0.5s ease-in-out, background-color 0.3s ease-in-out;
+        }
+
+        .progress-fill.completed { background-color: #16a34a; } /* green-600 */
+        .progress-fill.pending-voucher { background-color: #f59e0b; } /* amber-500 */
+        .progress-fill.pending-invoice { background-color: #ef4444; } /* red-500 */
+
 
         @media (max-width: 767px) {
             #invoiceTable thead {
@@ -343,7 +604,7 @@
             }
 
             .modal-note {
-                font-size: 0.65rem; /* Smaller note text */
+                font-size: 0.65rem;
                 margin-top: 0.5rem;
                 line-height: 1.3;
             }
@@ -1107,7 +1368,7 @@
 
             .date-line {
                 margin-top: 0.75rem;
-                font-size: 0.75rem; /* Increased font size */
+                font-size: 0.75rem;
                 color: #4b5563;
                 width: 100%;
                 text-align: left;
@@ -1139,19 +1400,19 @@
         }
 
         .table-loading-overlay .loading-dots-container {
-            position: relative; /* For absolute positioning of dots */
-            width: 80px; /* Size of the spinner area */
-            height: 80px; /* Size of the spinner area */
+            position: relative;
+            width: 80px;
+            height: 80px;
         }
 
         .table-loading-overlay .loading-dot {
             position: absolute;
-            width: 18px; /* Slightly larger dot */
-            height: 18px; /* Slightly larger dot */
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            background-color: #e0e0e0; /* Lighter grey for unlit */
-            opacity: 0.3; /* Start with lower opacity */
-            animation: sequential-fill 1s infinite ease-in-out; /* Main animation */
+            background-color: #e0e0e0;
+            opacity: 0.3;
+            animation: sequential-fill 1s infinite ease-in-out;
         }
 
         /* Positioning for 8 dots in a circle */
@@ -1177,13 +1438,13 @@
         @keyframes sequential-fill {
             0%, 100% {
                 opacity: 0.3;
-                background-color: #e0e0e0; /* Lighter grey for unlit */
-                transform: scale(0.8); /* Slightly smaller when unlit */
+                background-color: #e0e0e0;
+                transform: scale(0.8);
             }
             50% {
                 opacity: 1;
-                background-color: #1d4ed8; /* Main blue when lit */
-                transform: scale(1.2); /* Slightly larger when lit */
+                background-color: #1d4ed8;
+                transform: scale(1.2);
             }
         }
 
@@ -1191,6 +1452,127 @@
         #tableContainer {
             position: relative;
             min-height: 150px; /* Ensure there's space for the spinner */
+        }
+
+        /* New styles for chart container to allow central text */
+        .chart-container-wrapper {
+            position: relative;
+            width: 100%;
+            height: 250px; /* Fixed height for the chart area */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chart-center-text .main-value {
+            font-size: 2.25rem; /* 3xl */
+            font-weight: 700; /* bold */
+            line-height: 1;
+        }
+
+        .chart-center-text .label {
+            font-size: 0.875rem; /* sm */
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        /* Added style for the "Progress per SR ID" label */
+        .sr-progress-label {
+            font-weight: 500; /* Adjusted font weight to be less heavy */
+        }
+
+        /* New styles for collapsible section */
+        .collapsible-section {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            overflow: hidden; /* Ensures content is clipped during collapse */
+            margin-bottom: 1rem; /* Space between bubbles */
+        }
+
+        .collapsible-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+            background-color: #f8fafc; /* Light background for header */
+            transition: background-color 0.2s ease-in-out;
+            display: flex; /* Make it a flex container */
+            justify-content: space-between; /* Distribute items */
+            align-items: center; /* Vertically align items */
+        }
+
+        .collapsible-header:hover {
+            background-color: #f3f4f6; /* Subtle hover effect */
+        }
+
+        .collapsible-content {
+            max-height: 0; /* Starts collapsed */
+            overflow-y: hidden;
+            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+            padding: 0 1rem; /* Initial horizontal padding, vertical will be added when open */
+        }
+
+        .collapsible-content.expanded {
+            max-height: 300px; /* Increased max-height */
+            overflow-y: auto; /* Allow scrolling when expanded */
+            padding-top: 1rem; /* Add vertical padding when expanded */
+            padding-bottom: 1rem; /* Add vertical padding when expanded */
+        }
+
+        .collapsible-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .collapsible-icon.rotate {
+            transform: rotate(180deg);
+        }
+
+        /* Styles for the summary text within the collapsible header */
+        .collapsible-header-summary {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .collapsible-header-summary .sr-id-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .collapsible-header-summary .percentage-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 0.2rem;
+        }
+
+        /* New classes for percentage text color */
+        .percentage-not-started {
+            color: #ef4444; /* Red */
+        }
+
+        .percentage-in-progress {
+            color: #f59e0b; /* Yellow/Amber */
+        }
+
+        .percentage-completed {
+            color: #22c55e; /* Green */
+        }
+
+        .collapsible-header-summary .status-text-summary {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #666;
+            margin-top: 0.1rem;
+        }
+
+        /* Ensure progress bar container within collapsible content has no extra margin */
+        .collapsible-content .progress-bar-container {
+            margin-bottom: 0; /* Remove default margin from progress bar container */
+            border: none; /* Remove border from inner container */
+            box-shadow: none; /* Remove shadow from inner container */
+            padding: 0; /* Remove padding from inner container */
         }
     </style>
 </head>
@@ -1250,7 +1632,15 @@
                     </ul>
                 </div>
 
-                <div id="messageBox" class="mt-4 p-4 rounded-md hidden"></div> <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4 py-4">
+                <div id="dashboardContainer" class="mt-6 dashboard-section hidden">
+                    <h2 id="dashboardMainTitle" class="text-xl font-semibold text-gray-800 mb-4">Consignment Overview Dashboard</h2>
+
+                    <div id="srProgressBubblesContainer">
+                        </div>
+                </div>
+
+                <div id="messageBox" class="mt-4 p-4 rounded-md hidden"></div>
+                <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4 py-4">
                     <table id="invoiceTable" class="min-w-full bg-white">
                         <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                             <tr>
@@ -1399,6 +1789,16 @@
         const closeMessageModalButton = document.getElementById('closeMessageModalButton');
         const messageModalOkButton = document.getElementById('messageModalOkButton');
 
+        // Dashboard elements
+        const dashboardContainer = document.getElementById('dashboardContainer');
+        const dashboardMainTitle = document.getElementById('dashboardMainTitle'); // Added ID
+        const srProgressBubblesContainer = document.getElementById('srProgressBubblesContainer'); // New container for individual bubbles
+
+
+        // Chart instances (no longer used, but kept for consistency if re-added)
+        let overallStatusChartInstance = null;
+
+
         // This Set will store consignment order numbers that have been "acknowledged" in the current session
         const acknowledgedConsignments = new Set();
 
@@ -1407,10 +1807,9 @@
             messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-center');
             messageBox.innerHTML = '';
 
-            // MODIFIED: Simplified message for table loading, removed inline dots
             if (message === "Retrieving consignments..." && type === 'info') {
                 messageBox.classList.add('bg-blue-100', 'text-blue-800', 'flex', 'items-center', 'justify-content-center');
-                messageBox.textContent = "Retrieving consignments..."; // Updated message
+                messageBox.textContent = "Retrieving consignments...";
             } else {
                 messageBox.classList.add('mt-4', 'p-4', 'rounded-md');
                 if (type === 'error') {
@@ -1435,7 +1834,6 @@
             console.log('Attempting to show info modal...');
             messageModalTitle.textContent = title;
             messageModalBody.textContent = message;
-            // Directly set display properties
             messageModalOverlay.style.display = 'flex';
             messageModalOverlay.style.opacity = '1';
             messageModalOverlay.style.visibility = 'visible';
@@ -1445,14 +1843,12 @@
         // Function to hide the new message modal
         function hideInfoModal() {
             console.log('Attempting to hide info modal...');
-            // Directly set display properties to hide
             messageModalOverlay.style.opacity = '0';
             messageModalOverlay.style.visibility = 'hidden';
-            // Use a slight delay before setting display to 'none' to allow transition (if any)
             setTimeout(() => {
                 messageModalOverlay.style.display = 'none';
                 console.log('Modal display properties reset: display=none, opacity=0, visibility=hidden');
-            }, 300); // Match this with your CSS transition duration if you re-enable it
+            }, 300);
         }
 
         // Function to calculate and display the total quantity of the filtered data and per consignment
@@ -1595,17 +1991,17 @@
 
             let statusText = '';
             let statusClass = '';
-            let clickableClass = ''; // New variable for clickable class
+            let clickableClass = '';
 
             if (invoiceNo === '' || invoiceNo === '-') {
                 statusText = 'Waiting for Invoice';
                 statusClass = 'status-waiting';
-                clickableClass = 'status-waiting-clickable'; // Add specific class for click event
+                clickableClass = 'status-waiting-clickable';
             } else if (voucherNo === '' || voucherNo === '-' || voucherNo === '0') {
                 statusText = 'Processing Voucher';
                 statusClass = 'status-processing';
             } else {
-                statusText = 'Complete'; // Changed "Done" to "Complete"
+                statusText = 'Complete';
                 statusClass = 'status-done';
             }
 
@@ -1624,7 +2020,6 @@
                 const message = searchInput.value.trim() === '' ? 'Enter a search term and press Enter or select a suggestion.' : 'No data found for your search.';
                 invoiceTableBody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
 
-                // Hide export options when no data
                 exportOptionsDiv.classList.add('hidden');
 
             } else {
@@ -1638,7 +2033,6 @@
                     const consignmentOrderNumber = String(item['Consignment Order Number'] || 'N/A');
                     const isAcknowledged = acknowledgedConsignments.has(consignmentOrderNumber);
 
-                    // Check if Invoice No. is blank or dash AND if it's not already acknowledged
                     if ((invoiceNo.trim() === '' || invoiceNo.trim() === '-') && !isAcknowledged) {
                         invoiceNoCellContent = `
                             <button class="acknowledge-button py-1 px-2 focus:outline-none focus:shadow-outline"
@@ -1648,27 +2042,21 @@
                             </button>
                         `;
                     } else if (isAcknowledged) {
-                        // If it's already acknowledged, display the acknowledged state
                         invoiceNoCellContent = `
                             <button class="acknowledge-button bg-green-200 text-green-800 font-normal py-1 px-2 rounded cursor-not-allowed" disabled>
                                 <i class="fas fa-check mr-1"></i> Acknowledged
                             </button>
                         `;
                     }
-                    // If invoiceNo is not blank/dash and not acknowledged, it will just display invoiceNo as is.
 
-                    // Determine if voucher number exists to apply highlight class
                     const voucherValue = String(item['Voucher No.'] || '').trim();
                     const hasValidVoucher = voucherValue !== '' && voucherValue !== '0' && voucherValue !== '-';
                     const voucherClass = hasValidVoucher ? 'highlight-voucher' : '';
 
-                    // Get status HTML
                     const statusHtml = getStatusHtml(item);
 
-                    // Format Quantity Sold
                     const quantitySold = item['Quantity Sold'] ? parseInt(item['Quantity Sold'], 10).toLocaleString() : '';
 
-                    // Format Amount
                     const amount = item['Amount'] ? parseFloat(String(item['Amount']).replace(/[^0-9.-]+/g,"")).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
 
 
@@ -1686,19 +2074,16 @@
                     invoiceTableBody.appendChild(row);
                 });
 
-                // Show export options when data is present
                 exportOptionsDiv.classList.remove('hidden');
             }
 
-            // Ensure table and pagination containers are always visible
             tableContainer.style.display = 'block';
             paginationContainer.style.display = 'flex';
 
             updatePaginationControls();
             exportButton.disabled = filteredData.length === 0;
             updateSortIcons();
-            addAcknowledgeButtonListeners(); // New listener for the buttons
-            // Removed addStatusButtonListeners() call from here, as it's now handled by delegation
+            addAcknowledgeButtonListeners();
         }
 
         // New function to merge data
@@ -1708,7 +2093,7 @@
             data.forEach(item => {
                 const srId = item['SR ID'] || '';
                 const consignmentOrderNumber = item['Consignment Order Number'] || '';
-                const key = `${srId}-${consignmentOrderNumber}`; // Unique key for merging
+                const key = `${srId}-${consignmentOrderNumber}`;
 
                 const quantity = parseInt(item['Quantity Sold'], 10) || 0;
                 const amount = parseFloat(String(item['Amount'] || '0').replace(/[^0-9.-]+/g,"")) || 0;
@@ -1717,14 +2102,10 @@
                     const existing = mergedMap.get(key);
                     existing['Quantity Sold'] += quantity;
                     existing['Amount'] += amount;
-                    // For other fields, we primarily want the first encountered value or a representative one.
-                    // For 'Invoice No.', 'Voucher No.', 'Voucher Date', we'll keep the first one encountered.
-                    // This is acceptable because the merging is primarily for quantity/amount.
                 } else {
-                    // Create a copy to avoid modifying the original data directly
                     const newItem = { ...item };
-                    newItem['Quantity Sold'] = quantity; // Ensure it's a number
-                    newItem['Amount'] = amount; // Ensure it's a number
+                    newItem['Quantity Sold'] = quantity;
+                    newItem['Amount'] = amount;
                     mergedMap.set(key, newItem);
                 }
             });
@@ -1734,7 +2115,6 @@
 
         // Function to fetch data from the JSON URL
         async function fetchData() {
-            // Show loading overlay immediately
             loadingOverlay.classList.remove('hidden');
             mainContent.classList.add('hidden');
             console.log('Loading overlay shown, main content hidden.');
@@ -1744,16 +2124,20 @@
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                allData = await response.json(); // Store raw data
-                processedData = mergeData(allData); // Process and merge data
-                filteredData = []; // Initialize filteredData as empty on initial load
+                allData = await response.json();
+
+                // Initially, processedData and filteredData are empty,
+                // and the table will show the "Enter a search term" message.
+                processedData = [];
+                filteredData = [];
+
                 hideMessageBox();
                 quantitySummaryPanel.classList.add('hidden');
+                dashboardContainer.classList.add('hidden');
+                renderTable(); // Render empty table initially
 
-                console.log('Data fetched and processed successfully. Rendering table...');
-                renderTable(); // Render table with initial empty filteredData
+                console.log('Raw data fetched successfully. Dashboard and table will load on search.');
 
-                // ONLY on successful fetch, apply the 5-second delay
                 setTimeout(() => {
                     loadingOverlay.classList.add('hidden');
                     mainContent.classList.remove('hidden');
@@ -1763,76 +2147,86 @@
             } catch (error) {
                 console.error("Error fetching data:", error);
                 showMessage(`Failed to load data: ${error.message}`, 'error');
-                invoiceTableBody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>'; // Changed colspan to 9
+                invoiceTableBody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>';
                 quantitySummaryPanel.classList.add('hidden');
+                dashboardContainer.classList.add('hidden');
 
-                // On error, hide loading overlay quickly
                 setTimeout(() => {
                     loadingOverlay.classList.add('hidden');
                     mainContent.classList.remove('hidden');
-                    console.log('Loading overlay hidden and main content shown after error (500ms delay).');
                 }, 500);
             }
         }
 
         // Function to perform the search
-        // Accepts an optional searchValue to filter by a specific key value (used for suggestion clicks)
         function performSearch(searchValue = null) {
             console.log("performSearch called. Search term (raw):", searchInput.value);
-            console.log("Processed Data Length:", processedData.length);
 
             hideMessageBox();
-            // MODIFIED: Simpler message for table loading
             showMessage("Retrieving consignments...", 'info');
-            tableContainer.style.display = 'block';
-            paginationContainer.style.display = 'flex';
-            quantitySummaryPanel.classList.add('hidden');
+            tableLoadingOverlay.classList.remove('hidden');
 
             setTimeout(() => {
-                // Clear the table body here before rendering new results
                 invoiceTableBody.innerHTML = '';
-                tableLoadingOverlay.classList.add('hidden'); // Remove loading class from table
+                tableLoadingOverlay.classList.add('hidden');
 
                 let searchTerm;
                 if (searchValue !== null) {
                     searchTerm = String(searchValue).toLowerCase();
+                    searchInput.value = searchTerm;
                     console.log("Searching by suggestion value (Consignment Order Number):", searchTerm);
-                    // When a suggestion is clicked, we specifically search by consignment order number
-                    filteredData = processedData.filter(item => {
-                        const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
-                        return consignmentOrderNumber === searchTerm;
-                    });
                 } else {
                     searchTerm = searchInput.value.toLowerCase();
                     console.log("Searching by typed input:", searchTerm);
-                    if (searchTerm) {
-                        // Filter for partial matches across SR ID, Consignment Order Number, or Invoice No.
-                        filteredData = processedData.filter(item => {
-                            const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
-                            const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
-                            const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+                }
 
-                            const match = srId.includes(searchTerm) ||
-                                          consignmentOrderNumber.includes(searchTerm) ||
-                                          invoiceNo.includes(searchTerm);
-                            // console.log(`Item: ${item['SR ID']}, CO: ${item['Consignment Order Number']}, Invoice: ${item['Invoice No.']} -> Match: ${match}`); // Detailed debug log
-                            return match;
-                        });
-                    } else {
-                        filteredData = []; // If no search term, keep filtered data empty
-                    }
+                if (searchTerm) {
+                    processedData = mergeData(allData);
+
+                    // Step 1: Find all unique Consignment Order Numbers that match the search term
+                    const relevantCOs = new Set();
+                    processedData.forEach(item => {
+                        const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
+                        const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']).toLowerCase() : '';
+                        const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
+
+                        if (srId.includes(searchTerm) || consignmentOrderNumber.includes(searchTerm) || invoiceNo.includes(searchTerm)) {
+                            if (item['Consignment Order Number']) {
+                                relevantCOs.add(item['Consignment Order Number']);
+                            }
+                        }
+                    });
+
+                    // Step 2: Filter processedData to include ALL items belonging to the relevant COs
+                    filteredData = processedData.filter(item =>
+                        relevantCOs.has(item['Consignment Order Number'])
+                    );
+
+                    // Sort filteredData by SR ID ascending
+                    filteredData.sort((a, b) => {
+                        const srA = String(a['SR ID'] || '').toLowerCase();
+                        const srB = String(b['SR ID'] || '').toLowerCase();
+                        if (srA < srB) return -1;
+                        if (srA > srB) return 1;
+                        return 0;
+                    });
+
+                } else {
+                    filteredData = [];
+                    processedData = [];
                 }
 
                 console.log("Filtered Data Length after search:", filteredData.length);
                 currentPage = 1;
                 calculateAndDisplaySummary();
                 renderTable();
+                renderDashboard();
                 hideMessageBox();
 
                 if (filteredData.length === 0 && searchInput.value.trim() !== '') {
                     showMessage("No matching results found.", 'info');
                 }
-            }, 1500);
+            }, 500);
         }
 
         // Optional: Allow pressing Enter in the search field to trigger search
@@ -1849,17 +2243,16 @@
             const searchTerm = searchInput.value.toLowerCase();
             suggestionsList.innerHTML = '';
 
-            // Toggle clear button visibility
             if (searchInput.value.length > 0) {
                 clearSearchButton.classList.remove('hidden');
             } else {
                 clearSearchButton.classList.add('hidden');
             }
 
-            if (searchTerm.length > 2 && processedData.length > 0) { // Use processedData for suggestions
+            if (searchTerm.length > 2 && allData.length > 0) {
                 const matchedItems = new Map();
 
-                processedData.forEach(item => {
+                allData.forEach(item => {
                     const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
                     const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']) : 'N/A';
                     const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
@@ -1886,11 +2279,10 @@
                         suggestionItem.textContent = suggestion.display;
                         suggestionItem.setAttribute('data-value', suggestion.value);
                         suggestionItem.classList.add('px-4', 'py-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-700');
-                        suggestionItem.addEventListener('click', (event) => { // Added event parameter
-                            event.stopPropagation(); // Stop propagation for suggestion click
+                        suggestionItem.addEventListener('click', (event) => {
+                            event.stopPropagation();
                             searchInput.value = suggestion.display;
                             suggestionsList.classList.add('hidden');
-                            tableLoadingOverlay.classList.remove('hidden'); // Add loading class to table overlay
                             performSearch(suggestion.value);
                         });
                         suggestionsList.appendChild(suggestionItem);
@@ -1902,25 +2294,26 @@
             } else {
                 suggestionsList.classList.add('hidden');
             }
-            // Ensure message box is hidden when suggestions appear
             hideMessageBox();
         });
 
         // Event listener for the clear search button
         clearSearchButton.addEventListener('click', () => {
             searchInput.value = '';
-            clearSearchButton.classList.add('hidden'); // Hide clear button after clearing
+            clearSearchButton.classList.add('hidden');
             hideMessageBox();
             suggestionsList.classList.add('hidden');
             suggestionsList.innerHTML = '';
+            filteredData = [];
+            processedData = [];
+            renderTable();
+            renderDashboard();
         });
 
         // Hide the dropdown if the user clicks outside of it
         window.addEventListener('click', (event) => {
-            // Check if the click is outside the export button, dropdown, search input, suggestions list, and message modal
             const isClickOutsideExport = !exportButton.contains(event.target) && !exportDropdown.contains(event.target);
             const isClickOutsideSearch = !searchInput.contains(event.target) && !suggestionsList.contains(event.target) && !clearSearchButton.contains(event.target);
-            // Check if the modal is currently displayed before trying to hide it
             const isClickOutsideMessageModal = messageModalOverlay.style.display === 'flex' && !messageModalOverlay.contains(event.target);
             const isClickOutsideDetailsModal = detailsModalOverlay.style.display === 'flex' && !detailsModalOverlay.contains(event.target);
 
@@ -1944,7 +2337,6 @@
         // Function to show the details modal
         function showDetailsModal(srId, consignmentOrder) {
             console.log('Attempting to show details modal...');
-            // Find the specific item that was clicked in the PROCESSED data
             const clickedItem = processedData.find(item =>
                 String(item['SR ID'] || 'N/A') === String(srId) &&
                 String(item['Consignment Order Number'] || 'N/A') === String(consignmentOrder)
@@ -1961,7 +2353,6 @@
                 <p><strong>C.O.#:</strong> <span>${consignmentOrder}</span></p>
                 <p><strong>Total Qty. Sold:</strong> <span>${totalQuantity.toLocaleString()} pcs</span></p> <p><strong>Total Amount:</strong> <span>${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>
             `;
-            // Directly set display properties
             detailsModalOverlay.style.display = 'flex';
             detailsModalOverlay.style.opacity = '1';
             detailsModalOverlay.style.visibility = 'visible';
@@ -1971,37 +2362,32 @@
         // Function to hide the details modal
         function hideDetailsModal() {
             console.log('Attempting to hide details modal...');
-            // Directly set display properties to hide
             detailsModalOverlay.style.opacity = '0';
             detailsModalOverlay.style.visibility = 'hidden';
-            // Use a slight delay before setting display to 'none' to allow transition (if any)
             setTimeout(() => {
                 detailsModalOverlay.style.display = 'none';
-                console.log('Details Modal display properties reset: display=none, opacity=0, visibility=hidden');
-            }, 300); // Match this with your CSS transition duration if you re-enable it
+                console.log('Modal display properties reset: display=none, opacity=0, visibility=hidden');
+            }, 300);
         }
 
         // Function to update the print/download button label and icon
         function updatePrintButtonLabel() {
-            if (window.innerWidth <= 767) { // Mobile view
+            if (window.innerWidth <= 767) {
                 printDetailsButton.innerHTML = '<i class="fas fa-share-alt"></i> Confirm and Share';
-            } else { // Desktop view
+            } else {
                 printDetailsButton.innerHTML = '<i class="fas fa-print"></i> Confirm and Print';
             }
         }
 
         // New function to generate PNG Blob
         async function generateModalPngBlob() {
-            const modalContent = document.querySelector('#detailsModalOverlay .modal-content'); // Target specific modal content
-            // Temporarily hide elements that should not appear in the screenshot
+            const modalContent = document.querySelector('#detailsModalOverlay .modal-content');
             const closeButton = modalContent.querySelector('.modal-close-button');
             const printButton = modalContent.querySelector('#printDetailsButton');
 
-            // Store original display styles
             const originalCloseButtonDisplay = closeButton.style.display;
             const originalPrintButtonDisplay = printButton.style.display;
 
-            // Apply specific styles for PNG capture (same as before)
             const signatureSection = modalContent.querySelector('.signature-section');
             const signatureBlockCentered = modalContent.querySelector('.signature-block-centered');
             const signatureText = modalContent.querySelector('.signature-text');
@@ -2070,7 +2456,6 @@
                     windowWidth: modalContent.offsetWidth
                 });
 
-                // Restore elements immediately after canvas capture
                 closeButton.style.display = originalCloseButtonDisplay;
                 printButton.style.display = originalPrintButtonDisplay;
                 signatureSection.style.display = originalSignatureSectionDisplay;
@@ -2099,7 +2484,7 @@
                 });
             } catch (error) {
                 console.error("Error generating PNG:", error);
-                throw error; // Re-throw to be caught by the caller
+                throw error;
             }
         }
 
@@ -2115,29 +2500,25 @@
 
             setTimeout(() => URL.revokeObjectURL(url), 10000);
 
-            showMessage("Acknowledgement slip downloaded as PNG.", 'success'); // Show success message after download
+            showMessage("Acknowledgement slip downloaded as PNG.", 'success');
         }
 
         // Function to update the state of acknowledge buttons
         function updateAcknowledgeButtonsState(consignmentOrder) {
-            // Add the consignment order to the set of acknowledged ones
             acknowledgedConsignments.add(consignmentOrder);
-
-            // Re-render the table to reflect the updated button states
             renderTable();
         }
 
         // Event listener for acknowledge buttons (delegated for dynamic content)
         function addAcknowledgeButtonListeners() {
             document.querySelectorAll('.acknowledge-button').forEach(button => {
-                // Only add click listener if the button is not already disabled
                 if (!button.disabled) {
                     button.onclick = (event) => {
                         console.log('Acknowledge button clicked:', event.currentTarget);
-                        event.stopPropagation(); // Stop propagation to prevent window click listener from immediately hiding
+                        event.stopPropagation();
                         const srId = event.currentTarget.dataset.srId;
                         const consignmentOrder = event.currentTarget.dataset.consignmentOrder;
-                        lastClickedConsignmentOrder = consignmentOrder; // Store the consignment order
+                        lastClickedConsignmentOrder = consignmentOrder;
                         showDetailsModal(srId, consignmentOrder);
                     };
                 }
@@ -2147,16 +2528,16 @@
         // New function to set up event delegation for status buttons
         function setupStatusButtonDelegation() {
             invoiceTableBody.addEventListener('click', (event) => {
-                console.log('Click on invoiceTableBody detected. Event target:', event.target); // Debugging log
+                console.log('Click on invoiceTableBody detected. Event target:', event.target);
                 const clickedButton = event.target.closest('.status-waiting-clickable');
                 if (clickedButton) {
-                    console.log('Clicked element has class status-waiting-clickable:', clickedButton); // Debugging log
-                    event.stopPropagation(); // Stop propagation to prevent window click listener from immediately hiding
+                    console.log('Clicked element has class status-waiting-clickable:', clickedButton);
+                    event.stopPropagation();
                     const statusText = clickedButton.textContent.trim();
-                    console.log('Status button text (trimmed):', statusText); // Debugging log
+                    console.log('Status button text (trimmed):', statusText);
 
                     if (statusText === 'Waiting for Invoice') {
-                        console.log('Condition met: statusText is "Waiting for Invoice". Calling showInfoModal...'); // Debugging log
+                        console.log('Condition met: statusText is "Waiting for Invoice". Calling showInfoModal...');
                         showInfoModal(
                             "Invoice Status Information",
                             "No invoice has been received in the past 42 hours. If already submitted, you may ignore this message or call local 3018 for assistance."
@@ -2175,21 +2556,19 @@
 
         printDetailsButton.addEventListener('click', async (event) => {
             console.log('Print/Confirm button clicked.');
-            event.stopPropagation(); // Stop propagation to prevent window click listener from immediately hiding
-            // Update acknowledge state before print/download/share
+            event.stopPropagation();
             if (lastClickedConsignmentOrder) {
                 updateAcknowledgeButtonsState(lastClickedConsignmentOrder);
-                lastClickedConsignmentOrder = null; // Clear the stored value
+                lastClickedConsignmentOrder = null;
             }
 
-            if (window.innerWidth <= 767) { // Mobile view
+            if (window.innerWidth <= 767) {
                 try {
                     console.log('Generating PNG blob for mobile share...');
-                    const pngBlob = await generateModalPngBlob(); // New function to get the blob
+                    const pngBlob = await generateModalPngBlob();
                     const file = new File([pngBlob], 'acknowledgement_slip.png', { type: 'image/png' });
 
                     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                        // Use Web Share API
                         console.log('Using Web Share API.');
                         await navigator.share({
                             files: [file],
@@ -2198,7 +2577,6 @@
                         });
                         showMessage("Acknowledgement slip shared successfully.", 'success');
                     } else {
-                        // Fallback to download if Web Share API is not available or cannot share files
                         console.log('Web Share API not available, falling back to download.');
                         triggerDownload(pngBlob, 'acknowledgement_slip.png', 'image/png');
                     }
@@ -2206,9 +2584,8 @@
                     console.error("Error handling share/download:", error);
                     showMessage("Failed to share or download image. Please try again.", 'error');
                 }
-            } else { // Desktop view, print
+            } else {
                 console.log('Initiating print for desktop.');
-                // Existing print logic
                 document.body.classList.add('print-active');
                 const originalSignatureDisplay = signatureSection.style.display;
                 signatureSection.style.display = 'flex';
@@ -2218,23 +2595,155 @@
                     signatureSection.style.display = originalSignatureDisplay;
                 }, 500);
             }
-            hideDetailsModal(); // Close modal after action
+            hideDetailsModal();
         });
 
         // Event listeners for the new message modal
         closeMessageModalButton.addEventListener('click', hideInfoModal);
         messageModalOkButton.addEventListener('click', hideInfoModal);
 
+        // New function to render the dashboard summary cards and charts
+        function renderDashboard() {
+            srProgressBubblesContainer.innerHTML = ''; // Clear the new container
+
+            const dataToSummarize = filteredData.length > 0 ? filteredData : [];
+
+            if (dataToSummarize.length === 0) {
+                dashboardContainer.classList.add('hidden');
+                dashboardMainTitle.textContent = "Consignment Overview Dashboard"; // Reset to default
+                return;
+            } else {
+                dashboardContainer.classList.remove('hidden');
+            }
+
+            // Determine unique Consignment Order Numbers and Company Names in the filtered data
+            const uniqueCOs = new Set();
+            const uniqueCompanies = new Set();
+            dataToSummarize.forEach(item => {
+                uniqueCOs.add(item['Consignment Order Number']);
+                uniqueCompanies.add(item['Name of Company']);
+            });
+
+            // Set the main dashboard title based on unique COs and Companies
+            if (uniqueCompanies.size === 1) {
+                dashboardMainTitle.textContent = `${Array.from(uniqueCompanies)[0]}`; // Changed to just company name
+            } else if (uniqueCOs.size === 1) {
+                dashboardMainTitle.textContent = `Latest update on C.O. ${Array.from(uniqueCOs)[0]}`;
+            } else {
+                dashboardMainTitle.textContent = "Latest Consignment Updates";
+            }
+
+            // Sort filteredData by SR ID ascending for consistent progress bar display
+            dataToSummarize.sort((a, b) => {
+                const srA = String(a['SR ID'] || '').toLowerCase();
+                const srB = String(b['SR ID'] || '').toLowerCase();
+                if (srA < srB) return -1;
+                if (srA > srB) return 1;
+                return 0;
+            });
+
+            // Iterate through each item (SR ID) in filteredData to create a progress bubble
+            dataToSummarize.forEach(item => {
+                const srId = item['SR ID'] || 'N/A';
+                const coNumber = item['Consignment Order Number'] || 'N/A';
+                const invoiceNo = String(item['Invoice No.'] || '').trim();
+                const voucherNo = String(item['Voucher No.'] || '').trim();
+
+                let progressPercentage = 0;
+                let statusText = '';
+                let progressClass = ''; // For progress bar color
+                let srStageClass = 'inactive';
+                let invoiceStageClass = 'inactive';
+                let voucherStageClass = 'inactive';
+                let percentageClass = ''; // For the percentage text color
+
+                // Logic to determine status and progress for individual SR
+                if (invoiceNo === '' || invoiceNo === '-') {
+                    statusText = 'Not Started';
+                    progressPercentage = 25;
+                    progressClass = 'pending-invoice'; // Red
+                    srStageClass = 'active-sr'; // SR is always active if data exists for it
+                    invoiceStageClass = 'inactive-invoice-red'; // Invoice dot is red if no invoice
+                    percentageClass = 'percentage-not-started';
+                } else if (voucherNo === '' || voucherNo === '-' || voucherNo === '0') {
+                    statusText = 'In-Progress';
+                    progressPercentage = 60;
+                    progressClass = 'pending-voucher'; // Yellow/Gold
+                    srStageClass = 'active-sr';
+                    invoiceStageClass = 'active-invoice'; // Invoice is received (green)
+                    voucherStageClass = 'active-voucher-pending'; // Voucher is pending, dot is gold
+                    percentageClass = 'percentage-in-progress';
+                } else {
+                    statusText = 'Completed';
+                    progressPercentage = 100;
+                    progressClass = 'completed'; // Green
+                    srStageClass = 'active-sr';
+                    invoiceStageClass = 'active-invoice'; // Invoice is received (green)
+                    voucherStageClass = 'active-voucher-complete'; // Voucher is complete, dot is green
+                    percentageClass = 'percentage-completed';
+                }
+
+                const bubbleHtml = `
+                    <div class="collapsible-section">
+                        <div class="collapsible-header flex justify-between items-center">
+                            <div class="collapsible-header-summary">
+                                <span class="sr-id-text">SR ID # ${srId}</span>
+                                <span class="percentage-text ${percentageClass}">${progressPercentage.toFixed(0)}% Complete</span>
+                                <span class="status-text-summary">${statusText}</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-500 collapsible-icon"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-header">
+                                    <h4>SR ${srId} <span class="status-badge-progress ${progressClass}">${statusText}</span></h4>
+                                </div>
+                                <div class="progress-bar-stages">
+                                    <div class="progress-stage-item">
+                                        <div class="progress-stage-circle ${srStageClass}"></div> SR
+                                    </div>
+                                    <i class="fas fa-arrow-right text-gray-400"></i>
+                                    <div class="progress-stage-item">
+                                        <div class="progress-stage-circle ${invoiceStageClass}"></div> Invoice
+                                    </div>
+                                    <i class="fas fa-arrow-right text-gray-400"></i>
+                                    <div class="progress-stage-item">
+                                        <div class="progress-stage-circle ${voucherStageClass}"></div> Voucher
+                                    </div>
+                                </div>
+                                <div class="progress-bar-line">
+                                    <div class="progress-fill ${progressClass}" style="width: ${progressPercentage}%;"></div>
+                                </div>
+                                <div class="text-right text-sm text-gray-600 mt-2">${progressPercentage.toFixed(0)}% Complete</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                srProgressBubblesContainer.insertAdjacentHTML('beforeend', bubbleHtml);
+            });
+
+            // Add event listeners to the newly created collapsible headers
+            document.querySelectorAll('.collapsible-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling; // The collapsible-content div
+                    const icon = header.querySelector('.collapsible-icon');
+
+                    content.classList.toggle('expanded');
+                    icon.classList.toggle('rotate');
+                });
+            });
+        }
+
+
         // Initial data fetch and button label update when the page loads, wrapped in DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOMContentLoaded fired. Initializing...');
-            // Initially hide mainContent and show loading overlay
             mainContent.classList.add('hidden');
             loadingOverlay.classList.remove('hidden');
 
-            fetchData();
-            updatePrintButtonLabel(); // Set initial button label
-            setupStatusButtonDelegation(); // Setup the delegated listener once on load
+            fetchData(); // This will now only fetch data and render an empty table
+            updatePrintButtonLabel();
+            setupStatusButtonDelegation();
         });
 
         // Update button label on window resize
