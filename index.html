@@ -1745,6 +1745,7 @@
         let allData = []; // Raw data from JSON
         let processedData = []; // Merged/processed data
         let filteredData = []; // Filtered subset of processedData
+        let lastDisplayedData = []; // NEW: Stores the last successfully displayed filtered data
         let currentSortColumn = null;
         let currentSortDirection = 'asc';
         let lastClickedConsignmentOrder = null; // New global variable to store the consignment order of the last clicked button
@@ -2130,6 +2131,7 @@
                 // and the table will show the "Enter a search term" message.
                 processedData = [];
                 filteredData = [];
+                lastDisplayedData = []; // Ensure this is also empty on initial load
 
                 hideMessageBox();
                 quantitySummaryPanel.classList.add('hidden');
@@ -2223,6 +2225,9 @@
                 renderDashboard();
                 hideMessageBox();
 
+                // Store the current filteredData as lastDisplayedData after a successful search
+                lastDisplayedData = [...filteredData]; // Deep copy to avoid reference issues
+
                 if (filteredData.length === 0 && searchInput.value.trim() !== '') {
                     showMessage("No matching results found.", 'info');
                 }
@@ -2304,8 +2309,21 @@
             hideMessageBox();
             suggestionsList.classList.add('hidden');
             suggestionsList.innerHTML = '';
-            filteredData = [];
-            processedData = [];
+
+            // NEW LOGIC: Revert to last displayed data if available, otherwise clear completely
+            if (lastDisplayedData.length > 0) {
+                filteredData = [...lastDisplayedData]; // Restore the last successfully displayed filtered data
+                // Ensure processedData is also consistent for subsequent operations based on allData
+                // This is important because performSearch re-merges allData, but if we're not performing a search,
+                // we need processedData to be ready for potential new searches on the full dataset.
+                processedData = mergeData(allData);
+            } else {
+                // If no successful search has ever occurred, clear everything
+                filteredData = [];
+                processedData = [];
+            }
+
+            currentPage = 1; // Reset to first page
             renderTable();
             renderDashboard();
         });
