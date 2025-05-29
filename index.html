@@ -11,25 +11,31 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* New Color Palette:
-           Primary Blue: #4A90E2
-           Darker Blue: #2C5F9B
-           Light Blue: #EBF4FF
-           Accent Green: #6DD47E
-           Darker Green: #4CAF50
-           Light Grey: #A0AEC0
-           Dark Grey: #4A5568
-           Red (for errors/warnings): #EF4444
-           Yellow (for warnings/pending): #FBBF24
+            Primary Blue: #4A90E2
+            Darker Blue: #2C5F9B
+            Light Blue: #EBF4FF
+            Accent Green: #6DD47E
+            Darker Green: #4CAF50
+            Light Grey: #A0AEC0
+            Dark Grey: #4A5568
+            Red (for errors/warnings): #EF4444
+            Yellow (for warnings/pending): #FBBF24
         */
 
         /* Base styles for the entire application */
+        html, body {
+            height: 100%; /* Ensure html and body take full viewport height */
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
             overflow-x: hidden;
-            margin: 0;
-            padding: 0;
             background-color: #F0F2F5; /* Light background for the whole page */
+            display: flex; /* Enable flexbox for main layout */
+            flex-direction: column; /* Stack children vertically */
         }
 
         /* Main container for the application, now with bubble aesthetics */
@@ -37,9 +43,12 @@
             background-color: white;
             border-radius: 2rem; /* Significantly more rounded for a bubble look */
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(0, 0, 0, 0.05); /* Softer, larger shadow */
-            margin-bottom: 2.5rem; /* More space at the bottom */
+            /* margin-bottom: 2.5rem; Removed mb-10 as pagination is now outside */
             border: none; /* Remove sharp border */
             overflow: hidden; /* Ensure content respects border-radius */
+            display: flex; /* Make container itself a flex column */
+            flex-direction: column;
+            flex-grow: 1; /* Allow the container to grow and push content down */
         }
 
         /* Header section with rounded corners to match the container */
@@ -83,42 +92,49 @@
             position: relative;
             flex-grow: 1;
             overflow: visible;
-        }
-
-        .search-input-container input {
-            width: 100%;
-            padding: 0.75rem 1.25rem 0.75rem 3rem; /* Adjusted padding for bubble input */
-            border: 1px solid #A0AEC0; /* Light Grey border */
-            border-radius: 9999px; /* Pill-shaped input */
-            focus: outline-none;
-            focus: ring-2;
-            focus: ring-blue-500;
-            focus: border-transparent;
-            color: #4A5568; /* Dark Grey text */
+            display: flex; /* Make it a flex container */
+            align-items: center; /* Vertically align items */
+            border: 1px solid #A0AEC0; /* Border moved to container */
+            border-radius: 9999px; /* Pill-shaped container */
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle inner shadow */
             transition: all 0.2s ease-in-out;
+            padding-right: 0.5rem; /* Space for right icons */
         }
 
-        .search-input-container input:focus {
+        .search-input-container:focus-within { /* Apply focus style to the container */
             border-color: #4A90E2; /* Primary Blue on focus */
             box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25); /* Focus ring */
         }
 
-        .search-input-container i.fa-search {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
+        .search-input-container input {
+            flex-grow: 1; /* Input takes available space */
+            padding: 0.75rem 0 0.75rem 1rem; /* Adjusted padding for internal icons */
+            border: none; /* Remove individual input border */
+            background: transparent; /* Transparent background */
+            focus: outline-none;
+            color: #4A5568; /* Dark Grey text */
+        }
+
+        .search-input-container input:focus {
+            outline: none; /* Remove default outline on focus */
+        }
+
+        .search-icon-left { /* New class for the left search icon */
+            margin-left: 1rem;
             color: #A0AEC0; /* Light Grey */
             pointer-events: none;
             z-index: 1;
         }
 
-        .search-clear-button {
-            position: absolute;
-            right: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
+        /* Right-aligned icons within the search bar */
+        .search-icons-right {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* Space between icons */
+            margin-right: 0.5rem;
+        }
+
+        .search-clear-button, .export-button-inside { /* Combined styling for internal buttons */
             background: none;
             border: none;
             cursor: pointer;
@@ -130,27 +146,36 @@
             z-index: 102;
             border-radius: 50%; /* Make it circular */
             transition: all 0.2s ease-in-out;
+            display: flex; /* Ensure centering of icon */
+            align-items: center;
+            justify-content: center;
         }
-        .search-clear-button:hover {
+        .search-clear-button:hover, .export-button-inside:hover:not([disabled]) {
             opacity: 1;
             color: #EF4444; /* Red on hover */
             background-color: #FFF5F5; /* Very light red background */
         }
 
+        .export-button-inside:disabled {
+            opacity: 0.3; /* More subtle disabled state for internal icon */
+            cursor: not-allowed;
+            background: none;
+            box-shadow: none;
+            transform: none;
+        }
+
+
         /* Search Suggestions List Styling */
         #suggestionsList {
-            position: absolute;
+            position: absolute; /* Changed to absolute for dynamic positioning */
             background-color: white;
             border: 1px solid #E2E8F0;
             border-radius: 0.5rem;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             max-height: 200px; /* Limit height */
             overflow-y: auto; /* Enable vertical scrolling */
-            z-index: 100;
-            width: 100%;
-            left: 0;
-            top: 100%; /* Position below the input */
-            margin-top: 0.25rem; /* Small gap below input */
+            z-index: 999; /* Increased z-index to ensure it's on top */
+            /* Removed fixed positioning properties (left, width, top) as they are set by JS */
         }
         #suggestionsList.hidden {
             display: none;
@@ -178,7 +203,7 @@
         }
 
 
-        /* Soft, bubble-style buttons (general) */
+        /* Soft, bubble-style buttons (general) - no longer directly used for export button */
         .soft-button {
             padding: 0.75rem 1.5rem;
             border-radius: 9999px; /* Pill-shaped */
@@ -438,7 +463,7 @@
 
         .status-badge-progress.completed {
             background-color: #D1FAE5; /* Light green */
-            color: #4CAF50; /* Darker Green */
+            color: #065F46; /* Darker Green */
         }
 
         .progress-bar-stages {
@@ -851,7 +876,6 @@
             background-color: #FFF5F5;
             transform: rotate(90deg);
         }
-
         /* Modal Body */
         .modal-body {
             flex-grow: 1;
@@ -1270,6 +1294,23 @@
                 width: 1.2rem;
                 height: 1.2rem;
             }
+
+            /* Adjust search and export container behavior */
+            .mb-6.flex.flex-row { /* Target the parent of search and export */
+                flex-wrap: nowrap; /* Force no wrapping on small screens */
+                justify-content: space-between; /* Space between items */
+            }
+
+            .search-reset-container {
+                flex-grow: 1; /* Allow search input to grow */
+                min-width: 200px; /* Minimum width for search input to prevent it from becoming too small */
+                margin-bottom: 0; /* Remove margin when on single line */
+            }
+
+            .export-options { /* This div is now removed from HTML, but keeping for reference if needed */
+                flex-shrink: 0; /* Prevent export button from shrinking */
+                flex-basis: auto; /* Allow it to determine its size based on content */
+            }
         }
     </style>
 </head>
@@ -1284,8 +1325,8 @@
         <h1 class="loading-text">ConsignTracker <span class="version-suffix">v2</span></h1>
     </div>
 
-    <div id="mainContent" class="p-4 hidden">
-        <div class="container mx-auto max-w-screen-lg rounded-xl shadow-2xl mb-10">
+    <div id="mainContent" class="p-4 hidden flex flex-col flex-grow">
+        <div class="container mx-auto max-w-screen-lg rounded-xl shadow-2xl flex-grow">
             <div class="header">
                 <div class="header-content">
                     <div>
@@ -1300,23 +1341,23 @@
                 <div class="mb-6 flex flex-row gap-4 items-center flex-nowrap">
                     <div class="flex-grow search-reset-container">
                         <div class="search-input-container">
+                            <i class="fas fa-search search-icon-left"></i>
                             <input type="text" id="searchInput" placeholder="Search by, Consignment Order Number, SR ID, or Invoice No."
-                                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-gray-700 shadow-sm">
-                            <i class="fas fa-search"></i>
-                            <button id="clearSearchButton" class="search-clear-button hidden" title="Clear search">
-                                <i class="fas fa-times-circle"></i>
-                            </button>
-                            <div id="suggestionsList" class="hidden"></div>
-                        </div>
-                    </div>
-
-                    <div class="export-options relative">
-                        <button id="exportButton" disabled class="soft-button">
-                            <i class="fas fa-file-export"></i> Export <i class="fas fa-chevron-down ml-2"></i>
-                        </button>
-                        <div id="exportDropdown" class="soft-dropdown hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-10">
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="csv">Export as CSV</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="html" id="exportHtmlOption">Export as HTML</a>
+                                class="w-full p-3 focus:outline-none text-gray-700">
+                            <div class="search-icons-right">
+                                <button id="clearSearchButton" class="search-clear-button hidden" title="Clear search">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                                <div class="export-options-inside relative">
+                                    <button id="exportButton" disabled class="export-button-inside" title="Export Data">
+                                        <i class="fas fa-file-export"></i>
+                                    </button>
+                                    <div id="exportDropdown" class="soft-dropdown hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-10">
+                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="csv">Export as CSV</a>
+                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="html" id="exportHtmlOption">Export as HTML</a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1337,7 +1378,7 @@
                 </div>
 
                 <div id="messageBox" class="mt-4 p-4 rounded-md hidden"></div>
-                <div id="tableContainer" class="overflow-x-auto mt-4 px-4 py-4">
+                <div id="tableContainer" class="overflow-x-auto mt-4 px-4 py-4 hidden">
                     <table id="invoiceTable" class="min-w-full">
                         <thead>
                             <tr>
@@ -1371,21 +1412,20 @@
                         </div>
                     </div>
                 </div>
-
-                <div id="paginationContainer" class="mt-6 flex flex-col md:flex-row justify-between items-center">
-                    <div class="flex gap-4 mb-4 md:mb-0">
-                        <button id="prevPageButton">
-                            <i class="fas fa-arrow-left"></i> Previous
-                        </button>
-                        <button id="nextPageButton">
-                            Next <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                    <span id="pageInfo"></span>
-                </div>
-
             </div>
         </div>
+        <div id="paginationContainer" class="mt-6 p-4 flex flex-col md:flex-row justify-between items-center hidden">
+            <div class="flex gap-4 mb-4 md:mb-0">
+                <button id="prevPageButton">
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button id="nextPageButton">
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            <span id="pageInfo"></span>
+        </div>
+
     </div>
 
     <div id="detailsModalOverlay" class="modal-overlay">
@@ -1433,7 +1473,7 @@
         </div>
     </div>
 
-<script>
+    <div id="suggestionsList" class="hidden"></div> <script>
         const jsonUrl = "https://raw.githubusercontent.com/moonandjupiter/my-json-data/refs/heads/main/Sheet1_data.json";
         const itemsPerPage = 5;
         let currentPage = 1;
@@ -1468,7 +1508,7 @@
         const paginationContainer = document.getElementById('paginationContainer');
         const loadingOverlay = document.getElementById('loadingOverlay');
         const mainContent = document.getElementById('mainContent');
-        const exportOptionsDiv = document.querySelector('.export-options'); // Get the export options div
+        // const exportOptionsDiv = document.querySelector('.export-options'); // No longer needed as export is inside search
 
         // NEW: Table specific loading overlay element
         const tableLoadingOverlay = document.getElementById('tableLoadingOverlay');
@@ -1737,7 +1777,9 @@
                 const message = searchInput.value.trim() === '' ? 'Enter a search term and press Enter or select a suggestion.' : 'No data found for your search.';
                 invoiceTableBody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
 
-                exportOptionsDiv.classList.add('hidden');
+                exportButton.disabled = true; // Disable export button if no data
+                tableContainer.classList.add('hidden'); // Hide table
+                paginationContainer.classList.add('hidden'); // Hide pagination
 
             } else {
                 dataToDisplay.forEach(item => {
@@ -1791,14 +1833,12 @@
                     invoiceTableBody.appendChild(row);
                 });
 
-                exportOptionsDiv.classList.remove('hidden');
+                exportButton.disabled = false; // Enable export button if data exists
+                tableContainer.classList.remove('hidden'); // Show table
+                paginationContainer.classList.remove('hidden'); // Show pagination
             }
 
-            tableContainer.style.display = 'block';
-            paginationContainer.style.display = 'flex';
-
             updatePaginationControls();
-            exportButton.disabled = filteredData.length === 0;
             updateSortIcons();
             addAcknowledgeButtonListeners();
         }
@@ -1852,7 +1892,7 @@
                 hideMessageBox();
                 quantitySummaryPanel.classList.add('hidden');
                 dashboardContainer.classList.add('hidden');
-                renderTable(); // Render empty table initially
+                renderTable(); // Render empty table initially (which will hide table/pagination)
 
                 console.log('Raw data fetched successfully. Dashboard and table will load on search.');
 
@@ -1868,6 +1908,8 @@
                 invoiceTableBody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>';
                 quantitySummaryPanel.classList.add('hidden');
                 dashboardContainer.classList.add('hidden');
+                tableContainer.classList.add('hidden'); // Ensure hidden on error
+                paginationContainer.classList.add('hidden'); // Ensure hidden on error
 
                 setTimeout(() => {
                     loadingOverlay.classList.add('hidden');
@@ -1937,7 +1979,7 @@
                 console.log("Filtered Data Length after search:", filteredData.length);
                 currentPage = 1;
                 calculateAndDisplaySummary();
-                renderTable();
+                renderTable(); // This will now show/hide table and pagination based on filteredData.length
                 renderDashboard();
                 hideMessageBox();
 
@@ -2019,6 +2061,12 @@
             }
 
             if (suggestionsList.children.length > 0) {
+                // Calculate position and width dynamically
+                const inputRect = searchInput.getBoundingClientRect();
+                suggestionsList.style.top = `${inputRect.bottom + window.scrollY + 4}px`; // 4px gap below input
+                suggestionsList.style.left = `${inputRect.left + window.scrollX}px`;
+                suggestionsList.style.width = `${inputRect.width}px`;
+
                 suggestionsList.classList.remove('hidden');
             } else {
                 suggestionsList.classList.add('hidden');
@@ -2062,6 +2110,9 @@
                 renderSuggestions(allMatchedSuggestions, currentSuggestionOffset); // Render the first batch
             } else {
                 suggestionsList.classList.add('hidden');
+                suggestionsList.innerHTML = '';
+                allMatchedSuggestions = [];
+                currentSuggestionOffset = 0;
             }
             hideMessageBox();
         });
@@ -2090,7 +2141,7 @@
             }
 
             currentPage = 1; // Reset to first page
-            renderTable();
+            renderTable(); // This will re-hide table/pagination if filteredData is empty
             renderDashboard();
         });
 
@@ -2153,7 +2204,7 @@
 
         // Function to hide the details modal
         function hideDetailsModal() {
-            console.log('Attempting to hide details modal...');
+            console.log('Attempting to hide info modal...');
             detailsModalOverlay.style.opacity = '0';
             detailsModalOverlay.style.visibility = 'hidden';
             setTimeout(() => {
@@ -2171,6 +2222,17 @@
             }
         }
 
+        // Function to handle placeholder text based on screen width
+        const originalPlaceholder = "Search by, Consignment Order Number, SR ID, or Invoice No.";
+        function updateSearchInputPlaceholder() {
+            if (window.innerWidth <= 767) { // Mobile breakpoint
+                searchInput.placeholder = '';
+            } else {
+                searchInput.placeholder = originalPlaceholder;
+            }
+        }
+
+
         // New function to generate PNG Blob
         async function generateModalPngBlob() {
             const modalContent = document.querySelector('#detailsModalOverlay .modal-content');
@@ -2180,46 +2242,58 @@
             const originalCloseButtonDisplay = closeButton.style.display;
             const originalPrintButtonDisplay = printButton.style.display;
 
-            const signatureSection = modalContent.querySelector('.signature-section');
-            const signatureBlockCentered = modalContent.querySelector('.signature-block-centered');
-            const signatureText = modalContent.querySelector('.signature-text');
-            const dateLine = modalContent.querySelector('.date-line');
-            const modalNote = modalContent.querySelector('.modal-note');
-            const printSeparator = modalContent.querySelector('.print-separator');
+            const signatureSectionElement = modalContent.querySelector('.signature-section');
+            const signatureBlockCenteredElement = modalContent.querySelector('.signature-block-centered');
+            const signatureTextElement = modalContent.querySelector('.signature-text');
+            const dateLineElement = modalContent.querySelector('.date-line');
+            const modalNoteElement = modalContent.querySelector('.modal-note');
+            const printSeparatorElement = modalContent.querySelector('.print-separator');
 
-            const originalSignatureSectionDisplay = signatureSection.style.display;
-            const originalSignatureSectionFlexDirection = signatureSection.style.flexDirection;
-            const originalSignatureSectionAlignItems = signatureSection.style.alignItems;
-            const originalSignatureSectionWidth = signatureSection.style.width;
-            const originalSignatureSectionMarginTop = signatureSection.style.marginTop;
+            const originalSignatureSectionDisplay = signatureSectionElement ? signatureSectionElement.style.display : 'none';
+            const originalSignatureSectionFlexDirection = signatureSectionElement ? signatureSectionElement.style.flexDirection : '';
+            const originalSignatureSectionAlignItems = signatureSectionElement ? signatureSectionElement.style.alignItems : '';
+            const originalSignatureSectionWidth = signatureSectionElement ? signatureSectionElement.style.width : '';
+            const originalSignatureSectionMarginTop = signatureSectionElement ? signatureSectionElement.style.marginTop : '';
 
             closeButton.style.display = 'none';
             printButton.style.display = 'none';
 
-            signatureSection.style.display = 'flex';
-            signatureSection.style.flexDirection = 'column';
-            signatureSection.style.alignItems = 'flex-start';
-            signatureSection.style.width = '100%';
-            signatureSection.style.marginTop = '0';
+            if (signatureSectionElement) {
+                signatureSectionElement.style.display = 'flex';
+                signatureSectionElement.style.flexDirection = 'column';
+                signatureSectionElement.style.alignItems = 'flex-start';
+                signatureSectionElement.style.width = '100%';
+                signatureSectionElement.style.marginTop = '0';
+            }
 
-            signatureBlockCentered.style.display = 'flex';
-            signatureBlockCentered.style.flexDirection = 'column';
-            signatureBlockCentered.style.alignItems = 'flex-start';
-            signatureBlockCentered.style.width = '100%';
-            signatureBlockCentered.style.marginTop = '0.75rem';
+            if (signatureBlockCenteredElement) {
+                signatureBlockCenteredElement.style.display = 'flex';
+                signatureBlockCenteredElement.style.flexDirection = 'column';
+                signatureBlockCenteredElement.style.alignItems = 'flex-start';
+                signatureBlockCenteredElement.style.width = '100%';
+                signatureBlockCenteredElement.style.marginTop = '0.75rem';
+            }
 
-            signatureText.style.fontSize = '0.6rem';
-            signatureText.style.lineHeight = '1.1';
-            signatureText.style.textAlign = 'left';
-            signatureText.style.width = '75%';
+            if (signatureTextElement) {
+                signatureTextElement.style.fontSize = '0.6rem';
+                signatureTextElement.style.lineHeight = '1.1';
+                signatureTextElement.style.textAlign = 'left';
+                signatureTextElement.style.width = '75%';
+            }
 
-            dateLine.style.fontSize = '0.6rem';
-            dateLine.style.marginTop = '0.75rem';
-            dateLine.style.textAlign = 'left';
+            if (dateLineElement) {
+                dateLineElement.style.fontSize = '0.6rem';
+                dateLineElement.style.marginTop = '0.75rem';
+                dateLineElement.style.textAlign = 'left';
+            }
 
-            modalNote.style.display = 'block';
-            modalNote.style.fontSize = '0.55rem';
-            printSeparator.style.display = 'block';
+            if (modalNoteElement) {
+                modalNoteElement.style.display = 'block';
+                modalNoteElement.style.fontSize = '0.55rem';
+            }
+            if (printSeparatorElement) {
+                printSeparatorElement.style.display = 'block';
+            }
 
             try {
                 const canvas = await html2canvas(modalContent, {
@@ -2231,26 +2305,38 @@
 
                 closeButton.style.display = originalCloseButtonDisplay;
                 printButton.style.display = originalPrintButtonDisplay;
-                signatureSection.style.display = originalSignatureSectionDisplay;
-                signatureSection.style.flexDirection = originalSignatureSectionFlexDirection;
-                signatureSection.style.alignItems = originalSignatureSectionAlignItems;
-                signatureSection.style.width = originalSignatureSectionWidth;
-                signatureSection.style.marginTop = originalSignatureSectionMarginTop;
-                signatureBlockCentered.style.display = originalSignatureBlockCenteredDisplay;
-                signatureBlockCentered.style.flexDirection = originalSignatureBlockCenteredFlexDirection;
-                signatureBlockCentered.style.alignItems = originalSignatureBlockCenteredAlignItems;
-                signatureBlockCentered.style.width = originalSignatureBlockCenteredWidth;
-                signatureBlockCentered.style.marginTop = originalSignatureBlockCenteredMarginTop;
-                signatureText.style.fontSize = originalSignatureTextFontSize;
-                signatureText.style.lineHeight = originalSignatureTextLineHeight;
-                signatureText.style.width = originalSignatureTextWidth;
-                signatureText.style.textAlign = originalSignatureTextAlign;
-                dateLine.style.fontSize = originalDateLineFontSize;
-                dateLine.style.marginTop = originalDateLineMarginTop;
-                dateLine.style.textAlign = originalDateLineTextAlign;
-                modalNote.style.display = originalModalNoteDisplay;
-                modalNote.style.fontSize = originalModalNoteFontSize;
-                printSeparator.style.display = originalPrintSeparatorDisplay;
+                if (signatureSectionElement) {
+                    signatureSectionElement.style.display = originalSignatureSectionDisplay;
+                    signatureSectionElement.style.flexDirection = originalSignatureSectionFlexDirection;
+                    signatureSectionElement.style.alignItems = originalSignatureSectionAlignItems;
+                    signatureSectionElement.style.width = originalSignatureSectionWidth;
+                    signatureSectionElement.style.marginTop = originalSignatureSectionMarginTop;
+                }
+                if (signatureBlockCenteredElement) {
+                    signatureBlockCenteredElement.style.display = originalSignatureBlockCenteredDisplay;
+                    signatureBlockCenteredElement.style.flexDirection = originalSignatureBlockCenteredFlexDirection;
+                    signatureBlockCenteredElement.style.alignItems = originalSignatureBlockCenteredAlignItems;
+                    signatureBlockCenteredElement.style.width = originalSignatureBlockCenteredWidth;
+                    signatureBlockCenteredElement.style.marginTop = originalSignatureBlockCenteredMarginTop;
+                }
+                if (signatureTextElement) {
+                    signatureTextElement.style.fontSize = originalSignatureTextFontSize;
+                    signatureTextElement.style.lineHeight = originalSignatureTextLineHeight;
+                    signatureTextElement.style.width = originalSignatureTextWidth;
+                    signatureTextElement.style.textAlign = originalSignatureTextAlign;
+                }
+                if (dateLineElement) {
+                    dateLineElement.style.fontSize = originalDateLineFontSize;
+                    dateLineElement.style.marginTop = originalDateLineMarginTop;
+                    dateLineElement.style.textAlign = originalDateLineTextAlign;
+                }
+                if (modalNoteElement) {
+                    modalNoteElement.style.display = originalModalNoteDisplay;
+                    modalNoteElement.style.fontSize = originalModalNoteFontSize;
+                }
+                if (printSeparatorElement) {
+                    printSeparatorElement.style.display = originalPrintSeparatorDisplay;
+                }
 
                 return new Promise(resolve => {
                     canvas.toBlob(resolve, 'image/png');
@@ -2516,11 +2602,22 @@
 
             fetchData(); // This will now only fetch data and render an empty table
             updatePrintButtonLabel();
+            updateSearchInputPlaceholder(); // Call initially for placeholder
             setupStatusButtonDelegation();
         });
 
         // Update button label on window resize
-        window.addEventListener('resize', updatePrintButtonLabel);
+        window.addEventListener('resize', () => {
+            updatePrintButtonLabel();
+            updateSearchInputPlaceholder(); // Call on resize for placeholder
+            // Update suggestions list position if visible
+            if (!suggestionsList.classList.contains('hidden')) {
+                const inputRect = searchInput.getBoundingClientRect();
+                suggestionsList.style.top = `${inputRect.bottom + window.scrollY + 4}px`;
+                suggestionsList.style.left = `${inputRect.left + window.scrollX}px`;
+                suggestionsList.style.width = `${inputRect.width}px`;
+            }
+        });
     </script>
 
 </body>
