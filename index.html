@@ -1021,7 +1021,6 @@
             max-width: 350px; /* Slightly smaller for message */
             padding: 1.25rem;
         }
-
         #messageModalOverlay .modal-header {
             padding: 0.75rem 1.25rem 0.75rem 1.25rem; /* Added top and right padding for better X button placement */
             margin-bottom: 1rem;
@@ -1487,10 +1486,13 @@
         .collapsible-section {
             background-color: white;
             border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            /* REVISED: Increased border-radius for bubble look */
+            border-radius: 1.5rem; /* More rounded corners for the whole section */
+            /* REVISED: Soft shadow for bubble look */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08); /* Soft shadow */
             overflow: hidden; /* Ensures content is clipped during collapse */
             margin-bottom: 1rem; /* Space between bubbles */
+            transition: all 0.3s ease-in-out; /* Smooth transition for hover/active states */
         }
 
         .collapsible-header {
@@ -1522,8 +1524,20 @@
             padding-bottom: 1rem; /* Add vertical padding when expanded */
         }
 
+        /* Revised .collapsible-icon for bubble-like aesthetic */
         .collapsible-icon {
             transition: transform 0.3s ease-in-out;
+            border: 1px solid #a0aec0; /* Subtle border */
+            border-radius: 0.75rem; /* Increased border-radius for more rounded corners */
+            padding: 0.35rem; /* Increased padding around the arrow */
+            display: inline-flex; /* To control size and alignment */
+            align-items: center;
+            justify-content: center;
+            width: 1.5rem; /* Adjust width as needed */
+            height: 1.5rem; /* Adjust height as needed */
+            color: #718096; /* Icon color */
+            background-color: #f0f4f8; /* Slightly darker light background for the bubble */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Soft shadow for depth */
         }
 
         .collapsible-icon.rotate {
@@ -1576,6 +1590,77 @@
             box-shadow: none; /* Remove shadow from inner container */
             padding: 0; /* Remove padding from inner container */
         }
+
+        /* Custom styles for soft, bubble-style buttons and dropdowns */
+        .soft-button {
+            padding: 0.75rem 1.5rem; /* Ample padding */
+            border-radius: 9999px; /* Pill-shaped */
+            font-weight: 600;
+            color: white;
+            background-color: #10B981; /* Darker green pastel */
+            background-image: linear-gradient(to bottom right, #10B981, #059669); /* Darker soft gradient */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06); /* Soft shadow */
+            transition: all 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none; /* For anchor tags styled as buttons */
+        }
+
+        .soft-button:hover:not([disabled]) {
+            background-color: #059669; /* Even darker green on hover */
+            background-image: linear-gradient(to bottom right, #059669, #047857); /* Even darker gradient on hover */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px); /* Subtle lift effect */
+        }
+
+        .soft-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #e0e0e0;
+            background-image: none;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Dropdown specific styles */
+        .soft-dropdown {
+            border-radius: 1rem; /* More rounded corners for the dropdown itself */
+            padding: 0.5rem; /* Padding inside the dropdown */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.08); /* Soft shadow */
+            background-color: white;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s;
+        }
+
+        .soft-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .soft-dropdown a {
+            padding: 0.75rem 1rem; /* Ample padding for dropdown items */
+            border-radius: 0.75rem; /* Rounded corners for individual items */
+            color: #374151; /* Dark text for contrast */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            display: block;
+            text-align: left; /* Align text to the left */
+        }
+
+        .soft-dropdown a:hover {
+            background-color: #f0fdf4; /* Very light green on hover */
+            color: #059669; /* Darker green text on hover */
+        }
+
+        /* Adjust icon spacing within the soft button */
+        .soft-button i {
+            margin-right: 0.5rem; /* Adjust space between icon and text */
+        }
     </style>
 </head>
 <body>
@@ -1615,14 +1700,14 @@
                         </div>
                     </div>
 
-                    <div class="export-options relative hidden"> <button id="exportButton" disabled
-                                                                        class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 transition duration-150 ease-in-out shadow-sm">
-                                <i class="fas fa-download"></i> Export <i class="fas fa-caret-down ml-2"></i>
-                            </button>
-                            <div id="exportDropdown" class="export-dropdown hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-10">
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="csv">Export as CSV</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="html" id="exportHtmlOption">Export as HTML</a>
-                            </div>
+                    <div class="export-options relative">
+                        <button id="exportButton" disabled class="soft-button">
+                            <i class="fas fa-file-export"></i> Export <i class="fas fa-chevron-down ml-2"></i>
+                        </button>
+                        <div id="exportDropdown" class="soft-dropdown hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-10">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="csv">Export as CSV</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="html" id="exportHtmlOption">Export as HTML</a>
+                        </div>
                     </div>
                 </div>
                 <p class="text-sm text-gray-600 mt-2">Type your SR ID, Consignment Order #, or Invoice # to search. Select a suggestion or press Enter.</p>
@@ -2330,6 +2415,13 @@
             renderDashboard();
         });
 
+        // Toggle export dropdown visibility
+        exportButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent click from bubbling to window and closing dropdown
+            exportDropdown.classList.toggle('hidden');
+            exportDropdown.classList.toggle('show'); // Toggle 'show' class for animation
+        });
+
         // Hide the dropdown if the user clicks outside of it
         window.addEventListener('click', (event) => {
             const isClickOutsideExport = !exportButton.contains(event.target) && !exportDropdown.contains(event.target);
@@ -2339,7 +2431,8 @@
 
 
             if (isClickOutsideExport) {
-                exportDropdown.classList.add('hidden');
+                exportDropdown.classList.remove('show'); // Use 'show' class for dropdown visibility
+                exportDropdown.classList.add('hidden'); // Also add hidden back
             }
             if (isClickOutsideSearch) {
                 suggestionsList.classList.add('hidden');
