@@ -7,1634 +7,226 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* Existing styles remain the same */
+        /* New Color Palette:
+           Primary Blue: #4A90E2
+           Darker Blue: #2C5F9B
+           Light Blue: #EBF4FF
+           Accent Green: #6DD47E
+           Darker Green: #4CAF50
+           Light Grey: #A0AEC0
+           Dark Grey: #4A5568
+           Red (for errors/warnings): #EF4444
+           Yellow (for warnings/pending): #FBBF24
+        */
+
+        /* Base styles for the entire application */
         body {
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
             overflow-x: hidden;
-            margin: 0; /* Added to remove default browser margin */
-            padding: 0; /* Added to remove default browser padding */
-        }
-
-        /* General style for Acknowledge button */
-        .acknowledge-button {
-            background-color: #dc2626; /* Pure Red for critical status */
-            color: white;
-            font-weight: 600;
-            border-radius: 0.375rem;
-            transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-            border: none;
-            cursor: pointer;
-        }
-
-        .acknowledge-button:hover:not([disabled]) {
-            background-color: #b91c1c; /* Darker red on hover */
-            box-shadow: 0 2px 5px rgba(220, 38, 38, 0.2);
-        }
-
-        .acknowledge-button[disabled] {
-            opacity: 0.7;
-            cursor: not-allowed;
-            background-color: #a1a1aa; /* Grey for disabled state */
-            color: #e5e7eb; /* Lighter text for disabled state */
-        }
-
-        /* Style for the clear button inside the search input */
-        .search-clear-button {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            opacity: 0.6;
-            font-size: 1rem;
-            color: #6b7280;
-            padding: 0;
             margin: 0;
-            z-index: 102; /* Ensure it's above the search icon */
+            padding: 0;
+            background-color: #F0F2F5; /* Light background for the whole page */
         }
 
-        .search-clear-button:hover {
-            opacity: 1;
-            color: #4b5563;
-        }
-
-        /* Dashboard card specific styles (retained for general use, but main summary cards are different) */
-        .summary-card {
-            background-color: #f8fafc; /* Light background for cards */
-            border: 1px solid #e2e8f0; /* Subtle border */
-            border-radius: 0.5rem;
-            padding: 1.25rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 180px; /* Ensure consistent card height */
-        }
-
-        .summary-card h3 {
-            font-size: 1.125rem; /* lg text */
-            font-weight: 600; /* semi-bold */
-            color: #1a202c; /* dark gray */
-            margin-bottom: 0.75rem;
-        }
-
-        .summary-card p {
-            font-size: 0.875rem; /* sm text */
-            color: #4a5568; /* medium gray */
-            margin-bottom: 0.25rem;
-        }
-
-        .summary-card .value {
-            font-weight: 700; /* bold */
-            color: #2d3748; /* darker gray */
-        }
-
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px; /* Full rounded for pill shape */
-            font-size: 0.75rem; /* xs text */
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 0.75rem;
-        }
-
-        .status-badge.completed {
-            background-color: #d1fae5; /* green-100 */
-            color: #065f46; /* green-800 */
-        }
-
-        .status-badge.pending-voucher {
-            background-color: #fef3c7; /* yellow-100 */
-            color: #92400e; /* yellow-800 */
-        }
-
-        .status-badge.pending-invoice {
-            background-color: #fee2e2; /* red-100 */
-            color: #991b1b; /* red-800 */
-        }
-
-        .flow-indicator {
-            display: flex;
-            align-items: center;
-            margin-top: 0.75rem;
-            gap: 0.5rem;
-        }
-
-        .flow-step {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            font-size: 0.875rem; /* sm text */
-            color: #718096; /* gray-600 */
-        }
-
-        .flow-circle {
-            width: 1rem;
-            height: 1rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.6rem;
-            flex-shrink: 0; /* Prevent shrinking */
-        }
-
-        .flow-circle.active {
-            background-color: #3b82f6; /* blue-500 */
-        }
-
-        .flow-circle.inactive {
-            background-color: #cbd5e0; /* gray-300 */
-        }
-
-        .flow-arrow {
-            color: #a0aec0; /* gray-400 */
-            font-size: 0.75rem;
-        }
-
-        /* New Dashboard Specific Styles */
-        .dashboard-section {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .dashboard-card-item {
+        /* Main container for the application, now with bubble aesthetics */
+        .container {
             background-color: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            text-align: center;
+            border-radius: 2rem; /* Significantly more rounded for a bubble look */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(0, 0, 0, 0.05); /* Softer, larger shadow */
+            margin-bottom: 2.5rem; /* More space at the bottom */
+            border: none; /* Remove sharp border */
+            overflow: hidden; /* Ensure content respects border-radius */
         }
 
-        .dashboard-card-item .icon {
-            font-size: 1.5rem;
-            color: #3b82f6; /* blue-500 */
-            margin-bottom: 0.5rem;
-        }
-
-        .dashboard-card-item .label {
-            font-size: 0.875rem; /* sm */
-            color: #64748b; /* slate-600 */
-            font-weight: 500;
-        }
-
-        .dashboard-card-item .count {
-            font-size: 1.5rem; /* xl */
-            font-weight: 700; /* bold */
-            color: #1e293b; /* slate-900 */
-        }
-
-        /* Progress Bar Styles */
-        .progress-bar-container {
-            margin-bottom: 1rem;
-            background-color: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .progress-bar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-        }
-
-        .progress-bar-header h4 {
-            font-size: 1.1rem; /* Slightly larger for prominence */
-            font-weight: 600;
-            color: #333; /* Dark grey for headings */
-            display: flex; /* To align SR ID and badge */
-            align-items: center;
-        }
-
-        .progress-bar-header .status-text {
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .progress-bar-stages {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-            padding-top: 0.5rem; /* Added padding for spacing */
-        }
-
-        .progress-stage-item {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            font-size: 0.8rem;
-            color: #666; /* Lighter grey for subtext */
-            font-weight: 500; /* Medium font weight */
-        }
-
-        .progress-stage-circle {
-            width: 0.8rem;
-            height: 0.8rem;
-            border-radius: 50%;
-        }
-
-        /* New styles for the status badge within the progress bar header */
-        .status-badge-progress {
-            padding: 0.2rem 0.6rem; /* Adjusted padding */
-            border-radius: 9999px; /* Pill shape */
-            font-size: 0.7rem; /* Smaller font size */
-            font-weight: 600; /* Semi-bold */
-            display: inline-block;
-            margin-left: 0.6rem; /* Increased space from SR ID */
-            white-space: nowrap; /* Prevent wrapping */
-            text-transform: uppercase; /* Make text uppercase */
-            letter-spacing: 0.025em; /* Slight letter spacing */
-        }
-
-        /* Specific colors for the progress badges */
-        .status-badge-progress.pending-invoice {
-            background-color: #fee2e2; /* red-100 */
-            color: #991b1b; /* red-800 */
-        }
-        .status-badge-progress.pending-voucher {
-            background-color: #fef3c7; /* yellow-100 */
-            color: #92400e; /* yellow-800 */
-        }
-        .status-badge-progress.completed {
-            background-color: #d1fae5; /* green-100 */
-            color: #065f46; /* green-800 */
-        }
-
-        /* Progress stage circle colors */
-        .progress-stage-circle.active-sr,
-        .progress-stage-circle.active-invoice {
-            background-color: #22c55e; /* green-500 */
-        }
-        .progress-stage-circle.active-voucher-pending {
-            background-color: #f59e0b; /* amber-500 */
-        }
-        .progress-stage-circle.active-voucher-complete {
-            background-color: #22c55e; /* green-500 */
-        }
-        /* New class for inactive invoice dot (red) */
-        .progress-stage-circle.inactive-invoice-red {
-            background-color: #ef4444; /* red-500 */
-        }
-        /* Inactive remains gray-300 */
-        .progress-stage-circle.inactive {
-            background-color: #cbd5e0; /* gray-300 */
-        }
-
-
-        .progress-bar-line {
-            width: 100%;
-            height: 0.35rem; /* Slimmer progress bar */
-            background-color: #e2e8f0;
-            border-radius: 9999px; /* Fully rounded */
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%; /* Controlled by JS */
-            background-color: #3b82f6; /* blue-500 default */
-            border-radius: 9999px; /* Fully rounded */
-            transition: width 0.5s ease-in-out, background-color 0.3s ease-in-out;
-        }
-
-        .progress-fill.completed { background-color: #16a34a; } /* green-600 */
-        .progress-fill.pending-voucher { background-color: #f59e0b; } /* amber-500 */
-        .progress-fill.pending-invoice { background-color: #ef4444; } /* red-500 */
-
-
-        @media (max-width: 767px) {
-            #invoiceTable thead {
-                display: none;
-            }
-
-            #invoiceTable, #invoiceTable tbody, #invoiceTable tr, #invoiceTable td {
-                display: block;
-                width: 100%;
-            }
-
-            #invoiceTable tr {
-                margin-bottom: 15px;
-                border: 1px solid #d1d5db;
-                border-radius: 0.5rem;
-                background-color: #ffffff;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-                overflow: hidden;
-            }
-
-            #invoiceTable tbody tr:nth-child(even) {
-                background-color: #f9fafb;
-            }
-
-            #invoiceTable td {
-                border-bottom: 1px solid #e5e7eb;
-                position: relative;
-                padding: 12px 15px 12px 50%;
-                text-align: right;
-                font-size: 0.9rem;
-                min-height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-            }
-
-            #invoiceTable td:last-child {
-                border-bottom: 0;
-            }
-
-            #invoiceTable td::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 0;
-                width: 45%;
-                padding-left: 15px;
-                font-weight: 600;
-                text-align: left;
-                color: #4b5563;
-                display: block;
-                align-items: initial;
-                justify-content: initial;
-            }
-
-            #invoiceTable td[data-label="SR ID:"] {
-                background-color: #e0f2f7;
-                font-weight: 700;
-            }
-
-            #invoiceTable td[data-label="Voucher No.:"].highlight-voucher {
-                color: #dc2626; /* Changed to red */
-                font-weight: 600;
-            }
-
-            /* Mobile specific alignment for Status column */
-            #invoiceTable td[data-label="Status:"] {
-                justify-content: flex-end; /* Align right */
-                text-align: right; /* Ensure text alignment is also right */
-            }
-
-            .status-button {
-                padding: 0.3em 0.6em;
-                border-radius: 0.5em;
-                font-size: 0.8em;
-                border: none;
-                white-space: nowrap; /* Prevent text wrapping */
-            }
-
-            .status-waiting {
-                background-color: #fde047; /* Yellow for waiting */
-                color: black; /* Changed font color to black for readability */
-                font-weight: normal; /* No longer bold */
-            }
-
-            .status-waiting-clickable {
-                cursor: pointer;
-            }
-
-            .status-processing {
-                background-color: #3b82f6; /* Light blue */
-                color: white;
-                font-weight: bold; /* Keep bold */
-            }
-
-            .status-done {
-                background-color: #16a34a; /* Light green */
-                color: white;
-                font-weight: bold; /* Keep bold */
-            }
-
-            /* Mobile specific style for Acknowledge button */
-            .acknowledge-button {
-                font-size: 0.8em; /* Smaller font size */
-                padding: 0.3em 0.6em; /* Adjust padding to match status button */
-            }
-
-            .mb-6.flex.flex-col.md\:flex-row.gap-4.items-center {
-                flex-direction: column;
-            }
-
-            .search-reset-container {
-                width: 100%;
-                margin-bottom: 0; /* No margin as reset button is gone */
-                position: relative;
-                z-index: 100;
-            }
-
-            .export-options {
-                width: 100%;
-                margin-top: 10px; /* Add some space below the search on mobile */
-            }
-
-            .export-options button {
-                width: 100%;
-            }
-
-            .export-dropdown {
-                position: static;
-                width: 100%;
-                margin-top: 10px;
-                box-shadow: none;
-                border: 1px solid #d1d5db;
-                border-radius: 0.5rem;
-            }
-
-            .export-dropdown a {
-                padding: 10px;
-                text-align: center;
-            }
-
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .version-number {
-                margin-top: 5px;
-                font-size: 0.8rem;
-            }
-
-            #quantitySummaryPanel {
-                font-size: 0.9rem;
-                padding: 10px;
-            }
-
-            #consignmentSummaryList {
-                margin-top: 5px;
-                font-size: 0.85rem;
-                list-style: disc;
-                padding-left: 20px;
-            }
-
-            #consignmentSummaryList li {
-                margin-bottom: 3px;
-            }
-
-            #suggestionsList {
-                position: absolute;
-                width: 100%;
-                margin-top: 0;
-                border-radius: 0.5rem;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-                z-index: 99;
-                background-color: white;
-                border: 1px solid #d1d5db;
-                border-top: none;
-                left: 0;
-                top: 100%;
-                max-height: 150px;
-                overflow-y: auto;
-            }
-            #suggestionsList div {
-                padding: 8px 15px;
-                font-size: 0.9rem;
-            }
-
-            #invoiceTable td.empty-table-message {
-                text-align: left;
-                justify-content: flex-start;
-                padding-left: 15px;
-                padding-right: 15px;
-            }
-
-            #invoiceTable td.empty-table-message::before {
-                content: none;
-            }
-
-            .search-input-container {
-                width: 100%; /* Make search input fill the width on mobile */
-                position: relative;
-            }
-
-            .search-input-container input {
-                padding-left: 45px;
-                padding-right: 35px; /* Added space for clear button */
-                width: 100%; /* Ensure input fills the container */
-            }
-
-            .search-input-container i.fa-search {
-                position: absolute;
-                left: 15px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #9ca3af;
-                pointer-events: none;
-                z-index: 101;
-            }
-
-            #loadingOverlay {
-                justify-content: center;
-                padding: 0 1rem;
-            }
-
-            .loading-text {
-                font-size: 2rem;
-                margin-top: 30px;
-                white-space: nowrap;
-            }
-
-            .version-suffix {
-                font-size: 0.7em;
-                color: #93c5fd;
-                font-weight: 600;
-                vertical-align: super;
-                margin-left: 0.2em;
-            }
-
-            /* START: Mobile Acknowledgement Slip Specific Styles */
-            .modal-content {
-                padding: 1rem; /* Reduced overall padding */
-                max-width: 95%; /* Allow it to take more width on smaller screens */
-            }
-
-            .modal-header {
-                padding: 1rem 1rem 0.5rem 1rem; /* Adjust header padding */
-                margin-bottom: 0.75rem; /* Less margin below header */
-            }
-
-            .print-header {
-                font-size: 0.7rem; /* Slightly smaller print header font */
-                margin-bottom: 0.5rem;
-            }
-
-            .print-header p {
-                line-height: 1.1;
-            }
-
-            .modal-header h2 {
-                font-size: 1rem; /* Smaller main title */
-                margin-bottom: 0.25rem;
-            }
-
-            .modal-body p {
-                font-size: 0.8rem; /* Slightly smaller body text */
-                margin-bottom: 0.1rem;
-                display: block; /* Stack label and value on separate lines */
-            }
-
-            .modal-body strong {
-                display: block; /* Make labels take full width */
-                margin-bottom: 0.1rem; /* Add a little space below the label */
-                width: 100%;
-                text-align: left;
-                font-weight: normal; /* Less emphasis on labels */
-            }
-
-            .modal-body span {
-                display: block; /* Make values take full width */
-                font-weight: 600; /* Keep values bold */
-                text-align: left;
-            }
-
-            .modal-note {
-                font-size: 0.65rem;
-                margin-top: 0.5rem;
-                line-height: 1.3;
-            }
-
-            .signature-block-centered {
-                margin-top: 0.5rem;
-            }
-
-            .signature-text {
-                font-size: 0.6rem;
-            }
-
-            .date-line {
-                font-size: 0.6rem;
-                margin-top: 0.5rem;
-            }
-            /* END: Mobile Acknowledgement Slip Specific Styles */
-        }
-
-        @media (min-width: 768px) {
-            #invoiceTable th,
-            #invoiceTable td {
-                border-bottom: 1px solid #e5e7eb;
-                padding: 12px 16px;
-                text-align: left;
-            }
-            #invoiceTable thead th {
-                border-bottom-width: 2px;
-                border-top: none;
-                background-color: #f3f4f6;
-                color: #4b5563;
-                font-weight: 600;
-                text-transform: uppercase;
-                font-size: 0.8rem;
-                cursor: pointer;
-                padding-right: 25px;
-                position: relative;
-            }
-
-            #invoiceTable thead th i {
-                position: absolute;
-                right: 8px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #9ca3af;
-                font-size: 0.7em;
-                visibility: hidden;
-            }
-
-            #invoiceTable thead th.sortable i {
-                visibility: visible;
-            }
-
-            #invoiceTable td.highlight-voucher {
-                color: #dc2626; /* Changed to red */
-                font-weight: 600;
-            }
-
-            #invoiceTable tbody tr:last-child td {
-                border-bottom: none;
-            }
-            #invoiceTable tbody tr:nth-child(even) {
-                background-color: #f9fafb;
-            }
-            #invoiceTable tbody tr:hover {
-                background-color: #eef2ff;
-                transition: background-color 0.2s ease-in-out;
-            }
-
-            .header-content {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .version-number {
-                font-size: 0.9rem;
-            }
-
-            #quantitySummaryPanel {
-                font-size: 1rem;
-                padding: 1rem;
-            }
-
-            #consignmentSummaryList {
-                margin-top: 8px;
-                font-size: 0.9rem;
-                list-style: disc;
-                padding-left: 25px;
-            }
-
-            #consignmentSummaryList li {
-                margin-bottom: 4px;
-            }
-
-            #suggestionsList {
-                position: absolute;
-                width: max-content;
-                min-width: 100%;
-                max-height: 300px;
-                overflow-y: auto;
-                background-color: white;
-                border: 1px solid #d1d5db;
-                border-top: none;
-                border-bottom-left-radius: 0.5rem;
-                border-bottom-right-radius: 0.5rem;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                z-index: 20;
-                top: 100%;
-                left: 0;
-                padding-right: 15px;
-            }
-
-            #suggestionsList div {
-                padding: 10px 15px;
-                cursor: pointer;
-                font-size: 0.9rem;
-                color: #4b5563;
-                white-space: nowrap;
-                max-width: none;
-            }
-
-            #suggestionsList div:hover {
-                background-color: #f3f4f6;
-            }
-
-            #invoiceTable td[data-label="Status:"] {
-                justify-content: center; /* Center the status button in desktop view */
-            }
-
-            .status-button {
-                padding: 0.3em 0.6em;
-                border-radius: 0.5em;
-                font-size: 0.8em;
-                border: none;
-                white-space: nowrap; /* Prevent text wrapping */
-            }
-
-            .status-waiting {
-                background-color: #fde047; /* Yellow for waiting */
-                color: black; /* Changed font color to black for readability */
-                font-weight: normal; /* No longer bold */
-            }
-
-            .status-waiting-clickable {
-                cursor: pointer; /* Explicitly make it clickable */
-            }
-
-            .status-processing {
-                background-color: #3b82f6; /* Light blue */
-                color: white;
-                font-weight: bold; /* Keep bold */
-            }
-
-            .status-done {
-                background-color: #16a34a; /* Light green */
-                color: white;
-                font-weight: bold; /* Keep bold */
-            }
-
-            /* Desktop specific style for Acknowledge button */
-            .acknowledge-button {
-                font-size: 0.8em; /* Smaller font size */
-                padding: 0.3em 0.6em; /* Adjust padding to match status button */
-                white-space: nowrap; /* Prevent text from wrapping */
-            }
-
-            .mb-6.flex.flex-col.md\:flex-row.gap-4.items-center {
-                flex-direction: row;
-                align-items: center;
-            }
-
-            .search-reset-container {
-                width: auto;
-                margin-bottom: 0;
-                position: relative;
-                flex-grow: 1;
-            }
-
-            .export-options {
-                width: auto;
-            }
-
-            .export-options button {
-                width: auto;
-            }
-
-            .export-dropdown {
-                position: absolute;
-                width: 150px;
-                margin-top: 2px;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-                border: 1px solid #d1d5db;
-                border-radius: 0.5rem;
-            }
-
-            .search-input-container input {
-                padding-right: 35px; /* Added space for clear button */
-                /* ADDED THIS LINE TO INCREASE LEFT PADDING ON DESKTOP */
-                padding-left: 45px;
-            }
-        }
-
-        button {
-            transition: all 0.15s ease-in-out;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        button i {
-            margin-right: 8px;
-        }
-
-        #exportButton:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .search-input-container {
-            position: relative;
-            flex-grow: 1;
-            overflow: visible;
-        }
-
-        .search-input-container i.fa-search {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9ca3af;
-            pointer-events: none;
-            z-index: 1;
-        }
-
+        /* Header section with rounded corners to match the container */
         .header {
-            background-color: #1d4ed8;
+            background-color: #4A90E2; /* Primary Blue */
             color: white;
             padding: 1.5rem;
-            border-top-left-radius: 0.75rem;
-            border-top-right-radius: 0.75rem;
+            border-top-left-radius: 2rem; /* Match container's top-left */
+            border-top-right-radius: 2rem; /* Match container's top-right */
             position: relative;
             overflow: hidden;
         }
 
         .header-content {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-direction: column; /* Default to column for mobile */
+        }
+
+        @media (min-width: 768px) {
+            .header-content {
+                flex-direction: row; /* Row for desktop */
+            }
         }
 
         .version-number {
-            color: #93c5fd;
+            color: #EBF4FF; /* Light Blue */
             font-weight: 400;
+            font-size: 0.9rem; /* Consistent font size */
+            margin-top: 0.5rem; /* Space on mobile */
         }
-
-        .summary-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .summary-icon {
-            font-size: 1.5rem;
-            color: #1e3a8a;
-        }
-
-        #loadingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #1d4ed8;
-            background-image: radial-gradient(circle at center, #1d4ed8 0%, #1e40af 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            color: white;
-            transition: opacity 0.5s ease-out;
-        }
-
-        #loadingOverlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loading-text {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-top: 40px;
-            animation: fadeInOut 5s infinite alternate;
-            padding: 0 1rem;
-            white-space: nowrap;
-        }
-
-        .version-suffix {
-            font-size: 1.5rem;
-            color: #93c5fd;
-            font-weight: 600;
-            vertical-align: super;
-            margin-left: 0.2em;
-        }
-
-        .loading-dots-container {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .loading-dot {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #93c5fd;
-            animation: bounce 1.4s infinite ease-in-out;
-        }
-
-        /* Specific colors for each dot */
-        .loading-dot:nth-child(1) { background-color: #4285F4; }
-        .loading-dot:nth-child(2) { background-color: #EA4335; animation-delay: 0.1s; }
-        .loading-dot:nth-child(3) { background-color: #FBBC05; animation-delay: 0.2s; }
-        .loading-dot:nth-child(4) { background-color: #34A853; animation-delay: 0.3s; }
-
-
-        /* Keyframe Animations */
-        @keyframes fadeInOut {
-            0% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
+        @media (min-width: 768px) {
+            .version-number {
+                margin-top: 0; /* No extra margin on desktop */
             }
         }
 
-        /* New CSS for loading dots in message box */
-        .loading-message-dots {
-            display: inline-block;
-            margin-left: 8px;
-        }
-
-        .loading-message-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: currentColor;
-            margin: 0 2px;
-            animation: pulse 1.4s infinite ease-in-out;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-
-        /* Styles for the Details Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000; /* Ensure it's on top */
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-        }
-
-        .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background-color: white; /* Pure white background */
-            background-image: none; /* Removed gradient */
-            padding: 1.5rem; /* Reduced padding for a more compact receipt feel */
-            border-radius: 0.25rem; /* Minimal border-radius for sharp edges like a receipt */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Lighter, less spread shadow */
-            width: 90%;
-            max-width: 380px; /* Narrower for receipt-like feel */
-            transform: translateY(-10px) scale(0.99); /* Subtle animation */
-            transition: transform 0.2s ease-out; /* Quicker animation */
+        /* Search input and related elements */
+        .search-input-container {
             position: relative;
-            color: #1f2937; /* Dark gray for main text, good for print */
-            border: 1px solid #e5e7eb; /* Subtle light gray border */
-
-            /* Added for button positioning */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between; /* Distributes space between items, pushing footer to bottom */
-            min-height: 250px; /* Ensure enough height for space-between to work */
-        }
-
-        .modal-overlay.show .modal-content {
-            transform: translateY(0) scale(1);
-        }
-
-        /* Specific styles for the new message modal */
-        #messageModalOverlay .modal-content {
-            min-height: unset; /* Remove min-height for simpler message modal */
-            max-width: 350px; /* Slightly smaller for message */
-            padding: 1.25rem;
-        }
-        #messageModalOverlay .modal-header {
-            padding: 0.75rem 1.25rem 0.75rem 1.25rem; /* Added top and right padding for better X button placement */
-            margin-bottom: 1rem;
-            display: flex; /* Ensure flex for icon and title */
-            flex-direction: row; /* Explicitly set to row */
-            align-items: center; /* Vertically align icon and title */
-            gap: 0.5rem; /* Space between icon and title */
-            position: relative; /* Crucial for positioning the close button */
-        }
-
-        #messageModalOverlay .modal-header h2 {
-            font-size: 1.1rem; /* Slightly smaller title for message modal */
-            font-weight: 700; /* Made bolder */
-            margin-bottom: 0;
-            color: #1f2937; /* Darker text */
-            flex-grow: 1; /* Allow h2 to grow and take available space */
-            /* Removed white-space, overflow, and text-overflow to allow wrapping */
-        }
-
-        #messageModalOverlay .modal-header i.fas {
-            font-size: 1.2rem; /* Size for the icon */
-            color: #3b82f6; /* Blue color for info icon */
-            margin-right: 0.25rem; /* Add a small margin to the right of the icon */
-        }
-
-        /* Positioning for the close button in the message modal */
-        #messageModalOverlay .modal-close-button {
-            position: absolute;
-            top: 0.5rem; /* Adjusted to be within the new padding */
-            right: 0.5rem; /* Adjusted to be within the new padding */
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: #6b7280;
-            transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
-            padding: 0.25rem;
-        }
-
-        #messageModalOverlay .modal-close-button:hover {
-            color: #dc2626;
-            transform: rotate(90deg);
-        }
-
-
-        #messageModalOverlay .modal-body {
-            font-size: 0.9rem;
-            line-height: 1.5;
-            color: #374151;
-            flex-grow: unset; /* Don't let it grow */
-            padding: 0 0.5rem; /* Add horizontal padding */
-        }
-
-        #messageModalOverlay .modal-footer {
-            border-top: none; /* No footer border for message modal */
-            padding-top: 0;
-            margin-top: 1rem;
-            justify-content: flex-end; /* Align button to the right */
-            align-items: flex-end; /* Align button to the right */
-        }
-
-        #messageModalOverlay .modal-footer button {
-            background-color: #1d4ed8; /* Blue button for message modal */
-            color: white;
-            padding: 0.5rem 1rem;
-            font-weight: 500;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border-radius: 0.375rem; /* Rounded corners */
-        }
-
-        #messageModalOverlay .modal-footer button:hover {
-            background-color: #1e40af;
-            box-shadow: 0 2px 5px rgba(29, 78, 216, 0.2);
-        }
-
-
-        /* General Modal Header Styles */
-        .modal-header {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            border-bottom: 1px dashed #d1d5db;
-            padding: 1.5rem 1.5rem 1rem 1.5rem;
-            margin-bottom: 1.25rem;
-            position: relative;
-        }
-
-        .modal-header h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1f2937;
-            text-shadow: none;
-            margin-bottom: 0.5rem;
-            text-align: left;
-            width: calc(100% - 2.5rem);
-        }
-
-        .modal-close-button {
-            position: absolute;
-            top: 0.75rem;
-            right: 0.75rem;
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: #6b7280;
-            transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
-            padding: 0.25rem;
-        }
-
-        .modal-close-button:hover {
-            color: #dc2626;
-            transform: rotate(90deg);
-        }
-
-        /* Details Modal Body Styles */
-        .modal-body {
             flex-grow: 1;
+            overflow: visible;
         }
 
-        .modal-body p {
-            margin-bottom: 0.25rem;
-            font-size: 0.85rem;
-            display: flex; /* Keep flex for horizontal layout */
-            align-items: baseline;
-            padding: 0.1rem 0;
-            border-bottom: none;
-        }
-
-        .modal-body strong {
-            color: #4b5563;
-            font-weight: normal;
-            flex-shrink: 0;
-            margin-right: 0.5rem;
-            width: 45%; /* Set a fixed width for the label to create the barrier */
-            text-align: left;
-        }
-
-        .modal-body span {
-            color: #1f2937;
-            font-weight: 600;
-            text-align: left; /* Align value to the left from the barrier */
-            flex-grow: 1; /* Allow value to take remaining space */
-            word-wrap: break-word; /* Ensure long words break and wrap */
-        }
-
-        /* Details Modal Footer Styles */
-        .modal-footer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            border-top: 1px dashed #d1d5db;
-            padding-top: 1.25rem;
-            margin-top: 1.5rem;
-        }
-
-        .modal-footer button {
-            padding: 0.6rem 1.2rem;
-            border-radius: 0.375rem;
-            font-weight: 600;
-            cursor: pointer;
+        .search-input-container input {
+            width: 100%;
+            padding: 0.75rem 1.25rem 0.75rem 3rem; /* Adjusted padding for bubble input */
+            border: 1px solid #A0AEC0; /* Light Grey border */
+            border-radius: 9999px; /* Pill-shaped input */
+            focus: outline-none;
+            focus: ring-2;
+            focus: ring-blue-500;
+            focus: border-transparent;
+            color: #4A5568; /* Dark Grey text */
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle inner shadow */
             transition: all 0.2s ease-in-out;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .modal-print-button {
-            background-color: #22c55e;
-            color: white;
-            border: 1px solid #22c55e;
+        .search-input-container input:focus {
+            border-color: #4A90E2; /* Primary Blue on focus */
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25); /* Focus ring */
         }
 
-        .modal-print-button:hover {
-            background-color: #16a34a;
-            box-shadow: 0 2px 5px rgba(34, 197, 94, 0.2);
+        .search-input-container i.fa-search {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #A0AEC0; /* Light Grey */
+            pointer-events: none;
+            z-index: 1;
         }
 
-        .modal-cancel-button {
+        .search-clear-button {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            opacity: 0.6;
+            font-size: 1.1rem; /* Slightly larger icon */
+            color: #4A5568; /* Dark Grey */
+            padding: 0.2rem; /* Small padding for click area */
+            margin: 0;
+            z-index: 102;
+            border-radius: 50%; /* Make it circular */
+            transition: all 0.2s ease-in-out;
+        }
+        .search-clear-button:hover {
+            opacity: 1;
+            color: #EF4444; /* Red on hover */
+            background-color: #FFF5F5; /* Very light red background */
+        }
+
+        /* Search Suggestions List Styling */
+        #suggestionsList {
+            position: absolute;
             background-color: white;
-            color: #4b5563;
-            border: 1px solid #d1d5db;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-height: 200px; /* Limit height */
+            overflow-y: auto; /* Enable vertical scrolling */
+            z-index: 100;
+            width: 100%;
+            left: 0;
+            top: 100%; /* Position below the input */
+            margin-top: 0.25rem; /* Small gap below input */
         }
-
-        .modal-cancel-button:hover {
-            background-color: #f9fafb;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .modal-note {
-            font-size: 0.75rem;
-            color: #6b7280;
-            text-align: left;
-            margin-top: 0.75rem;
-            line-height: 1.4;
-        }
-        /* Print specific styles */
-        @media print {
-            body.print-active > *:not(.modal-overlay) {
-                display: none;
-            }
-            body.print-active .modal-overlay {
-                position: static;
-                background-color: transparent;
-                display: block;
-                width: auto;
-                height: auto;
-                overflow: visible;
-                /* Ensure it's not centered by default */
-                justify-content: flex-start;
-                align-items: flex-start;
-            }
-            body.print-active .modal-content {
-                width: 100mm; /* Increased width for better size */
-                max-width: 100mm; /* Increased max-width */
-                box-shadow: none;
-                border: none;
-                padding: 10mm; /* Increased padding */
-                transform: none;
-                border-radius: 0;
-                margin: 0; /* Reset margin */
-                float: left; /* Position to the left */
-                margin-left: 10mm; /* Add some margin from the left edge */
-                min-height: auto;
-            }
-            body.print-active .modal-header {
-                border-bottom: 1px dashed #d1d5db;
-                padding-bottom: 0.5rem;
-                margin-bottom: 0.5rem;
-                align-items: flex-start; /* Align items to the start (left) */
-                text-align: left; /* Ensure text within the header is left-aligned */
-                display: flex; /* Use flexbox for alignment control */
-                flex-direction: column; /* Stack the header content vertically */
-                /* NEW: Remove left/right padding that might be causing the offset */
-                padding-left: 0;
-                padding-right: 0;
-            }
-            body.print-active .modal-header h2 {
-                font-size: 1.3rem; /* Increased font size */
-                margin-bottom: 0;
-                font-family: 'Poppins', sans-serif; /* Changed to Poppins for consistency */
-                font-weight: 700; /* Made bolder */
-                text-align: left;
-                width: 100%;
-            }
-            /* New print header styles */
-            body.print-active .print-header {
-                font-family: 'Poppins', sans-serif;
-                font-size: 0.8rem; /* Adjusted font size for print header */
-                margin-bottom: 0.75rem; /* Space below the new header */
-                color: #1f2937;
-                text-align: left;
-                width: 100%;
-                display: block; /* Ensure it behaves as a block-level element */
-            }
-            body.print-active .print-header p {
-                margin: 0; /* Remove default paragraph margins */
-                line-height: 1.2; /* Adjust line height for compactness */
-                text-align: left; /* Ensure text inside <p> is also left-aligned */
-            }
-
-            body.print-active .modal-footer {
-                border-top: none;
-                padding-top: 0;
-                margin-top: 0;
-                align-items: flex-start;
-            }
-            body.print-active .modal-close-button,
-            body.print-active .modal-footer button {
-                display: none;
-            }
-
-            body.print-active .modal-body p {
-                font-size: 0.9rem; /* Increased font size */
-                margin-bottom: 0.1rem;
-                padding: 0.1rem 0;
-                font-family: 'Poppins', sans-serif;
-                /* No change needed here for flex as it's handled by strong/span */
-            }
-            body.print-active .modal-body strong {
-                font-weight: 400;
-                margin-right: 0.5rem;
-                width: 45%; /* Set a fixed width for the label to create the barrier */
-                flex-shrink: 0;
-                text-align: left;
-                font-family: 'Poppins', sans-serif;
-            }
-            body.print-active .modal-body span {
-                font-weight: 600; /* Increased font weight for values */
-                flex-grow: 1;
-                text-align: left; /* Align value to the left from the barrier */
-                font-family: 'Poppins', sans-serif;
-                word-wrap: break-word; /* Ensure long words break and wrap */
-            }
-            body.print-active .modal-note {
-                font-size: 0.7rem; /* Increased font size */
-                font-style: normal; /* Changed to normal */
-                margin-top: 1rem;
-                text-align: left;
-                color: #6b7280; /* Darker color for better contrast */
-                line-height: 1.4;
-            }
-
-            .print-separator {
-                display: block;
-                width: 100%;
-                margin-top: 1.5rem;
-                margin-bottom: 1rem;
-                border-bottom: 1px dashed #d1d5db;
-            }
-
-            .signature-section {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                width: 100%;
-                margin-top: 0;
-                padding-top: 0;
-                border-top: none;
-                font-family: 'Poppins', sans-serif;
-                color: #1f2937;
-            }
-
-            .signature-block-centered {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                width: 100%;
-                margin: 0;
-                margin-top: 0.75rem;
-            }
-
-            .signature-line {
-                border-bottom: 1px solid #a1a1aa;
-                width: 75%;
-                margin-bottom: 0.15rem;
-            }
-
-            .signature-text {
-                font-size: 0.75rem; /* Increased font size */
-                color: #4b5563;
-                text-align: left;
-                width: 75%;
-                margin-top: 0;
-                line-height: 1.1;
-            }
-
-            .date-line {
-                margin-top: 0.75rem;
-                font-size: 0.75rem;
-                color: #4b5563;
-                width: 100%;
-                text-align: left;
-            }
-        }
-
-        .signature-section {
+        #suggestionsList.hidden {
             display: none;
         }
-
-        /* Table specific loading overlay */
-        .table-loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white overlay */
-            z-index: 50; /* Above the table content */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.3s ease-out; /* Smooth fade in/out */
-        }
-
-        .table-loading-overlay.hidden {
-            opacity: 0;
-            pointer-events: none; /* Allow clicks through when hidden */
-        }
-
-        .table-loading-overlay .loading-dots-container {
-            position: relative;
-            width: 80px;
-            height: 80px;
-        }
-
-        .table-loading-overlay .loading-dot {
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background-color: #e0e0e0;
-            opacity: 0.3;
-            animation: sequential-fill 1s infinite ease-in-out;
-        }
-
-        /* Positioning for 8 dots in a circle */
-        .table-loading-overlay .loading-dot:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
-        .table-loading-overlay .loading-dot:nth-child(2) { top: 14.64%; right: 14.64%; transform: translate(50%, -50%); }
-        .table-loading-overlay .loading-dot:nth-child(3) { top: 50%; right: 0; transform: translateY(-50%); }
-        .table-loading-overlay .loading-dot:nth-child(4) { bottom: 14.64%; right: 14.64%; transform: translate(50%, 50%); }
-        .table-loading-overlay .loading-dot:nth-child(5) { bottom: 0; left: 50%; transform: translateX(-50%); }
-        .table-loading-overlay .loading-dot:nth-child(6) { bottom: 14.64%; left: 14.64%; transform: translate(-50%, 50%); }
-        .table-loading-overlay .loading-dot:nth-child(7) { top: 50%; left: 0; transform: translateY(-50%); }
-        .table-loading-overlay .loading-dot:nth-child(8) { top: 14.64%; left: 14.64%; transform: translate(-50%, -50%); }
-
-        /* Animation delays for sequential effect */
-        .table-loading-overlay .loading-dot:nth-child(1) { animation-delay: 0s; }
-        .table-loading-overlay .loading-dot:nth-child(2) { animation-delay: 0.125s; } /* 1s / 8 dots = 0.125s per dot */
-        .table-loading-overlay .loading-dot:nth-child(3) { animation-delay: 0.25s; }
-        .table-loading-overlay .loading-dot:nth-child(4) { animation-delay: 0.375s; }
-        .table-loading-overlay .loading-dot:nth-child(5) { animation-delay: 0.5s; }
-        .table-loading-overlay .loading-dot:nth-child(6) { animation-delay: 0.625s; }
-        .table-loading-overlay .loading-dot:nth-child(7) { animation-delay: 0.75s; }
-        .table-loading-overlay .loading-dot:nth-child(8) { animation-delay: 0.875s; }
-
-        @keyframes sequential-fill {
-            0%, 100% {
-                opacity: 0.3;
-                background-color: #e0e0e0;
-                transform: scale(0.8);
-            }
-            50% {
-                opacity: 1;
-                background-color: #1d4ed8;
-                transform: scale(1.2);
-            }
-        }
-
-        /* Ensure tableContainer is relative for absolute positioning of overlay */
-        #tableContainer {
-            position: relative;
-            min-height: 150px; /* Ensure there's space for the spinner */
-        }
-
-        /* New styles for chart container to allow central text */
-        .chart-container-wrapper {
-            position: relative;
-            width: 100%;
-            height: 250px; /* Fixed height for the chart area */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .chart-center-text .main-value {
-            font-size: 2.25rem; /* 3xl */
-            font-weight: 700; /* bold */
-            line-height: 1;
-        }
-
-        .chart-center-text .label {
-            font-size: 0.875rem; /* sm */
-            font-weight: 500;
-            color: #64748b;
-        }
-
-        /* Added style for the "Progress per SR ID" label */
-        .sr-progress-label {
-            font-weight: 500; /* Adjusted font weight to be less heavy */
-        }
-
-        /* New styles for collapsible section */
-        .collapsible-section {
-            background-color: white;
-            border: 1px solid #e2e8f0;
-            /* REVISED: Increased border-radius for bubble look */
-            border-radius: 1.5rem; /* More rounded corners for the whole section */
-            /* REVISED: Soft shadow for bubble look */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08); /* Soft shadow */
-            overflow: hidden; /* Ensures content is clipped during collapse */
-            margin-bottom: 1rem; /* Space between bubbles */
-            transition: all 0.3s ease-in-out; /* Smooth transition for hover/active states */
-        }
-
-        .collapsible-header {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
+        #suggestionsList div {
+            padding: 0.75rem 1rem; /* More padding for suggestion items */
             cursor: pointer;
-            background-color: #f8fafc; /* Light background for header */
-            transition: background-color 0.2s ease-in-out;
-            display: flex; /* Make it a flex container */
-            justify-content: space-between; /* Distribute items */
-            align-items: center; /* Vertically align items */
-        }
-
-        .collapsible-header:hover {
-            background-color: #f3f4f6; /* Subtle hover effect */
-        }
-
-        .collapsible-content {
-            max-height: 0; /* Starts collapsed */
-            overflow-y: hidden;
-            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-            padding: 0 1rem; /* Initial horizontal padding, vertical will be added when open */
-        }
-
-        .collapsible-content.expanded {
-            max-height: 300px; /* Increased max-height */
-            overflow-y: auto; /* Allow scrolling when expanded */
-            padding-top: 1rem; /* Add vertical padding when expanded */
-            padding-bottom: 1rem; /* Add vertical padding when expanded */
-        }
-
-        /* Revised .collapsible-icon for bubble-like aesthetic */
-        .collapsible-icon {
-            transition: transform 0.3s ease-in-out;
-            border: 1px solid #a0aec0; /* Subtle border */
-            border-radius: 0.75rem; /* Increased border-radius for more rounded corners */
-            padding: 0.35rem; /* Increased padding around the arrow */
-            display: inline-flex; /* To control size and alignment */
-            align-items: center;
-            justify-content: center;
-            width: 1.5rem; /* Adjust width as needed */
-            height: 1.5rem; /* Adjust height as needed */
-            color: #718096; /* Icon color */
-            background-color: #f0f4f8; /* Slightly darker light background for the bubble */
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Soft shadow for depth */
-        }
-
-        .collapsible-icon.rotate {
-            transform: rotate(180deg);
-        }
-
-        /* Styles for the summary text within the collapsible header */
-        .collapsible-header-summary {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .collapsible-header-summary .sr-id-text {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .collapsible-header-summary .percentage-text {
+            color: #4A5568;
             font-size: 0.9rem;
-            font-weight: 500;
-            margin-top: 0.2rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+        #suggestionsList div:hover {
+            background-color: #EBF4FF; /* Light Blue on hover */
+            color: #2C5F9B;
+        }
+        #suggestionsList .load-more-results {
+            font-weight: 600;
+            text-align: center;
+            border-top: 1px solid #E2E8F0;
+            color: #4A90E2; /* Primary Blue */
+        }
+        #suggestionsList .load-more-results:hover {
+            background-color: #F8FAFC; /* Lighter hover for load more */
+            color: #2C5F9B;
         }
 
-        /* New classes for percentage text color */
-        .percentage-not-started {
-            color: #ef4444; /* Red */
-        }
 
-        .percentage-in-progress {
-            color: #f59e0b; /* Yellow/Amber */
-        }
-
-        .percentage-completed {
-            color: #22c55e; /* Green */
-        }
-
-        .collapsible-header-summary .status-text-summary {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #666;
-            margin-top: 0.1rem;
-        }
-
-        /* Ensure progress bar container within collapsible content has no extra margin */
-        .collapsible-content .progress-bar-container {
-            margin-bottom: 0; /* Remove default margin from progress bar container */
-            border: none; /* Remove border from inner container */
-            box-shadow: none; /* Remove shadow from inner container */
-            padding: 0; /* Remove padding from inner container */
-        }
-
-        /* Custom styles for soft, bubble-style buttons and dropdowns */
+        /* Soft, bubble-style buttons (general) */
         .soft-button {
-            padding: 0.75rem 1.5rem; /* Ample padding */
+            padding: 0.75rem 1.5rem;
             border-radius: 9999px; /* Pill-shaped */
             font-weight: 600;
             color: white;
-            background-color: #10B981; /* Darker green pastel */
-            background-image: linear-gradient(to bottom right, #10B981, #059669); /* Darker soft gradient */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06); /* Soft shadow */
+            background-color: #6DD47E; /* Accent Green */
+            background-image: linear-gradient(to bottom right, #6DD47E, #4CAF50); /* Darker Green */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
             transition: all 0.3s ease-in-out;
             border: none;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            text-decoration: none; /* For anchor tags styled as buttons */
+            text-decoration: none;
         }
 
         .soft-button:hover:not([disabled]) {
-            background-color: #059669; /* Even darker green on hover */
-            background-image: linear-gradient(to bottom right, #059669, #047857); /* Even darker gradient on hover */
+            background-color: #4CAF50; /* Darker Green */
+            background-image: linear-gradient(to bottom right, #4CAF50, #388E3C); /* Even Darker Green */
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.08);
-            transform: translateY(-2px); /* Subtle lift effect */
+            transform: translateY(-2px);
         }
 
         .soft-button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            background-color: #e0e0e0;
+            background-color: #E0E0E0;
             background-image: none;
             box-shadow: none;
             transform: none;
         }
 
-        /* Dropdown specific styles */
+        .soft-button i {
+            margin-right: 0.5rem;
+        }
+
+        /* Soft, bubble-style dropdowns */
         .soft-dropdown {
-            border-radius: 1rem; /* More rounded corners for the dropdown itself */
-            padding: 0.5rem; /* Padding inside the dropdown */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.08); /* Soft shadow */
+            border-radius: 1.5rem; /* More rounded corners for the dropdown itself */
+            padding: 0.75rem; /* Increased padding inside the dropdown */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18), 0 4px 8px rgba(0, 0, 0, 0.1); /* Stronger, softer shadow */
             background-color: white;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(10px);
+            transform: translateY(15px); /* More pronounced slide effect */
             transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s;
+            border: none; /* Remove default border */
         }
 
         .soft-dropdown.show {
@@ -1644,22 +236,1040 @@
         }
 
         .soft-dropdown a {
-            padding: 0.75rem 1rem; /* Ample padding for dropdown items */
-            border-radius: 0.75rem; /* Rounded corners for individual items */
-            color: #374151; /* Dark text for contrast */
+            padding: 0.75rem 1.25rem; /* Ample padding for dropdown items */
+            border-radius: 1rem; /* Rounded corners for individual items */
+            color: #4A5568; /* Dark Grey */
             transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
             display: block;
-            text-align: left; /* Align text to the left */
+            text-align: left;
+            font-weight: 500; /* Slightly bolder text for readability */
         }
 
         .soft-dropdown a:hover {
-            background-color: #f0fdf4; /* Very light green on hover */
-            color: #059669; /* Darker green text on hover */
+            background-color: #EBF4FF; /* Light Blue on hover */
+            color: #2C5F9B; /* Darker Blue */
         }
 
-        /* Adjust icon spacing within the soft button */
-        .soft-button i {
-            margin-right: 0.5rem; /* Adjust space between icon and text */
+        /* Quantity Summary Panel - now bubble-styled */
+        #quantitySummaryPanel {
+            background-color: #EBF4FF; /* Light Blue background */
+            border: none; /* Remove border */
+            border-radius: 1.5rem; /* Rounded corners for bubble shape */
+            padding: 1.5rem; /* More padding */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Soft shadow */
+            color: #2C5F9B; /* Darker Blue text */
+            font-weight: 600;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .summary-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem; /* Increased gap */
+        }
+
+        .summary-icon {
+            font-size: 1.8rem; /* Larger icon */
+            color: #4A90E2; /* Primary Blue */
+        }
+
+        #consignmentSummaryList {
+            margin-top: 1rem; /* More space */
+            font-size: 0.95rem; /* Slightly larger font */
+            list-style: disc;
+            padding-left: 1.5rem; /* Indent list items */
+            color: #4A5568; /* Dark Grey text for list */
+        }
+        #consignmentSummaryList li {
+            margin-bottom: 0.4rem;
+        }
+        #consignmentSummaryList span {
+            font-weight: 700;
+            color: #2C5F9B; /* Stronger Darker Blue for values */
+        }
+
+        /* Dashboard Section - now bubble-styled */
+        .dashboard-section {
+            background-color: #F8FAFC;
+            border: none; /* Remove border */
+            border-radius: 2rem; /* More rounded for bubble */
+            padding: 2rem; /* More padding */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.06); /* Softer shadow */
+        }
+
+        .dashboard-main-title {
+            font-size: 1.75rem; /* Larger title */
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 1.5rem;
+            text-align: center; /* Center the title */
+        }
+
+        /* Individual collapsible "bubble" sections for SR Progress */
+        .collapsible-section {
+            background-color: white;
+            border: none; /* Removed border */
+            border-radius: 1.75rem; /* Very rounded for bubble shape */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 1.25rem; /* More space between bubbles */
+            transition: all 0.3s ease-in-out;
+        }
+
+        .collapsible-header {
+            padding: 1.25rem 1.5rem; /* More padding */
+            border-bottom: 1px solid #E2E8F0;
+            cursor: pointer;
+            background-color: #F8FAFC;
+            transition: background-color 0.2s ease-in-out;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .collapsible-header:hover {
+            background-color: #F3F4F6;
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow-y: hidden;
+            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+            padding: 0 1.5rem; /* Horizontal padding, vertical will be added when open */
+        }
+
+        .collapsible-content.expanded {
+            max-height: 300px; /* Increased max-height to accommodate content */
+            overflow-y: auto;
+            padding-top: 1.25rem; /* Vertical padding when expanded */
+            padding-bottom: 1.25rem; /* Vertical padding when expanded */
+        }
+
+        /* Collapsible icon (the arrow) - now a distinct bubble */
+        .collapsible-icon {
+            transition: transform 0.3s ease-in-out;
+            border: 1px solid #A0AEC0; /* Light Grey border */
+            border-radius: 50%; /* Perfectly circular */
+            padding: 0.4rem; /* More padding */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.8rem; /* Larger size */
+            height: 1.8rem; /* Larger size */
+            color: #718096; /* Darker Grey */
+            background-color: #EEF2F7; /* Light background */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .collapsible-icon.rotate {
+            transform: rotate(180deg);
+        }
+
+        /* Summary text within collapsible header */
+        .collapsible-header-summary {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .collapsible-header-summary .sr-id-text {
+            font-size: 1.2rem; /* Slightly larger */
+            font-weight: 600;
+            color: #333;
+        }
+
+        .collapsible-header-summary .percentage-text {
+            font-size: 1rem; /* Larger */
+            font-weight: 500;
+            margin-top: 0.25rem;
+        }
+
+        .percentage-not-started { color: #EF4444; } /* Red */
+        .percentage-in-progress { color: #FBBF24; } /* Yellow */
+        .percentage-completed { color: #4CAF50; } /* Darker Green */
+
+        .collapsible-header-summary .status-text-summary {
+            font-size: 0.85rem; /* Slightly larger */
+            font-weight: 500;
+            color: #666;
+            margin-top: 0.15rem;
+        }
+
+        /* Progress Bar Container inside collapsible content */
+        .progress-bar-container {
+            margin-bottom: 0;
+            border: none;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        /* Progress bar styling */
+        .progress-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar-header h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .status-badge-progress {
+            padding: 0.3em 0.6em;
+            border-radius: 9999px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .status-badge-progress.pending-invoice {
+            background-color: #FEE2E2; /* Light red */
+            color: #EF4444; /* Red */
+        }
+
+        .status-badge-progress.pending-voucher {
+            background-color: #FEF3C7; /* Light yellow */
+            color: #FBBF24; /* Yellow */
+        }
+
+        .status-badge-progress.completed {
+            background-color: #D1FAE5; /* Light green */
+            color: #4CAF50; /* Darker Green */
+        }
+
+        .progress-bar-stages {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 0.85rem;
+            color: #555;
+            text-align: center;
+        }
+
+        .progress-stage-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .progress-stage-circle {
+            width: 1.2rem;
+            height: 1.2rem;
+            border-radius: 50%;
+            background-color: #E0E0E0; /* Default grey */
+            margin-bottom: 0.3rem;
+            border: 2px solid #E0E0E0;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .progress-stage-circle.active-sr {
+            background-color: #4A90E2; /* Primary Blue */
+            border-color: #4A90E2;
+        }
+
+        .progress-stage-circle.inactive-invoice-red {
+            background-color: #EF4444; /* Red */
+            border-color: #EF4444;
+        }
+
+        .progress-stage-circle.active-invoice {
+            background-color: #4CAF50; /* Darker Green */
+            border-color: #4CAF50;
+        }
+
+        .progress-stage-circle.active-voucher-pending {
+            background-color: #FBBF24; /* Yellow */
+            border-color: #FBBF24;
+        }
+
+        .progress-stage-circle.active-voucher-complete {
+            background-color: #4CAF50; /* Darker Green */
+            border-color: #4CAF50;
+        }
+
+        .progress-bar-stages .fas.fa-arrow-right {
+            margin: 0 0.5rem;
+            color: #A0AEC0; /* Light Grey */
+        }
+
+        .progress-bar-line {
+            width: 100%;
+            height: 8px;
+            background-color: #E2E8F0; /* Light grey track */
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #4A90E2; /* Default blue */
+            border-radius: 4px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .progress-fill.pending-invoice { background-color: #EF4444; } /* Red */
+        .progress-fill.pending-voucher { background-color: #FBBF24; } /* Yellow */
+        .progress-fill.completed { background-color: #4CAF50; } /* Darker Green */
+
+
+        /* Table Container - now bubble-styled */
+        #tableContainer {
+            position: relative;
+            min-height: 150px;
+            border: none; /* Remove border */
+            border-radius: 1.5rem; /* Rounded corners for the table container */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08); /* Soft shadow */
+            padding: 1.5rem; /* More padding inside */
+            background-color: white; /* Ensure background is white */
+            overflow-x: auto; /* Keep scroll for small screens */
+        }
+
+        /* Table styling */
+        #invoiceTable {
+            min-width: 100%; /* Ensure table takes full width */
+            border-collapse: separate; /* Allows border-radius on cells */
+            border-spacing: 0; /* Remove space between cells */
+        }
+
+        #invoiceTable thead th {
+            background-color: #EBF4FF; /* Light Blue header */
+            color: #2C5F9B; /* Darker Blue text */
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem; /* Slightly larger font */
+            cursor: pointer;
+            padding: 1rem 1.25rem; /* More padding */
+            position: relative;
+            border-bottom: 2px solid #A0AEC0; /* Stronger bottom border */
+        }
+
+        #invoiceTable thead th:first-child {
+            border-top-left-radius: 1rem; /* Rounded top-left corner */
+        }
+        #invoiceTable thead th:last-child {
+            border-top-right-radius: 1rem; /* Rounded top-right corner */
+        }
+
+        #invoiceTable tbody tr:last-child td {
+            border-bottom: none; /* No border on last row's cells */
+        }
+
+        #invoiceTable tbody tr {
+            transition: background-color 0.2s ease-in-out;
+        }
+        #invoiceTable tbody tr:nth-child(even) {
+            background-color: #F9FAFB;
+        }
+        #invoiceTable tbody tr:hover {
+            background-color: #EBF4FF; /* Light Blue on hover */
+        }
+
+        #invoiceTable td {
+            border-bottom: 1px solid #E2E8F0; /* Softer cell borders */
+            padding: 0.85rem 1.25rem; /* More padding */
+            text-align: left;
+            font-size: 0.9rem; /* Slightly larger font */
+            color: #4A5568; /* Dark Grey text */
+        }
+
+        /* Acknowledge button (Click here) and Status buttons (Waiting, Processing, Complete) */
+        .acknowledge-button, .status-button {
+            padding: 0.4em 0.8em;
+            border-radius: 9999px; /* Pill shape */
+            font-size: 0.85em;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Soft shadow for all */
+            display: inline-flex; /* Use flex for centering content */
+            align-items: center; /* Vertically center content */
+            justify-content: center; /* Horizontally center content */
+            cursor: pointer; /* Ensure clickable cursor */
+            width: max-content; /* Make buttons only as wide as their content */
+            min-width: unset; /* Ensure no minimum width is forcing them to expand */
+            max-width: 100%; /* Prevent overflow if content is too long */
+        }
+
+        /* Acknowledge button specific styles */
+        .acknowledge-button {
+            background-color: #FFF5F5; /* Very light pinkish-red */
+            color: #DC2626; /* Standard red for text */
+            border: 1px solid #FCA5A5; /* Subtle red border */
+        }
+        .acknowledge-button:hover:not([disabled]) {
+            background-color: #EF4444; /* Solid red on hover for feedback */
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+            transform: translateY(-1px);
+        }
+        .acknowledge-button[disabled] {
+            background-color: #D1FAE5; /* Light green for acknowledged */
+            color: #065F46; /* Dark green text */
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 1; /* Full opacity for acknowledged state */
+            border: 1px solid #A7F3D0; /* Light green border */
+        }
+
+        /* Status button base styles (overridden by specific status classes) */
+        .status-button {
+            border: 1px solid; /* Add a border to status buttons for consistency */
+        }
+
+        .status-waiting {
+            background-color: #FEF3C7; /* Light yellow */
+            color: #92400E; /* Dark amber */
+            border-color: #FBBF24; /* Yellow border */
+        }
+        .status-waiting-clickable {
+            cursor: pointer;
+        }
+        .status-waiting:hover {
+            background-color: #FDE047; /* Darker yellow on hover */
+            box-shadow: 0 2px 5px rgba(253, 224, 71, 0.2);
+        }
+
+        .status-processing {
+            background-color: #BFDBFE; /* Light blue */
+            color: #1E40AF; /* Dark blue */
+            border-color: #93C5FD; /* Light blue border */
+        }
+        .status-processing:hover {
+            background-color: #93C5FD; /* Darker blue on hover */
+            box-shadow: 0 2px 5px rgba(59, 130, 246, 0.2);
+        }
+
+        .status-done {
+            background-color: #D1FAE5; /* Light green */
+            color: #065F46; /* Dark green */
+            border-color: #A7F3D0; /* Light green border */
+        }
+        .status-done:hover {
+            background-color: #A7F3D0; /* Darker green on hover */
+            box-shadow: 0 2px 5px rgba(34, 197, 94, 0.2);
+        }
+
+        /* Pagination buttons - consistent bubble style */
+        #paginationContainer button {
+            padding: 0.6rem 1.2rem;
+            border-radius: 9999px; /* Pill shape */
+            background-color: #4A90E2; /* Primary Blue */
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease-in-out;
+            border: none;
+        }
+        #paginationContainer button:hover:not([disabled]) {
+            background-color: #2C5F9B; /* Darker Blue */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        #paginationContainer button:disabled {
+            background-color: #CBD5E0;
+            color: #6B7280;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #pageInfo {
+            font-size: 0.95rem;
+            color: #4A5568; /* Dark Grey */
+            font-weight: 500;
+        }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #4A90E2; /* Primary Blue */
+            background-image: radial-gradient(circle at center, #4A90E2 0%, #2C5F9B 100%); /* Darker Blue */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+            transition: opacity 0.5s ease-out;
+        }
+        #loadingOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loading-text {
+            font-size: 2.5rem; /* Larger text */
+            font-weight: 700;
+            margin-top: 2.5rem; /* More space */
+            animation: fadeInOut 5s infinite alternate;
+            padding: 0 1rem;
+            white-space: nowrap;
+        }
+        .version-suffix {
+            font-size: 1.8rem; /* Larger suffix */
+            color: #EBF4FF; /* Light Blue */
+            font-weight: 600;
+            vertical-align: super;
+            margin-left: 0.2em;
+        }
+        .loading-dots-container {
+            display: flex;
+            gap: 1.25rem; /* More space between dots */
+            margin-bottom: 1.5rem; /* More space below dots */
+        }
+        .loading-dot {
+            width: 1.5rem; /* Larger dots */
+            height: 1.5rem; /* Larger dots */
+            border-radius: 50%;
+            background-color: #EBF4FF; /* Light Blue */
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        .loading-dot:nth-child(1) { background-color: #4A90E2; } /* Primary Blue */
+        .loading-dot:nth-child(2) { background-color: #6DD47E; animation-delay: 0.1s; } /* Accent Green */
+        .loading-dot:nth-child(3) { background-color: #FBBF24; animation-delay: 0.2s; } /* Yellow */
+        .loading-dot:nth-child(4) { background-color: #EF4444; animation-delay: 0.3s; } /* Red */
+        @keyframes fadeInOut { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        /* Table Loading Overlay */
+        .table-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.85); /* Slightly less transparent */
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 1.5rem; /* Match table container's border-radius */
+        }
+        .table-loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .table-loading-overlay .loading-dots-container {
+            width: 5rem; /* Larger spinner area */
+            height: 5rem;
+        }
+        .table-loading-overlay .loading-dot {
+            width: 1.2rem; /* Slightly larger dots */
+            height: 1.2rem;
+            animation: sequential-fill 1.2s infinite ease-in-out; /* Slower animation */
+        }
+        @keyframes sequential-fill {
+            0%, 100% { opacity: 0.3; background-color: #E0E0E0; transform: scale(0.8); }
+            50% { opacity: 1; background-color: #4A90E2; transform: scale(1.2); } /* Primary Blue */
+        }
+
+        /* Modals - now bubble-styled */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Darker overlay */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 1.5rem; /* Rounded corners for bubble aesthetic */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.1); /* Stronger, softer shadow */
+            padding: 2rem; /* More padding */
+            width: 90%;
+            max-width: 450px; /* Slightly wider */
+            transform: translateY(-20px) scale(0.95); /* More pronounced animation */
+            transition: transform 0.3s ease-out;
+            border: none; /* Remove sharp border */
+            color: #1F2937;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 280px; /* Ensure enough height */
+        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        /* Modal Header */
+        .modal-header {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            border-bottom: 1px dashed #D1D5DB;
+            padding: 0 0 1rem 0; /* Adjusted padding */
+            margin-bottom: 1.5rem; /* More margin */
+            position: relative;
+        }
+        .modal-header h2 {
+            font-size: 1.5rem; /* Larger title */
+            font-weight: 700;
+            color: #1F2937;
+            text-shadow: none;
+            margin-bottom: 0.75rem; /* More margin */
+            text-align: left;
+            width: calc(100% - 3rem); /* Account for close button */
+        }
+        .modal-close-button {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem; /* Larger close icon */
+            cursor: pointer;
+            color: #6B7280;
+            transition: all 0.2s ease-in-out;
+            padding: 0.3rem; /* More padding for click area */
+            border-radius: 50%; /* Circular close button */
+        }
+        .modal-close-button:hover {
+            color: #DC2626;
+            background-color: #FFF5F5;
+            transform: rotate(90deg);
+        }
+
+        /* Modal Body */
+        .modal-body {
+            flex-grow: 1;
+            padding: 0 0.5rem; /* Horizontal padding */
+            display: grid; /* Enable grid layout */
+            grid-template-columns: auto 1fr; /* First column adjusts to content, second takes remaining space */
+            gap: 0.5rem; /* Space between columns and rows */
+        }
+        .modal-body p {
+            margin-bottom: 0.5rem; /* More space between lines */
+            font-size: 0.95rem; /* Slightly larger text */
+            padding: 0.2rem 0;
+            display: contents; /* Make p behave like a container for grid items */
+        }
+        .modal-body strong {
+            color: #4A5568; /* Dark Grey */
+            font-weight: 500; /* Slightly bolder labels */
+            text-align: left;
+            grid-column: 1; /* Place labels in the first grid column */
+        }
+        .modal-body span {
+            color: #1F2937;
+            font-weight: 600;
+            text-align: left;
+            word-wrap: break-word;
+            grid-column: 2; /* Place values in the second grid column */
+        }
+
+        /* Modal Footer */
+        .modal-footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem; /* More space */
+            border-top: 1px dashed #D1D5DB;
+            padding-top: 1.5rem; /* More padding */
+            margin-top: 2rem; /* More margin */
+        }
+        .modal-footer button {
+            padding: 0.75rem 1.5rem; /* Larger buttons */
+            border-radius: 9999px; /* Pill shape */
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .modal-print-button {
+            background-color: #6DD47E; /* Accent Green */
+            color: white;
+            border: none;
+        }
+        .modal-print-button:hover {
+            background-color: #4CAF50; /* Darker Green */
+            box-shadow: 0 6px 15px rgba(109, 212, 126, 0.25);
+            transform: translateY(-1px);
+        }
+        .modal-cancel-button { /* Not currently used, but styled for consistency */
+            background-color: white;
+            color: #4A5568; /* Dark Grey */
+            border: 1px solid #D1D5DB;
+        }
+        .modal-cancel-button:hover {
+            background-color: #F9FAFB;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        .modal-note {
+            font-size: 0.8rem; /* Slightly larger */
+            color: #6B7280;
+            text-align: left;
+            margin-top: 1rem; /* More space */
+            line-height: 1.5;
+        }
+
+        /* Print specific styles */
+        @media print {
+            body.print-active > *:not(.modal-overlay) { display: none; }
+            body.print-active .modal-overlay {
+                position: static;
+                background-color: transparent;
+                display: block;
+                width: auto;
+                height: auto;
+                overflow: visible;
+                justify-content: flex-start;
+                align-items: flex-start;
+            }
+            body.print-active .modal-content {
+                width: 100mm;
+                max-width: 100mm;
+                box-shadow: none;
+                border: none;
+                padding: 10mm;
+                transform: none;
+                border-radius: 0;
+                margin: 0;
+                float: left;
+                margin-left: 10mm;
+                min-height: auto;
+            }
+            body.print-active .modal-header {
+                border-bottom: 1px dashed #D1D5DB;
+                padding-bottom: 0.5rem;
+                margin-bottom: 0.5rem;
+                align-items: flex-start;
+                text-align: left;
+                display: flex;
+                flex-direction: column;
+                padding-left: 0;
+                padding-right: 0;
+            }
+            body.print-active .print-header {
+                font-family: 'Poppins', sans-serif;
+                font-size: 0.8rem;
+                margin-bottom: 0.75rem;
+                color: #1F2937;
+                text-align: left;
+                width: 100%;
+                display: block;
+            }
+            body.print-active .print-header p {
+                margin: 0;
+                line-height: 1.2;
+                text-align: left;
+            }
+            body.print-active .modal-header h2 {
+                font-size: 1.3rem;
+                margin-bottom: 0;
+                font-family: 'Poppins', sans-serif;
+                font-weight: 700;
+                text-align: left;
+                width: 100%;
+            }
+            body.print-active .modal-footer {
+                border-top: none;
+                padding-top: 0;
+                margin-top: 0;
+                align-items: flex-start;
+            }
+            body.print-active .modal-close-button,
+            body.print-active .modal-footer button { display: none; }
+            body.print-active .modal-body { /* Apply grid to modal-body for print */
+                display: grid;
+                grid-template-columns: auto 1fr; /* Auto for labels, 1fr for values */
+                gap: 0.5rem;
+                font-size: 0.9rem;
+                margin-bottom: 0.1rem;
+                padding: 0.1rem 0;
+                font-family: 'Poppins', sans-serif;
+            }
+            body.print-active .modal-body p { /* Ensure p elements are grid items */
+                display: contents;
+            }
+            body.print-active .modal-body strong {
+                font-weight: 400;
+                text-align: left;
+                font-family: 'Poppins', sans-serif;
+                grid-column: 1; /* Labels in first column */
+            }
+            body.print-active .modal-body span {
+                font-weight: 600;
+                text-align: left;
+                font-family: 'Poppins', sans-serif;
+                word-wrap: break-word;
+                grid-column: 2; /* Values in second column */
+            }
+            body.print-active .modal-note {
+                font-size: 0.7rem;
+                font-style: normal;
+                margin-top: 1rem;
+                text-align: left;
+                color: #6B7280;
+                line-height: 1.4;
+            }
+            .print-separator {
+                display: block;
+                width: 100%;
+                margin-top: 1.5rem;
+                margin-bottom: 1rem;
+                border-bottom: 1px dashed #D1D5DB;
+            }
+            .signature-section {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+                margin-top: 0;
+                padding-top: 0;
+                border-top: none;
+                font-family: 'Poppins', sans-serif;
+                color: #1F2937;
+            }
+            .signature-block-centered {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+                margin: 0;
+                margin-top: 0.75rem;
+            }
+            .signature-line {
+                border-bottom: 1px solid #A1A1AA;
+                width: 75%;
+                margin-bottom: 0.15rem;
+            }
+            .signature-text {
+                font-size: 0.75rem;
+                color: #4A5568; /* Dark Grey */
+                text-align: left;
+                width: 75%;
+                margin-top: 0;
+                line-height: 1.1;
+            }
+            .date-line {
+                margin-top: 0.75rem;
+                font-size: 0.75rem;
+                color: #4A5568; /* Dark Grey */
+                width: 100%;
+                text-align: left;
+            }
+        }
+        .signature-section { display: none; } /* Hidden by default */
+
+        /* Message Modal specific styles */
+        #messageModalOverlay .modal-content {
+            min-height: unset;
+            max-width: 380px; /* Consistent with main modal */
+            padding: 1.5rem;
+        }
+        #messageModalOverlay .modal-header {
+            padding: 0 0 1rem 0; /* Adjusted padding */
+            margin-bottom: 1rem;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.75rem; /* More space */
+        }
+        #messageModalOverlay .modal-header h2 {
+            font-size: 1.25rem; /* Larger title */
+            font-weight: 700;
+            margin-bottom: 0;
+            color: #1F2937;
+            flex-grow: 1;
+        }
+        #messageModalOverlay .modal-header i.fas {
+            font-size: 1.5rem; /* Larger icon */
+            color: #4A90E2; /* Primary Blue */
+            margin-right: 0.25rem;
+        }
+        #messageModalOverlay .modal-close-button {
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.3rem; /* Adjusted size */
+        }
+        #messageModalOverlay .modal-body {
+            font-size: 0.95rem; /* Consistent with main modal */
+            line-height: 1.6;
+            color: #4A5568; /* Dark Grey */
+            flex-grow: unset;
+            padding: 0 0.5rem;
+        }
+        #messageModalOverlay .modal-footer {
+            border-top: none;
+            padding-top: 0;
+            margin-top: 1.5rem; /* More space */
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+        #messageModalOverlay .modal-footer button {
+            background-color: #4A90E2; /* Primary Blue */
+            color: white;
+            padding: 0.6rem 1.2rem; /* Consistent with other buttons */
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 9999px; /* Pill shape */
+        }
+        #messageModalOverlay .modal-footer button:hover {
+            background-color: #2C5F9B; /* Darker Blue */
+            box-shadow: 0 6px 15px rgba(74, 144, 226, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 767px) {
+            .container {
+                border-radius: 1.5rem; /* Slightly less rounded on small screens */
+            }
+            .header {
+                border-top-left-radius: 1.5rem;
+                border-top-right-radius: 1.5rem;
+            }
+            .dashboard-section {
+                border-radius: 1.5rem;
+                padding: 1.25rem;
+            }
+            .collapsible-section {
+                border-radius: 1.25rem;
+                margin-bottom: 1rem;
+            }
+            .collapsible-header {
+                padding: 1rem 1.25rem;
+            }
+            .collapsible-content.expanded {
+                max-height: 250px; /* Adjust max-height for mobile if needed */
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+            }
+            .collapsible-icon {
+                width: 1.6rem;
+                height: 1.6rem;
+                padding: 0.3rem;
+            }
+            #tableContainer {
+                border-radius: 1.25rem;
+                padding: 1rem;
+            }
+            #invoiceTable thead th:first-child { border-top-left-radius: 0.75rem; }
+            #invoiceTable thead th:last-child { border-top-right-radius: 0.75rem; }
+
+            /* Mobile table specific fixes */
+            #invoiceTable thead {
+                display: none; /* Hide table headers on small screens */
+            }
+
+            #invoiceTable, #invoiceTable tbody, #invoiceTable tr {
+                display: block; /* Make table elements behave as blocks */
+                width: 100%;
+            }
+
+            #invoiceTable tr {
+                margin-bottom: 1rem;
+                border: 1px solid #E2E8F0;
+                border-radius: 0.75rem; /* Rounded corners for each row */
+                overflow: hidden;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            }
+
+            #invoiceTable td {
+                display: grid; /* Use CSS Grid for two-column layout within each cell */
+                grid-template-columns: minmax(80px, max-content) 1fr; /* Label column auto-width, value column fills rest */
+                gap: 0.75rem; /* Increased gap between label and value */
+                padding: 0.75rem 1rem;
+                align-items: center; /* Vertically center content */
+                min-height: 40px; /* Consistent row height */
+                border-bottom: 1px solid #E2E8F0; /* Keep cell borders */
+                font-size: 0.9rem;
+                color: #4A5568; /* Dark Grey */
+            }
+
+            #invoiceTable td:last-child {
+                border-bottom: none; /* No bottom border for the last cell in a row */
+            }
+
+            #invoiceTable td::before {
+                content: attr(data-label);
+                display: inline-block; /* Ensure it behaves correctly as a grid item */
+                font-weight: 600;
+                color: #4A5568; /* Dark Grey */
+                text-align: left; /* Ensure label is left-aligned */
+                white-space: nowrap; /* Prevent label from wrapping */
+                overflow: hidden; /* Hide overflow if label is too long */
+                text-overflow: ellipsis; /* Add ellipsis for long labels */
+            }
+
+            /* Default to right-align for all data values and justify to end */
+            #invoiceTable td > *:not(::before) {
+                text-align: right; /* Default to right for numbers */
+                word-break: break-word;
+                overflow-wrap: break-word;
+                justify-self: end; /* Align content to the end (right) of the grid cell */
+            }
+
+            /* Mobile specific alignment for Status column (already right-aligned by default, but explicit for clarity) */
+            #invoiceTable td[data-label="Status:"] {
+                justify-content: flex-end; /* Align right */
+                text-align: right; /* Ensure text alignment is also right */
+            }
+            #invoiceTable td[data-label="Status:"] > *:not(::before) {
+                text-align: right; /* Ensure status button is aligned right */
+            }
+
+
+            .modal-content {
+                border-radius: 1rem;
+                padding: 1.25rem;
+                max-width: 95%;
+            }
+            .modal-header h2 {
+                font-size: 1.2rem;
+            }
+            .modal-footer {
+                padding-top: 1rem;
+                margin-top: 1.5rem;
+                gap: 1rem;
+            }
+            .modal-footer button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            .modal-note {
+                font-size: 0.7rem;
+            }
+            .print-header {
+                font-size: 0.65rem;
+            }
+            .loading-text {
+                font-size: 2rem;
+                margin-top: 30px;
+            }
+            .version-suffix {
+                font-size: 1.5rem;
+            }
+            .loading-dots-container {
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+            .loading-dot {
+                width: 1.2rem;
+                height: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -1674,8 +1284,8 @@
         <h1 class="loading-text">ConsignTracker <span class="version-suffix">v2</span></h1>
     </div>
 
-    <div id="mainContent" class="hidden">
-        <div class="container mx-auto max-w-screen-lg bg-white rounded-xl shadow-2xl border border-gray-200 mb-10">
+    <div id="mainContent" class="p-4 hidden">
+        <div class="container mx-auto max-w-screen-lg rounded-xl shadow-2xl mb-10">
             <div class="header">
                 <div class="header-content">
                     <div>
@@ -1687,7 +1297,7 @@
             </div>
 
             <div class="p-6">
-                <div class="mb-6 flex flex-col md:flex-row gap-4 items-center">
+                <div class="mb-6 flex flex-row gap-4 items-center flex-nowrap">
                     <div class="flex-grow search-reset-container">
                         <div class="search-input-container">
                             <input type="text" id="searchInput" placeholder="Search by, Consignment Order Number, SR ID, or Invoice No."
@@ -1711,7 +1321,7 @@
                     </div>
                 </div>
                 <p class="text-sm text-gray-600 mt-2">Type your SR ID, Consignment Order #, or Invoice # to search. Select a suggestion or press Enter.</p>
-                <div id="quantitySummaryPanel" class="mt-4 p-4 bg-blue-100 border border-blue-200 rounded-lg text-blue-800 font-semibold hidden">
+                <div id="quantitySummaryPanel" class="mt-4 p-4 hidden">
                     <div class="summary-content">
                         <i class="fas fa-info-circle summary-icon"></i> <div id="overallSummary"></div>
                     </div>
@@ -1720,29 +1330,29 @@
                 </div>
 
                 <div id="dashboardContainer" class="mt-6 dashboard-section hidden">
-                    <h2 id="dashboardMainTitle" class="text-xl font-semibold text-gray-800 mb-4">Consignment Overview Dashboard</h2>
+                    <h2 id="dashboardMainTitle" class="dashboard-main-title">Consignment Overview Dashboard</h2>
 
                     <div id="srProgressBubblesContainer">
                         </div>
                 </div>
 
                 <div id="messageBox" class="mt-4 p-4 rounded-md hidden"></div>
-                <div id="tableContainer" class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm mt-4 px-4 py-4">
-                    <table id="invoiceTable" class="min-w-full bg-white">
-                        <thead class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                <div id="tableContainer" class="overflow-x-auto mt-4 px-4 py-4">
+                    <table id="invoiceTable" class="min-w-full">
+                        <thead>
                             <tr>
-                                <th class="py-3 px-6 text-left" data-sort="SR ID">SR ID</th>
-                                <th class="py-3 px-6 text-left" data-sort="Name of Company">Name of Company</th>
-                                <th class="py-3 px-6 text-left sortable" data-sort="Consignment Order Number">C.O. Number <i class="fas fa-sort"></i></th>
-                                <th class="py-3 px-6 text-left" data-sort="Quantity Sold">Quantity Sold</th>
-                                <th class="py-3 px-6 text-left" data-sort="Amount">Amount</th>
-                                <th class="py-3 px-6 text-left" data-sort="Invoice No.">Invoice No.</th>
-                                <th class="py-3 px-6 text-left" data-sort="Voucher No.">Voucher No.</th>
-                                <th class="py-3 px-6 text-left" data-sort="Voucher Date">Voucher Date</th>
-                                <th class="py-3 px-6 text-left" data-sort="Status">Status</th>
+                                <th data-sort="SR ID">SR ID</th>
+                                <th data-sort="Name of Company">Name of Company</th>
+                                <th class="sortable" data-sort="Consignment Order Number">CO No. <i class="fas fa-sort"></i></th>
+                                <th data-sort="Quantity Sold">Quantity Sold</th>
+                                <th data-sort="Amount">Amount</th>
+                                <th data-sort="Invoice No.">Invoice No.</th>
+                                <th data-sort="Voucher No.">Voucher No.</th>
+                                <th data-sort="Voucher Date">Voucher Date</th>
+                                <th data-sort="Status">Status</th>
                             </tr>
                         </thead>
-                        <tbody id="invoiceTableBody" class="text-gray-700 text-sm font-light">
+                        <tbody id="invoiceTableBody">
                             <tr>
                                 <td colspan="9" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and press Enter or select a suggestion.</td>
                             </tr>
@@ -1764,16 +1374,14 @@
 
                 <div id="paginationContainer" class="mt-6 flex flex-col md:flex-row justify-between items-center">
                     <div class="flex gap-4 mb-4 md:mb-0">
-                        <button id="prevPageButton"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out shadow-sm">
+                        <button id="prevPageButton">
                             <i class="fas fa-arrow-left"></i> Previous
                         </button>
-                        <button id="nextPageButton"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out shadow-sm">
+                        <button id="nextPageButton">
                             Next <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
-                    <span id="pageInfo" class="text-gray-700 text-sm"></span>
+                    <span id="pageInfo"></span>
                 </div>
 
             </div>
@@ -1837,6 +1445,10 @@
         let currentSortDirection = 'asc';
         let lastClickedConsignmentOrder = null; // New global variable to store the consignment order of the last clicked button
 
+        // NEW: Variables for suggestion list management
+        let allMatchedSuggestions = []; // Stores all suggestions for the current search term
+        let currentSuggestionOffset = 0; // Current offset for displaying suggestions
+
         const searchInput = document.getElementById('searchInput');
         const clearSearchButton = document.getElementById('clearSearchButton'); // New clear button
         const exportButton = document.getElementById('exportButton');
@@ -1869,6 +1481,23 @@
         const signatureSection = document.querySelector('.signature-section');
         const modalNote = document.querySelector('.modal-note');
         const printSeparator = document.querySelector('.print-separator');
+
+        const originalSignatureTextFontSize = '0.75rem'; // Store original font sizes
+        const originalSignatureTextLineHeight = '1.1';
+        const originalSignatureTextWidth = '75%';
+        const originalSignatureTextAlign = 'left';
+        const originalDateLineFontSize = '0.75rem';
+        const originalDateLineMarginTop = '0.75rem';
+        const originalDateLineTextAlign = 'left';
+        const originalModalNoteDisplay = 'block';
+        const originalModalNoteFontSize = '0.8rem';
+        const originalPrintSeparatorDisplay = 'block';
+        const originalSignatureBlockCenteredDisplay = 'flex';
+        const originalSignatureBlockCenteredFlexDirection = 'column';
+        const originalSignatureBlockCenteredAlignItems = 'flex-start';
+        const originalSignatureBlockCenteredWidth = '100%';
+        const originalSignatureBlockCenteredMarginTop = '0';
+
 
         // New Message Modal elements
         const messageModalOverlay = document.getElementById('messageModalOverlay');
@@ -2123,7 +1752,7 @@
 
                     if ((invoiceNo.trim() === '' || invoiceNo.trim() === '-') && !isAcknowledged) {
                         invoiceNoCellContent = `
-                            <button class="acknowledge-button py-1 px-2 focus:outline-none focus:shadow-outline"
+                            <button class="acknowledge-button"
                                 data-sr-id="${item['SR ID'] || ''}"
                                 data-consignment-order="${item['Consignment Order Number'] || ''}">
                                 Click here
@@ -2131,7 +1760,7 @@
                         `;
                     } else if (isAcknowledged) {
                         invoiceNoCellContent = `
-                            <button class="acknowledge-button bg-green-200 text-green-800 font-normal py-1 px-2 rounded cursor-not-allowed" disabled>
+                            <button class="acknowledge-button" disabled>
                                 <i class="fas fa-check mr-1"></i> Acknowledged
                             </button>
                         `;
@@ -2149,15 +1778,15 @@
 
 
                     row.innerHTML = `
-                        <td data-label="SR ID:" class="px-6 py-3">${item['SR ID'] || ''}</td>
-                        <td data-label="Company:" class="px-6 py-3">${item['Name of Company'] || ''}</td>
-                        <td data-label="C.O. Number:" class="px-6 py-3">${item['Consignment Order Number'] || ''}</td>
-                        <td data-label="Quantity:" class="px-6 py-3">${quantitySold}</td>
-                        <td data-label="Amount:" class="px-6 py-3">${amount}</td>
-                        <td data-label="Invoice No.:" class="px-6 py-3">${invoiceNoCellContent}</td>
-                        <td data-label="Voucher No.:" class="px-6 py-3 ${voucherClass}">${item['Voucher No.'] || ''}</td>
-                        <td data-label="Voucher Date:" class="px-6 py-3">${item['Voucher Date'] || ''}</td>
-                        <td data-label="Status:" class="px-6 py-3">${statusHtml}</td>
+                        <td data-label="SR ID:">${item['SR ID'] || ''}</td>
+                        <td data-label="Company:">${item['Name of Company'] || ''}</td>
+                        <td data-label="CO No.:">${item['Consignment Order Number'] || ''}</td>
+                        <td data-label="Quantity:">${quantitySold}</td>
+                        <td data-label="Amount:">${amount}</td>
+                        <td data-label="Invoice No.:">${invoiceNoCellContent}</td>
+                        <td data-label="Voucher No.:" class="${voucherClass}">${item['Voucher No.'] || ''}</td>
+                        <td data-label="Voucher Date:">${item['Voucher Date'] || ''}</td>
+                        <td data-label="Status:">${statusHtml}</td>
                     `;
                     invoiceTableBody.appendChild(row);
                 });
@@ -2330,10 +1959,78 @@
             }
         });
 
+        // Fisher-Yates (Knuth) Shuffle for array randomization
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            }
+            return array;
+        }
+
+        // Function to render suggestions based on offset
+        function renderSuggestions(suggestionsToRender, offset) {
+            suggestionsList.innerHTML = ''; // Clear existing suggestions
+            const suggestionsPerPage = 5;
+            let currentBatch = suggestionsToRender.slice(offset, offset + suggestionsPerPage);
+
+            if (currentBatch.length === 0 && offset > 0) {
+                // If no more suggestions in this batch and we've already loaded some, hide the list
+                suggestionsList.classList.add('hidden');
+                return;
+            }
+
+            // Sort alphabetically if it's the first batch and not enough to shuffle
+            if (offset === 0 && suggestionsToRender.length <= suggestionsPerPage) {
+                currentBatch = suggestionsToRender.sort((a, b) => a.display.localeCompare(b.display));
+            } else if (offset === 0 && suggestionsToRender.length > suggestionsPerPage) {
+                // Only shuffle the initial set if there are more than 5 suggestions
+                currentBatch = shuffleArray([...suggestionsToRender]).slice(0, suggestionsPerPage);
+            } else if (offset > 0) {
+                // For subsequent "Load more" clicks, just take the next slice from the *original* (potentially shuffled once) full list
+                currentBatch = suggestionsToRender.slice(offset, offset + suggestionsPerPage);
+            }
+
+
+            currentBatch.forEach(suggestion => {
+                const suggestionItem = document.createElement('div');
+                suggestionItem.textContent = suggestion.display;
+                suggestionItem.setAttribute('data-value', suggestion.value);
+                suggestionItem.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    searchInput.value = suggestion.display; // Set input to full display text
+                    suggestionsList.classList.add('hidden');
+                    performSearch(suggestion.value); // Search by the actual CO number
+                });
+                suggestionsList.appendChild(suggestionItem);
+            });
+
+            // Add "Load more results" if there are more suggestions remaining
+            if (suggestionsToRender.length > offset + suggestionsPerPage) {
+                const loadMoreItem = document.createElement('div');
+                loadMoreItem.textContent = 'Load more results...';
+                loadMoreItem.classList.add('load-more-results');
+                loadMoreItem.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    currentSuggestionOffset += suggestionsPerPage; // Increment offset
+                    renderSuggestions(suggestionsToRender, currentSuggestionOffset); // Render next batch
+                });
+                suggestionsList.appendChild(loadMoreItem);
+            }
+
+            if (suggestionsList.children.length > 0) {
+                suggestionsList.classList.remove('hidden');
+            } else {
+                suggestionsList.classList.add('hidden');
+            }
+        }
+
+
         // Event listener for input changes in the search field for suggestions and clear button
         searchInput.addEventListener('input', () => {
             const searchTerm = searchInput.value.toLowerCase();
             suggestionsList.innerHTML = '';
+            currentSuggestionOffset = 0; // Reset offset on new input
 
             if (searchInput.value.length > 0) {
                 clearSearchButton.classList.remove('hidden');
@@ -2342,47 +2039,27 @@
             }
 
             if (searchTerm.length > 2 && allData.length > 0) {
-                const matchedItems = new Map();
+                const matchedItemsMap = new Map(); // Use map to ensure unique CO numbers
 
                 allData.forEach(item => {
                     const srId = item['SR ID'] ? String(item['SR ID']).toLowerCase() : '';
-                    const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']) : 'N/A';
+                    const consignmentOrderNumber = item['Consignment Order Number'] ? String(item['Consignment Order Number']) : '';
                     const invoiceNo = item['Invoice No.'] ? String(item['Invoice No.']).toLowerCase() : '';
                     const companyName = item['Name of Company'] ? String(item['Name of Company']) : 'Unknown Company';
 
+                    // Check if any of the fields include the search term
                     if (srId.includes(searchTerm) || consignmentOrderNumber.toLowerCase().includes(searchTerm) || invoiceNo.includes(searchTerm)) {
-                        const suggestionValue = consignmentOrderNumber;
-                        const suggestionKey = suggestionValue;
-
-                        if (suggestionValue !== 'N/A' && !matchedItems.has(suggestionKey)) {
-                            matchedItems.set(suggestionKey, {
+                        if (consignmentOrderNumber !== '') { // Only add if CO number exists
+                            matchedItemsMap.set(consignmentOrderNumber, {
                                 display: `${companyName} – ${consignmentOrderNumber}`,
-                                value: suggestionValue
+                                value: consignmentOrderNumber
                             });
                         }
                     }
                 });
 
-                if (matchedItems.size > 0) {
-                    const sortedSuggestions = Array.from(matchedItems.values()).sort((a, b) => a.display.localeCompare(b.display));
-
-                    sortedSuggestions.forEach(suggestion => {
-                        const suggestionItem = document.createElement('div');
-                        suggestionItem.textContent = suggestion.display;
-                        suggestionItem.setAttribute('data-value', suggestion.value);
-                        suggestionItem.classList.add('px-4', 'py-2', 'cursor-pointer', 'hover:bg-gray-100', 'text-gray-700');
-                        suggestionItem.addEventListener('click', (event) => {
-                            event.stopPropagation();
-                            searchInput.value = suggestion.display;
-                            suggestionsList.classList.add('hidden');
-                            performSearch(suggestion.value);
-                        });
-                        suggestionsList.appendChild(suggestionItem);
-                    });
-                    suggestionsList.classList.remove('hidden');
-                } else {
-                    suggestionsList.classList.add('hidden');
-                }
+                allMatchedSuggestions = Array.from(matchedItemsMap.values()); // Store all matched suggestions
+                renderSuggestions(allMatchedSuggestions, currentSuggestionOffset); // Render the first batch
             } else {
                 suggestionsList.classList.add('hidden');
             }
@@ -2396,6 +2073,8 @@
             hideMessageBox();
             suggestionsList.classList.add('hidden');
             suggestionsList.innerHTML = '';
+            allMatchedSuggestions = []; // Clear stored suggestions
+            currentSuggestionOffset = 0; // Reset offset
 
             // NEW LOGIC: Revert to last displayed data if available, otherwise clear completely
             if (lastDisplayedData.length > 0) {
@@ -2513,25 +2192,6 @@
             const originalSignatureSectionAlignItems = signatureSection.style.alignItems;
             const originalSignatureSectionWidth = signatureSection.style.width;
             const originalSignatureSectionMarginTop = signatureSection.style.marginTop;
-
-            const originalSignatureBlockCenteredDisplay = signatureBlockCentered.style.display;
-            const originalSignatureBlockCenteredFlexDirection = signatureBlockCentered.style.flexDirection;
-            const originalSignatureBlockCenteredAlignItems = signatureBlockCentered.style.alignItems;
-            const originalSignatureBlockCenteredWidth = signatureBlockCentered.style.width;
-            const originalSignatureBlockCenteredMarginTop = signatureBlockCentered.style.marginTop;
-
-            const originalSignatureTextFontSize = signatureText.style.fontSize;
-            const originalSignatureTextLineHeight = signatureText.style.lineHeight;
-            const originalSignatureTextWidth = signatureText.style.width;
-            const originalSignatureTextAlign = signatureText.style.textAlign;
-
-            const originalDateLineFontSize = dateLine.style.fontSize;
-            const originalDateLineMarginTop = dateLine.style.marginTop;
-            const originalDateLineTextAlign = dateLine.style.textAlign;
-
-            const originalModalNoteDisplay = modalNote.style.display;
-            const originalModalNoteFontSize = modalNote.style.fontSize;
-            const originalPrintSeparatorDisplay = printSeparator.style.display;
 
             closeButton.style.display = 'none';
             printButton.style.display = 'none';
