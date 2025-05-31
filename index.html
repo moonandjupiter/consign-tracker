@@ -15,11 +15,12 @@
             Darker Blue: #2C5F9B
             Light Blue: #EBF4FF
             Accent Green: #6DD47E
-            Darker Green: #4CAF50
+            Darker Green: #4CAF50 
+            Even Darker Green: #065F46
             Light Grey: #A0AEC0
             Dark Grey: #4A5568
-            Red (for errors/warnings): #EF4444
-            Yellow (for warnings/pending): #FBBF24
+            Red (for errors/warnings): #EF4444 / #B91C1C / #FEE2E2 / #FCA5A5
+            Yellow (for warnings/pending): #FBBF24 / #92400E / #FEF3C7
         */
 
         /* Base styles */
@@ -42,7 +43,6 @@
         header.app-header {
             background-color: #4A90E2; /* Primary Blue */
             color: white;
-            /* Width, max-width, mx-auto, padding, and rounded corners handled by Tailwind classes */
         }
 
         .version-number {
@@ -53,13 +53,12 @@
 
         /* Main content area wrapper */
         main#mainContent {
-            flex-grow: 1; 
+            /* flex-grow is on body's flex-direction: column child */
         }
 
-        /* White content block - constrained width */
+        /* White content block - now full width */
         .page-content-wrapper {
             background-color: white;
-            /* Width, max-width, mx-auto, shadow, and rounded-none handled by Tailwind classes */
         }
 
 
@@ -259,14 +258,18 @@
         }
         .collapsible-header:hover { background-color: #F3F4F6; }
         .collapsible-content {
+            box-sizing: border-box; 
             max-height: 0;
-            overflow-y: hidden;
-            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-            padding: 0 1.5rem;
+            overflow: hidden; 
+            transition: max-height 0.35s ease-in-out, padding-top 0.35s ease-in-out, padding-bottom 0.35s ease-in-out;
+            padding-left: 1.5rem; 
+            padding-right: 1.5rem;
+            padding-top: 0; 
+            padding-bottom: 0; 
         }
         .collapsible-content.expanded {
-            max-height: 300px;
-            overflow-y: auto;
+            max-height: 500px; 
+            overflow-y: auto; 
             padding-top: 1.25rem;
             padding-bottom: 1.25rem;
         }
@@ -287,33 +290,134 @@
         .collapsible-icon.rotate { transform: rotate(180deg); }
         .collapsible-header-summary { display: flex; flex-direction: column; align-items: flex-start; }
         .collapsible-header-summary .sr-id-text { font-size: 1.2rem; font-weight: 600; color: #333; }
-        .collapsible-header-summary .percentage-text { font-size: 1rem; font-weight: 500; margin-top: 0.25rem; }
-        .percentage-not-started { color: #EF4444; }
-        .percentage-in-progress { color: #FBBF24; }
-        .percentage-completed { color: #4CAF50; }
         .collapsible-header-summary .status-text-summary { font-size: 0.85rem; font-weight: 500; color: #666; margin-top: 0.15rem; }
+        
+        .badge.badge-error { /* For "Awaiting for Invoice" in collapsible header */
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.7rem; 
+            font-weight: 600;
+            border-radius: 9999px; 
+            background-color: #FEE2E2; /* red-100 */
+            color: #B91C1C; /* red-700 */
+            gap: 0.25rem; 
+            line-height: 1; 
+        }
+        .badge.badge-error svg {
+            width: 0.75rem; 
+            height: 0.75rem; 
+        }
+
 
         .progress-bar-container { margin-bottom: 0; border: none; box-shadow: none; padding: 0; }
         .progress-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
         .progress-bar-header h4 { font-size: 1.1rem; font-weight: 600; color: #333; margin: 0; }
-        .status-badge-progress { padding: 0.3em 0.6em; border-radius: 9999px; font-size: 0.75em; font-weight: 600; margin-left: 0.5rem; }
-        .status-badge-progress.pending-invoice { background-color: #FEE2E2; color: #EF4444; }
-        .status-badge-progress.pending-voucher { background-color: #FEF3C7; color: #FBBF24; }
-        .status-badge-progress.completed { background-color: #D1FAE5; color: #065F46; }
-        .progress-bar-stages { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.85rem; color: #555; text-align: center; }
-        .progress-stage-item { display: flex; flex-direction: column; align-items: center; flex: 1; }
-        .progress-stage-circle { width: 1.2rem; height: 1.2rem; border-radius: 50%; background-color: #E0E0E0; margin-bottom: 0.3rem; border: 2px solid #E0E0E0; transition: all 0.3s ease-in-out; }
-        .progress-stage-circle.active-sr { background-color: #4A90E2; border-color: #4A90E2; }
-        .progress-stage-circle.inactive-invoice-red { background-color: #EF4444; border-color: #EF4444; }
-        .progress-stage-circle.active-invoice { background-color: #4CAF50; border-color: #4CAF50; }
-        .progress-stage-circle.active-voucher-pending { background-color: #FBBF24; border-color: #FBBF24; }
-        .progress-stage-circle.active-voucher-complete { background-color: #4CAF50; border-color: #4CAF50; }
-        .progress-bar-stages .fas.fa-arrow-right { margin: 0 0.5rem; color: #A0AEC0; }
-        .progress-bar-line { width: 100%; height: 8px; background-color: #E2E8F0; border-radius: 4px; overflow: hidden; margin-top: 0.5rem; }
-        .progress-fill { height: 100%; width: 0%; background-color: #4A90E2; border-radius: 4px; transition: width 0.5s ease-in-out; }
-        .progress-fill.pending-invoice { background-color: #EF4444; }
-        .progress-fill.pending-voucher { background-color: #FBBF24; }
-        .progress-fill.completed { background-color: #4CAF50; }
+        .acknowledge-sr-button {
+            padding: 0.4em 0.8em;
+            border-radius: 9999px;
+            font-size: 0.8em;
+            font-weight: 600;
+            background-color: #FBBF24; /* Yellow for acknowledge */
+            color: #78350F; /* Dark amber text */
+            border: 1px solid #F59E0B;
+            transition: all 0.2s ease-in-out;
+            margin-left: 0.5rem; /* Space next to h4 */
+        }
+        .acknowledge-sr-button:hover:not([disabled]) {
+            background-color: #F59E0B;
+            color: white;
+        }
+        .acknowledge-sr-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* DaisyUI-like Steps Styling */
+        .progress-bar-stages {
+            display: flex;
+            align-items: flex-start; 
+            position: relative;
+            margin-bottom: 0.75rem;
+            font-size: 0.8rem;
+            color: #A0AEC0; /* Default text color for inactive steps */
+        }
+        .progress-stage-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            flex: 1; 
+        }
+        .progress-stage-item .progress-stage-circle {
+            width: 1.25rem; 
+            height: 1.25rem;
+            border-radius: 50%;
+            background-color: #E0E0E0; 
+            border: 2px solid #E0E0E0; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.3rem;
+            z-index: 2; 
+            position: relative;
+        }
+        /* Active step (blue) */
+        .progress-stage-item.active .progress-stage-circle {
+            background-color: #4A90E2; 
+            border-color: #4A90E2;
+        }
+        .progress-stage-item.active {
+            color: #2C5F9B; 
+        }
+        .progress-stage-item.active:not(:last-child)::after {
+             background-color: #4A90E2;
+        }
+
+        /* Completed step (green) */
+        .progress-stage-item.completed .progress-stage-circle {
+            background-color: #4CAF50; /* Darker Green */
+            border-color: #4CAF50;
+        }
+        .progress-stage-item.completed {
+            color: #065F46; /* Even Darker Green for text */
+        }
+         .progress-stage-item.completed:not(:last-child)::after {
+            background-color: #4CAF50; /* Darker Green for line */
+        }
+
+
+        .progress-stage-item.step-pending-invoice .progress-stage-circle { 
+            background-color: #FEE2E2; 
+            border-color: #EF4444; 
+        }
+        .progress-stage-item.step-pending-invoice { color: #EF4444; }
+
+        .progress-stage-item.step-pending-voucher .progress-stage-circle { 
+            background-color: #FEF3C7; 
+            border-color: #FBBF24; 
+        }
+        .progress-stage-item.step-pending-voucher { color: #FBBF24;}
+
+        .progress-stage-item:not(:last-child)::after { 
+            content: "";
+            position: absolute;
+            left: calc(50% + 0.625rem); 
+            right: calc(-50% + 0.625rem); 
+            top: 0.625rem; 
+            transform: translateY(-1px);
+            height: 2px;
+            background-color: #E0E0E0; 
+            z-index: 1; 
+        }
+        /* Line color for active step leading to next */
+        .progress-stage-item.active:not(:last-child)::after {
+            background-color: #4A90E2; 
+        }
+        .progress-stage-item:last-child::after {
+            display: none;
+        }
 
         #tableContainer {
             position: relative;
@@ -342,19 +446,22 @@
             font-size: 0.9rem; color: #4A5568;
         }
 
-        .acknowledge-button, .status-button {
+        .status-button { 
             padding: 0.4em 0.8em; border-radius: 9999px; font-size: 0.85em; font-weight: 600;
             white-space: nowrap; transition: all 0.2s ease-in-out; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
             width: max-content; min-width: unset; max-width: 100%;
         }
-        .acknowledge-button { background-color: #FFF5F5; color: #DC2626; border: 1px solid #FCA5A5; }
-        .acknowledge-button:hover:not([disabled]) { background-color: #EF4444; color: white; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); transform: translateY(-1px); }
-        .acknowledge-button[disabled] { background-color: #D1FAE5; color: #065F46; box-shadow: none; cursor: not-allowed; opacity: 1; border: 1px solid #A7F3D0; }
         .status-button { border: 1px solid; }
-        .status-waiting { background-color: #FEF3C7; color: #92400E; border-color: #FBBF24; }
-        .status-waiting-clickable { cursor: pointer; }
-        .status-waiting:hover { background-color: #FDE047; box-shadow: 0 2px 5px rgba(253, 224, 71, 0.2); }
+        .status-waiting { /* Now for "awaiting for invoice" in table */
+            background-color: #FEE2E2; /* Light red */
+            color: #B91C1C; /* Darker red text */
+            border-color: #FCA5A5; /* Reddish border */
+        }
+        .status-waiting:hover { /* Optional: Darken on hover */
+            background-color: #FECACA; /* red-200 */
+            border-color: #F87171; /* red-400 */
+        }
         .status-processing { background-color: #BFDBFE; color: #1E40AF; border-color: #93C5FD; }
         .status-processing:hover { background-color: #93C5FD; box-shadow: 0 2px 5px rgba(59, 130, 246, 0.2); }
         .status-done { background-color: #D1FAE5; color: #065F46; border-color: #A7F3D0; }
@@ -457,11 +564,35 @@
         .modal-body p { margin-bottom: 0.5rem; font-size: 0.95rem; padding: 0.2rem 0; display: contents; }
         .modal-body strong { color: #4A5568; font-weight: 500; text-align: left; grid-column: 1; }
         .modal-body span { color: #1F2937; font-weight: 600; text-align: left; word-wrap: break-word; grid-column: 2; }
-        .modal-footer { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; border-top: 1px dashed #D1D5DB; padding-top: 1.5rem; margin-top: 2rem; }
+        .modal-footer { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; border-top: 1px dashed #D1D5DB; padding-top: 1.5rem; margin-top: 1rem; } 
         .modal-footer button { padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: 600; cursor: pointer; transition: all 0.2s ease-in-out; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .modal-print-button { background-color: #6DD47E; color: white; border: none; }
-        .modal-print-button:hover { background-color: #4CAF50; box-shadow: 0 6px 15px rgba(109, 212, 126, 0.25); transform: translateY(-1px); }
+        .modal-print-button:hover:not([disabled]) { background-color: #4CAF50; box-shadow: 0 6px 15px rgba(109, 212, 126, 0.25); transform: translateY(-1px); }
+        .modal-print-button:disabled { 
+            background-color: #A0AEC0; /* Tailwind gray-400 */
+            color: #EBF4FF;    
+            opacity: 0.7;      
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            border: 1px solid #718096; /* Tailwind gray-500 */
+        }
         .modal-note { font-size: 0.8rem; color: #6B7280; text-align: left; margin-top: 1rem; line-height: 1.5; }
+        
+        .confirmation-section { 
+            text-align: left;
+            margin-bottom: 1rem; 
+        }
+        .confirmation-section label {
+            font-size: 0.85rem; 
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+        }
+         .confirmation-section input[type="checkbox"] {
+            margin-top: 0.2rem; 
+         }
+
 
         @media print {
             body.print-active > *:not(.modal-overlay) { display: none; }
@@ -472,12 +603,13 @@
             body.print-active .print-header p { margin: 0; line-height: 1.2; text-align: left; }
             body.print-active .modal-header h2 { font-size: 1.3rem; margin-bottom: 0; font-family: 'Poppins', sans-serif; font-weight: 700; text-align: left; width: 100%; }
             body.print-active .modal-footer { border-top: none; padding-top: 0; margin-top: 0; align-items: flex-start; }
-            body.print-active .modal-close-button, body.print-active .modal-footer button { display: none; }
+            body.print-active .modal-close-button, body.print-active .modal-footer button, .no-print { display: none !important; }
+            .only-print { display: block !important; }
             body.print-active .modal-body { display: grid; grid-template-columns: auto 1fr; gap: 0.5rem; font-size: 0.9rem; margin-bottom: 0.1rem; padding: 0.1rem 0; font-family: 'Poppins', sans-serif; }
             body.print-active .modal-body p { display: contents; }
             body.print-active .modal-body strong { font-weight: 400; text-align: left; font-family: 'Poppins', sans-serif; grid-column: 1; }
             body.print-active .modal-body span { font-weight: 600; text-align: left; font-family: 'Poppins', sans-serif; word-wrap: break-word; grid-column: 2; }
-            body.print-active .modal-note { font-size: 0.7rem; font-style: normal; margin-top: 1rem; text-align: left; color: #6B7280; line-height: 1.4; }
+            body.print-active .modal-note.only-print { font-size: 0.7rem; font-style: normal; margin-top: 1rem; text-align: left; color: #6B7280; line-height: 1.4; }
             .print-separator { display: block; width: 100%; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 1px dashed #D1D5DB; }
             .signature-section { display: flex; flex-direction: column; align-items: flex-start; width: 100%; margin-top: 0; padding-top: 0; border-top: none; font-family: 'Poppins', sans-serif; color: #1F2937; }
             .signature-block-centered { display: flex; flex-direction: column; align-items: flex-start; width: 100%; margin: 0; margin-top: 0.75rem; }
@@ -485,7 +617,10 @@
             .signature-text { font-size: 0.75rem; color: #4A5568; text-align: left; width: 75%; margin-top: 0; line-height: 1.1; }
             .date-line { margin-top: 0.75rem; font-size: 0.75rem; color: #4A5568; width: 100%; text-align: left; }
         }
-        .signature-section { display: none; }
+        .signature-section { display: none; } /* Hidden by default */
+        .only-print { display: none; } /* Hidden by default, shown only for print */
+        .no-print { /* Visible by default, hidden for print */ }
+
 
         #messageModalOverlay .modal-content { min-height: unset; max-width: 380px; padding: 1.5rem; }
         #messageModalOverlay .modal-header { padding: 0 0 1rem 0; margin-bottom: 1rem; flex-direction: row; align-items: center; gap: 0.75rem; }
@@ -505,7 +640,7 @@
         }
         
         .app-footer p {
-            margin: 0.3rem 0;
+            margin: 0.2rem 0; /* Adjusted margin for tighter packing */
             color: #EBF4FF; 
             font-size: 0.85rem; /* Base for footer p tags */
         }
@@ -517,12 +652,11 @@
         .app-footer .designer {
             font-style: normal; 
             color: #EBF4FF;
-            font-size: 1em; /* Make same size as copyright by inheriting from p */
+            font-size: 0.9em; /* Slightly smaller than copyright */
         }
 
         @media (max-width: 767px) { 
             .app-footer p { 
-                margin: 0.2rem 0;
                 font-size: 0.8rem; /* Mobile footer p font size */
             }
             
@@ -569,8 +703,8 @@
         <h1 class="loading-text">ConsignTracker <span class="version-suffix">v2</span></h1>
     </div>
 
-    <header class="app-header mx-auto max-w-screen-lg w-full px-4 sm:px-6 lg:px-8 py-6 rounded-t-2xl md:rounded-t-xl">
-        <div class="flex flex-col md:flex-row justify-between items-end md:items-center">
+    <header class="app-header mx-auto max-w-screen-lg w-full py-6 rounded-t-2xl md:rounded-t-xl">
+        <div class="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-end md:items-center">
             <div>
                 <h1 class="text-3xl font-bold">ConsignTracker</h1>
                 <p class="text-blue-200 mt-1 text-sm">Smart lookup for consignors: reported sales, invoices, and vouchers at a glance.</p>
@@ -657,9 +791,11 @@
         </div>
     </main>
 
-    <footer class="app-footer mx-auto max-w-screen-lg w-full px-4 sm:px-6 lg:px-8 py-6 text-center rounded-b-2xl md:rounded-b-xl">
-        <p class="copyright">&copy; 2025 ConsignTracker. All Rights Reserved.</p>
-        <p class="designer">Designed by jTeves.</p>
+    <footer class="app-footer mx-auto max-w-screen-lg w-full py-6 text-center rounded-b-2xl md:rounded-b-xl">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <p class="copyright">&copy; 2025 ConsignTracker. All rights reserved.</p>
+            <p class="designer">Built with ❤️ by jTeves.</p>
+        </div>
     </footer>
 
     <div id="detailsModalOverlay" class="modal-overlay">
@@ -674,6 +810,12 @@
             </div>
             <div class="modal-body" id="modalDetailsBody"></div>
             <div class="modal-footer">
+                <div class="confirmation-section no-print w-full">
+                    <label for="termsCheckbox" class="flex items-start text-sm text-gray-700 cursor-pointer">
+                        <input type="checkbox" id="termsCheckbox" class="mr-2 mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0">
+                        <span>By clicking 'Confirm', you acknowledge that you have reviewed the sales report and agree to the terms, figures, and details it contains. This action signifies your acceptance of the report as accurate and final for the stated period.</span>
+                    </label>
+                </div>
                 <button class="modal-print-button" id="printDetailsButton"></button>
                 <div class="print-separator"></div>
                 <div class="signature-section">
@@ -683,7 +825,7 @@
                     </div>
                     <p class="date-line">Date: _______________</p>
                 </div>
-                <p class="modal-note">
+                <p class="modal-note only-print">
                     <strong>Note to Supplier:</strong> Please attach this form to your sales invoice upon submission. Failure to attach may result in delays in verifying and processing your invoice.
                 </p>
             </div>
@@ -744,7 +886,9 @@
         const printDetailsButton = document.getElementById('printDetailsButton'); 
         const signatureSection = document.querySelector('.signature-section'); 
         const modalNote = document.querySelector('.modal-note'); 
-        const printSeparator = document.querySelector('.print-separator'); 
+        const printSeparator = document.querySelector('.print-separator');
+        const termsCheckbox = document.getElementById('termsCheckbox');
+
 
         const originalSignatureTextFontSize = '0.75rem';
         const originalSignatureTextLineHeight = '1.1';
@@ -902,7 +1046,7 @@
             paginationJoinDiv.appendChild(prevButton);
 
             // Page Number Buttons
-            const maxPageButtons = 4; // Max number of actual page number buttons to show, matching example
+            const maxPageButtons = 4; 
             let startPage, endPage;
 
             if (totalPages <= maxPageButtons) {
@@ -922,7 +1066,15 @@
                 if (endPage > totalPages) {
                     startPage -= (endPage - totalPages);
                     endPage = totalPages;
-                    if (startPage < 1) startPage = 1; // Ensure startPage is not less than 1
+                    if (startPage < 1) startPage = 1; 
+                }
+                 // Ensure we don't exceed maxPageButtons if totalPages is just slightly larger
+                if (endPage - startPage + 1 > maxPageButtons) {
+                    if (currentPage - startPage < endPage - currentPage) { // current page is closer to startPage
+                        endPage = startPage + maxPageButtons - 1;
+                    } else { // current page is closer to endPage or in the middle
+                        startPage = endPage - maxPageButtons + 1;
+                    }
                 }
             }
             
@@ -1017,21 +1169,19 @@
 
             let statusText = '';
             let statusClass = '';
-            let clickableClass = ''; 
 
             if (invoiceNo === '' || invoiceNo === '-') {
-                statusText = 'Waiting for Invoice';
-                statusClass = 'status-waiting';
-                clickableClass = 'status-waiting-clickable'; 
+                statusText = 'awaiting for invoice'; // Changed text
+                statusClass = 'status-waiting'; // This will be styled red
             } else if (voucherNo === '' || voucherNo === '-' || voucherNo === '0') {
                 statusText = 'Processing Voucher';
-                statusClass = 'status-processing';
+                statusClass = 'status-processing'; // This will be styled yellow
             } else {
-                statusText = 'Complete';
-                statusClass = 'status-done';
+                statusText = 'complete'; // Changed text to lowercase
+                statusClass = 'status-done'; // This will be styled green
             }
 
-            return `<span class="status-button ${statusClass} ${clickableClass}">${statusText}</span>`;
+            return `<span class="status-button ${statusClass}">${statusText}</span>`;
         }
 
         function renderTable() {
@@ -1051,28 +1201,9 @@
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-50'; 
 
-                    const invoiceNo = item['Invoice No.'] || '';
+                    const invoiceNo = item['Invoice No.'] || '-'; 
                     let invoiceNoCellContent = invoiceNo; 
-
-                    const consignmentOrderNumber = String(item['Consignment Order Number'] || 'N/A');
-                    const isAcknowledged = acknowledgedConsignments.has(consignmentOrderNumber);
-
-                    if ((invoiceNo.trim() === '' || invoiceNo.trim() === '-') && !isAcknowledged) {
-                        invoiceNoCellContent = `
-                            <button class="acknowledge-button"
-                                data-sr-id="${item['SR ID'] || ''}"
-                                data-consignment-order="${item['Consignment Order Number'] || ''}">
-                                Click here
-                            </button>
-                        `;
-                    } else if (isAcknowledged) {
-                        invoiceNoCellContent = `
-                            <button class="acknowledge-button" disabled>
-                                <i class="fas fa-check mr-1"></i> Acknowledged
-                            </button>
-                        `;
-                    }
-
+                    
                     const voucherValue = String(item['Voucher No.'] || '').trim();
                     const hasValidVoucher = voucherValue !== '' && voucherValue !== '0' && voucherValue !== '-';
                     const voucherClass = hasValidVoucher ? 'highlight-voucher' : ''; 
@@ -1089,8 +1220,8 @@
                         <td data-label="Quantity:">${quantitySold}</td>
                         <td data-label="Amount:">${amount}</td>
                         <td data-label="Invoice No.:">${invoiceNoCellContent}</td>
-                        <td data-label="Voucher No.:" class="${voucherClass}">${item['Voucher No.'] || ''}</td>
-                        <td data-label="Voucher Date:">${item['Voucher Date'] || ''}</td>
+                        <td data-label="Voucher No.:" class="${voucherClass}">${item['Voucher No.'] || '-'}</td>
+                        <td data-label="Voucher Date:">${item['Voucher Date'] || '-'}</td>
                         <td data-label="Status:">${statusHtml}</td>
                     `;
                     invoiceTableBody.appendChild(row);
@@ -1431,6 +1562,13 @@
                 <p><strong>Total Qty. Sold:</strong> <span>${totalQuantity.toLocaleString()} pcs</span></p>
                 <p><strong>Total Amount:</strong> <span>${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>
             `;
+            
+            // Reset checkbox and disable button
+            if(termsCheckbox) { // Check if element exists
+                termsCheckbox.checked = false;
+                printDetailsButton.disabled = true;
+            }
+
 
             detailsModalOverlay.classList.add('show');
             detailsModalOverlay.classList.remove('hidden');
@@ -1466,25 +1604,39 @@
             const modalContent = document.querySelector('#detailsModalOverlay .modal-content');
             const closeButton = modalContent.querySelector('.modal-close-button');
             const printButton = modalContent.querySelector('#printDetailsButton');
+            const confirmationSection = modalContent.querySelector('.confirmation-section');
+
 
             const originalCloseButtonDisplay = closeButton.style.display;
             const originalPrintButtonDisplay = printButton.style.display;
-
-            const signatureSectionElement = modalContent.querySelector('.signature-section');
-            const signatureTextElement = modalContent.querySelector('.signature-text');
-            const modalNoteElement = modalContent.querySelector('.modal-note');
-            
-            const originalSignatureSectionDisplay = signatureSectionElement ? signatureSectionElement.style.display : 'none';
-            const originalSignatureTextFontSize = signatureTextElement ? signatureTextElement.style.fontSize : '';
-            const originalModalNoteFontSize = modalNoteElement ? modalNoteElement.style.fontSize : '';
+            const originalConfirmationDisplay = confirmationSection ? confirmationSection.style.display : 'none';
 
 
             closeButton.style.display = 'none';
             printButton.style.display = 'none';
+            if(confirmationSection) confirmationSection.style.display = 'none'; // Hide terms for PNG
+
+
+            const signatureSectionElement = modalContent.querySelector('.signature-section');
+            const signatureTextElement = modalContent.querySelector('.signature-text');
+            const modalNoteElement = modalContent.querySelector('.modal-note');
+            const printSeparatorElement = modalContent.querySelector('.print-separator');
+            
+            const originalSignatureSectionDisplay = signatureSectionElement ? signatureSectionElement.style.display : 'none';
+            const originalSignatureTextFontSize = signatureTextElement ? signatureTextElement.style.fontSize : '';
+            const originalModalNoteFontSize = modalNoteElement ? modalNoteElement.style.fontSize : '';
+            const originalPrintSeparatorDisplay = printSeparatorElement ? printSeparatorElement.style.display : 'none';
+            const originalModalNoteElementDisplay = modalNoteElement ? modalNoteElement.style.display : 'none';
+
 
             if (signatureSectionElement) signatureSectionElement.style.display = 'flex'; 
             if (signatureTextElement) signatureTextElement.style.fontSize = '0.6rem'; 
-            if (modalNoteElement) modalNoteElement.style.fontSize = '0.55rem'; 
+            if (modalNoteElement) {
+                modalNoteElement.style.display = 'block'; // Make visible for capture if it's .only-print
+                modalNoteElement.style.fontSize = '0.55rem'; 
+            }
+            if (printSeparatorElement) printSeparatorElement.style.display = 'block';
+
 
             try {
                 const canvas = await html2canvas(modalContent, {
@@ -1496,9 +1648,15 @@
 
                 closeButton.style.display = originalCloseButtonDisplay;
                 printButton.style.display = originalPrintButtonDisplay;
+                if(confirmationSection) confirmationSection.style.display = originalConfirmationDisplay;
+
                 if (signatureSectionElement) signatureSectionElement.style.display = originalSignatureSectionDisplay;
                 if (signatureTextElement) signatureTextElement.style.fontSize = originalSignatureTextFontSize;
-                if (modalNoteElement) modalNoteElement.style.fontSize = originalModalNoteFontSize;
+                if (modalNoteElement) {
+                     modalNoteElement.style.fontSize = originalModalNoteFontSize;
+                     modalNoteElement.style.display = originalModalNoteElementDisplay; // Revert to original (likely none for .only-print)
+                }
+                if (printSeparatorElement) printSeparatorElement.style.display = originalPrintSeparatorDisplay;
 
 
                 return new Promise(resolve => {
@@ -1506,11 +1664,17 @@
                 });
             } catch (error) {
                 console.error("Error generating PNG:", error);
+                // Revert styles on error
                 closeButton.style.display = originalCloseButtonDisplay;
                 printButton.style.display = originalPrintButtonDisplay;
+                if(confirmationSection) confirmationSection.style.display = originalConfirmationDisplay;
                 if (signatureSectionElement) signatureSectionElement.style.display = originalSignatureSectionDisplay;
                 if (signatureTextElement) signatureTextElement.style.fontSize = originalSignatureTextFontSize;
-                if (modalNoteElement) modalNoteElement.style.fontSize = originalModalNoteFontSize;
+                 if (modalNoteElement) {
+                     modalNoteElement.style.fontSize = originalModalNoteFontSize;
+                     modalNoteElement.style.display = originalModalNoteElementDisplay;
+                }
+                if (printSeparatorElement) printSeparatorElement.style.display = originalPrintSeparatorDisplay;
                 throw error; 
             }
         }
@@ -1529,20 +1693,25 @@
             showMessage("Acknowledgement slip downloaded as PNG.", 'info'); 
         }
 
-        function updateAcknowledgeButtonsState(consignmentOrder) {
-            acknowledgedConsignments.add(consignmentOrder); 
+        function updateAcknowledgeButtonsState(consignmentOrder, srIdToUpdate) { // Added srIdToUpdate
+            const ackKey = consignmentOrder + '-' + srIdToUpdate; // Use specific key
+            acknowledgedConsignments.add(ackKey); 
             renderTable(); 
+            renderDashboard(); 
         }
 
         function addAcknowledgeButtonListeners() {
-            document.querySelectorAll('.acknowledge-button').forEach(button => {
+            // Target new buttons in dashboard
+            document.querySelectorAll('.acknowledge-sr-button').forEach(button => {
                 if (!button.disabled) { 
                     button.onclick = (event) => { 
-                        console.log('Acknowledge button clicked:', event.currentTarget);
                         event.stopPropagation(); 
                         const srId = event.currentTarget.dataset.srId;
                         const consignmentOrder = event.currentTarget.dataset.consignmentOrder;
                         lastClickedConsignmentOrder = consignmentOrder; 
+                        // Store the specific SR ID that is being acknowledged for the modal
+                        // This is important if multiple SRs share a CO number
+                        document.getElementById('detailsModalOverlay').dataset.currentSrId = srId; 
                         showDetailsModal(srId, consignmentOrder); 
                     };
                 }
@@ -1551,25 +1720,12 @@
 
         function setupStatusButtonDelegation() {
             invoiceTableBody.addEventListener('click', (event) => {
-                console.log('Click on invoiceTableBody detected. Event target:', event.target);
                 const clickedButton = event.target.closest('.status-waiting-clickable');
                 if (clickedButton) {
-                    console.log('Clicked element has class status-waiting-clickable:', clickedButton);
                     event.stopPropagation(); 
                     const statusText = clickedButton.textContent.trim(); 
-                    console.log('Status button text (trimmed):', statusText);
-
-                    if (statusText === 'Waiting for Invoice') {
-                        console.log('Condition met: statusText is "Waiting for Invoice". Calling showInfoModal...');
-                        showInfoModal(
-                            "Invoice Status Information",
-                            "No invoice has been received in the past 42 hours. If already submitted, you may ignore this message or call local 3018 for assistance."
-                        );
-                    } else {
-                        console.log('Clicked status button is not "Waiting for Invoice". Text:', statusText);
+                    if (statusText === 'awaiting for invoice') { // Updated text
                     }
-                } else {
-                    console.log('Clicked element is not a status-waiting-clickable button.');
                 }
             });
         }
@@ -1577,13 +1733,23 @@
 
         closeModalButton.addEventListener('click', hideDetailsModal);
 
+        if(termsCheckbox && printDetailsButton) {
+            termsCheckbox.addEventListener('change', function() {
+                printDetailsButton.disabled = !this.checked;
+            });
+        }
+
+
         printDetailsButton.addEventListener('click', async (event) => {
             console.log('Print/Confirm button clicked.');
             event.stopPropagation(); 
 
-            if (lastClickedConsignmentOrder) {
-                updateAcknowledgeButtonsState(lastClickedConsignmentOrder);
+            const currentSrIdForModal = document.getElementById('detailsModalOverlay').dataset.currentSrId;
+
+            if (lastClickedConsignmentOrder && currentSrIdForModal) {
+                updateAcknowledgeButtonsState(lastClickedConsignmentOrder, currentSrIdForModal); 
                 lastClickedConsignmentOrder = null; 
+                document.getElementById('detailsModalOverlay').dataset.currentSrId = ''; // Clear it
             }
 
             if (window.innerWidth <= 767) { 
@@ -1630,7 +1796,6 @@
 
         function renderDashboard() {
             srProgressBubblesContainer.innerHTML = ''; 
-
             const dataToSummarize = filteredData.length > 0 ? filteredData : [];
 
             if (dataToSummarize.length === 0) {
@@ -1666,90 +1831,114 @@
 
             dataToSummarize.forEach(item => {
                 const srId = item['SR ID'] || 'N/A';
+                const coNumber = String(item['Consignment Order Number'] || 'N/A');
                 const invoiceNo = String(item['Invoice No.'] || '').trim();
                 const voucherNo = String(item['Voucher No.'] || '').trim();
+                const ackKey = coNumber + '-' + srId; 
+                const isAcknowledgedForThisSR = acknowledgedConsignments.has(ackKey);
 
-                let progressPercentage = 0;
-                let statusText = '';
-                let progressClass = ''; 
-                let srStageClass = 'inactive'; 
-                let invoiceStageClass = 'inactive'; 
-                let voucherStageClass = 'inactive'; 
-                let percentageClass = ''; 
 
-                if (invoiceNo === '' || invoiceNo === '-') {
-                    statusText = 'Not Started';
-                    progressPercentage = 25; 
-                    progressClass = 'pending-invoice'; 
-                    srStageClass = 'active-sr'; 
-                    invoiceStageClass = 'inactive-invoice-red'; 
-                    percentageClass = 'percentage-not-started'; 
+                let statusTextSummary = ''; 
+                let srStepClass = 'inactive'; 
+                let invoiceStepClass = 'inactive'; 
+                let voucherStepClass = 'inactive';
+                let acknowledgeButtonHtml = '';
+                let collapsibleHeaderStatusHTML = '';
+
+
+                if ((invoiceNo === '' || invoiceNo === '-') && !isAcknowledgedForThisSR) {
+                    srStepClass = 'active'; 
+                    invoiceStepClass = 'step-pending-invoice'; 
+                    voucherStepClass = 'inactive';
+                    acknowledgeButtonHtml = `
+                        <button class="acknowledge-sr-button ml-2" data-sr-id="${srId}" data-consignment-order="${coNumber}">
+                            <i class="fas fa-handshake mr-1"></i> Acknowledge
+                        </button>`;
+                    collapsibleHeaderStatusHTML = `
+                        <span class="badge badge-error gap-1 text-xs py-0.5 px-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-3 h-3 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            Awaiting for Invoice
+                        </span>`;
+
+                } else if ( (invoiceNo === '' || invoiceNo === '-') && isAcknowledgedForThisSR) {
+                    statusTextSummary = 'Waiting for Invoice'; 
+                    srStepClass = 'completed'; 
+                    invoiceStepClass = 'step-pending-invoice'; 
+                    voucherStepClass = 'inactive';
+                     acknowledgeButtonHtml = `
+                        <button class="acknowledge-sr-button ml-2" disabled>
+                            <i class="fas fa-check mr-1"></i> Acknowledged
+                        </button>`;
+                    collapsibleHeaderStatusHTML = statusTextSummary; 
                 } else if (voucherNo === '' || voucherNo === '-' || voucherNo === '0') {
-                    statusText = 'In-Progress';
-                    progressPercentage = 60; 
-                    progressClass = 'pending-voucher'; 
-                    srStageClass = 'active-sr';
-                    invoiceStageClass = 'active-invoice'; 
-                    voucherStageClass = 'active-voucher-pending'; 
-                    percentageClass = 'percentage-in-progress'; 
+                    statusTextSummary = 'Processing Voucher';
+                    srStepClass = 'active'; // Corrected: Should be blue
+                    invoiceStepClass = 'active'; // Corrected: Should be blue
+                    voucherStepClass = 'step-pending-voucher'; 
+                    collapsibleHeaderStatusHTML = statusTextSummary; 
                 } else {
-                    statusText = 'Completed';
-                    progressPercentage = 100;
-                    progressClass = 'completed'; 
-                    srStageClass = 'active-sr';
-                    invoiceStageClass = 'active-invoice'; 
-                    voucherStageClass = 'active-voucher-complete'; 
-                    percentageClass = 'percentage-completed'; 
+                    statusTextSummary = 'Completed'; 
+                    srStepClass = 'completed'; 
+                    invoiceStepClass = 'completed';
+                    voucherStepClass = 'completed';
+                    collapsibleHeaderStatusHTML = statusTextSummary; 
                 }
+
 
                 const bubbleHtml = `
                     <div class="collapsible-section">
                         <div class="collapsible-header flex justify-between items-center">
                             <div class="collapsible-header-summary">
                                 <span class="sr-id-text">SR ID # ${srId}</span>
-                                <span class="percentage-text ${percentageClass}">${progressPercentage.toFixed(0)}% Complete</span>
-                                <span class="status-text-summary">${statusText}</span>
+                                <span class="status-text-summary mt-1">${collapsibleHeaderStatusHTML}</span>
                             </div>
                             <i class="fas fa-chevron-down text-gray-500 collapsible-icon"></i>
                         </div>
                         <div class="collapsible-content">
                             <div class="progress-bar-container">
                                 <div class="progress-bar-header">
-                                    <h4>SR ${srId} <span class="status-badge-progress ${progressClass}">${statusText}</span></h4>
+                                    <h4>Status...</h4>
+                                    ${acknowledgeButtonHtml} 
                                 </div>
                                 <div class="progress-bar-stages">
-                                    <div class="progress-stage-item">
-                                        <div class="progress-stage-circle ${srStageClass}"></div> SR
+                                    <div class="progress-stage-item ${srStepClass}">
+                                        <div class="progress-stage-circle"></div> Sales Report
                                     </div>
-                                    <i class="fas fa-arrow-right text-gray-400"></i>
-                                    <div class="progress-stage-item">
-                                        <div class="progress-stage-circle ${invoiceStageClass}"></div> Invoice
+                                    <div class="progress-stage-item ${invoiceStepClass}">
+                                        <div class="progress-stage-circle"></div> Invoice
                                     </div>
-                                    <i class="fas fa-arrow-right text-gray-400"></i>
-                                    <div class="progress-stage-item">
-                                        <div class="progress-stage-circle ${voucherStageClass}"></div> Voucher
+                                    <div class="progress-stage-item ${voucherStepClass}">
+                                        <div class="progress-stage-circle"></div> Voucher
                                     </div>
                                 </div>
-                                <div class="progress-bar-line">
-                                    <div class="progress-fill ${progressClass}" style="width: ${progressPercentage}%;"></div>
-                                </div>
-                                <div class="text-right text-sm text-gray-600 mt-2">${progressPercentage.toFixed(0)}% Complete</div>
                             </div>
                         </div>
                     </div>
                 `;
                 srProgressBubblesContainer.insertAdjacentHTML('beforeend', bubbleHtml);
             });
+            // Event delegation for collapsible headers
+            if (!srProgressBubblesContainer.dataset.collapsibleListenerAttached) {
+                srProgressBubblesContainer.addEventListener('click', function(event) {
+                    const header = event.target.closest('.collapsible-header');
+                    if (!header) return; 
 
-            document.querySelectorAll('.collapsible-header').forEach(header => {
-                header.addEventListener('click', () => {
-                    const content = header.nextElementSibling; 
-                    const icon = header.querySelector('.collapsible-icon'); 
+                    const parentSection = header.closest('.collapsible-section');
+                    if (!parentSection) return;
 
-                    content.classList.toggle('expanded'); 
-                    icon.classList.toggle('rotate'); 
+                    const content = parentSection.querySelector('.collapsible-content');
+                    const icon = header.querySelector('.collapsible-icon');
+
+                    if (content) {
+                        content.classList.toggle('expanded');
+                    }
+                    if (icon) {
+                        icon.classList.toggle('rotate');
+                    }
                 });
-            });
+                srProgressBubblesContainer.dataset.collapsibleListenerAttached = 'true'; 
+            }
+            addAcknowledgeButtonListeners(); 
         }
 
 
