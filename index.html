@@ -692,8 +692,7 @@
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen bg-gray-100 py-4 md:py-8">
-    <div id="loadingOverlay">
+<body class="flex flex-col min-h-screen bg-gray-100"> <div id="loadingOverlay">
         <div class="loading-dots-container">
             <div class="loading-dot"></div>
             <div class="loading-dot"></div>
@@ -703,13 +702,13 @@
         <h1 class="loading-text">ConsignTracker <span class="version-suffix">v2</span></h1>
     </div>
 
-    <header class="app-header mx-auto max-w-screen-lg w-full py-6 rounded-t-2xl md:rounded-t-xl">
-        <div class="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-end md:items-center">
+    <header class="app-header mx-auto max-w-screen-lg w-full px-4 sm:px-6 lg:px-8 py-4 md:py-6 rounded-t-2xl md:rounded-t-xl md:mt-8">
+        <div class="flex flex-col md:flex-row justify-between md:items-center h-full">
             <div>
                 <h1 class="text-3xl font-bold">ConsignTracker</h1>
                 <p class="text-blue-200 mt-1 text-sm">Smart lookup for consignors: reported sales, invoices, and vouchers at a glance.</p>
             </div>
-            <div class="version-number mt-2 md:mt-0 text-right md:text-left">Version: 2.0 build 6</div>
+            <div class="version-number mt-2 md:mt-0 self-end text-right md:self-auto md:text-left">Version: 2.0 build 6</div>
         </div>
     </header>
 
@@ -791,7 +790,7 @@
         </div>
     </main>
 
-    <footer class="app-footer mx-auto max-w-screen-lg w-full py-6 text-center rounded-b-2xl md:rounded-b-xl">
+    <footer class="app-footer mx-auto max-w-screen-lg w-full px-4 sm:px-6 lg:px-8 py-4 md:py-6 text-center rounded-b-2xl md:rounded-b-xl md:mb-8">
         <div class="px-4 sm:px-6 lg:px-8">
             <p class="copyright">&copy; 2025 ConsignTracker. All rights reserved.</p>
             <p class="designer">Built with ❤️ by jTeves.</p>
@@ -1171,14 +1170,14 @@
             let statusClass = '';
 
             if (invoiceNo === '' || invoiceNo === '-') {
-                statusText = 'awaiting for invoice'; // Changed text
-                statusClass = 'status-waiting'; // This will be styled red
+                statusText = 'awaiting for invoice'; 
+                statusClass = 'status-waiting'; 
             } else if (voucherNo === '' || voucherNo === '-' || voucherNo === '0') {
                 statusText = 'Processing Voucher';
-                statusClass = 'status-processing'; // This will be styled yellow
+                statusClass = 'status-processing'; 
             } else {
-                statusText = 'complete'; // Changed text to lowercase
-                statusClass = 'status-done'; // This will be styled green
+                statusText = 'complete'; 
+                statusClass = 'status-done'; 
             }
 
             return `<span class="status-button ${statusClass}">${statusText}</span>`;
@@ -1862,7 +1861,7 @@
 
                 } else if ( (invoiceNo === '' || invoiceNo === '-') && isAcknowledgedForThisSR) {
                     statusTextSummary = 'Waiting for Invoice'; 
-                    srStepClass = 'completed'; 
+                    srStepClass = 'active'; 
                     invoiceStepClass = 'step-pending-invoice'; 
                     voucherStepClass = 'inactive';
                      acknowledgeButtonHtml = `
@@ -1872,8 +1871,8 @@
                     collapsibleHeaderStatusHTML = statusTextSummary; 
                 } else if (voucherNo === '' || voucherNo === '-' || voucherNo === '0') {
                     statusTextSummary = 'Processing Voucher';
-                    srStepClass = 'active'; // Corrected: Should be blue
-                    invoiceStepClass = 'active'; // Corrected: Should be blue
+                    srStepClass = 'active'; 
+                    invoiceStepClass = 'active'; 
                     voucherStepClass = 'step-pending-voucher'; 
                     collapsibleHeaderStatusHTML = statusTextSummary; 
                 } else {
