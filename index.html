@@ -728,7 +728,8 @@
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen bg-gray-100"> <div id="loadingOverlay">
+<body class="flex flex-col min-h-screen bg-gray-100">
+    <div id="loadingOverlay">
         <div class="loading-dots-container">
             <div class="loading-dot"></div>
             <div class="loading-dot"></div>
@@ -981,6 +982,7 @@
 
             const consignmentTotals = filteredData.reduce((acc, item) => {
                 const consignmentNumber = String(item['Consignment Order Number'] || 'N/A');
+                // Corrected: Use parseFloat and replace non-numeric characters for Quantity Sold
                 const quantity = parseFloat(String(item['Quantity Sold'] || '0').replace(/[^0-9.-]+/g,"")) || 0;
                 const amount = parseFloat(String(item['Amount'] || '0').replace(/[^0-9.-]+/g,"")) || 0;
 
@@ -1225,6 +1227,7 @@
 
                     const statusHtml = getStatusHtml(item);
 
+                    // Corrected: Use parseFloat and replace non-numeric characters for Quantity Sold
                     const quantitySold = item['Quantity Sold'] ? parseFloat(String(item['Quantity Sold']).replace(/[^0-9.-]+/g,"")).toLocaleString() : '';
                     const amount = item['Amount'] ? parseFloat(String(item['Amount']).replace(/[^0-9.-]+/g,"")).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
 
@@ -1259,7 +1262,7 @@
                 const consignmentOrderNumber = item['Consignment Order Number'] || '';
                 const key = `${srId}-${consignmentOrderNumber}`;
 
-                const quantity = parseFloat(String(item['Quantity Sold'] || '0').replace(/[^0-9.-]+/g,"")) || 0;
+                const quantity = parseFloat(String(item['Quantity Sold'] || '0').replace(/[^0-9.-]+/g,"")) || 0; // Ensure parsing consistency
                 const amount = parseFloat(String(item['Amount'] || '0').replace(/[^0-9.-]+/g,"")) || 0;
 
                 if (mergedMap.has(key)) {
@@ -1289,16 +1292,25 @@
                 }
                 allData = await response.json();
 
-                processedData = [];
-                filteredData = [];
-                lastDisplayedData = [];
+                // Check sessionStorage for a last search term and restore
+                const lastSearchTerm = sessionStorage.getItem('lastSearchTerm');
+                if (lastSearchTerm) {
+                    console.log('Found last search term in session storage:', lastSearchTerm);
+                    searchInput.value = lastSearchTerm; // Set the input field value
+                    performSearch(lastSearchTerm); // Trigger a search with the stored term
+                    clearSearchButton.classList.remove('hidden'); // Ensure clear button is visible
+                } else {
+                    // If no stored search, initialize to empty state
+                    processedData = [];
+                    filteredData = [];
+                    lastDisplayedData = [];
+                    hideMessageBox();
+                    quantitySummaryPanel.classList.add('hidden');
+                    dashboardContainer.classList.add('hidden');
+                    renderTable(); // Render empty table if no search term
+                }
 
-                hideMessageBox();
-                quantitySummaryPanel.classList.add('hidden');
-                dashboardContainer.classList.add('hidden');
-                renderTable();
-
-                console.log('Raw data fetched successfully. Dashboard and table will load on search.');
+                console.log('Raw data fetched successfully. Dashboard and table will load on search or restored search.');
 
                 setTimeout(() => {
                     loadingOverlay.classList.add('hidden');
@@ -1336,11 +1348,18 @@
                 let searchTerm;
                 if (searchValue !== null) {
                     searchTerm = String(searchValue).toLowerCase();
-                    searchInput.value = searchTerm;
-                    console.log("Searching by suggestion value (Consignment Order Number):", searchTerm);
+                    searchInput.value = searchTerm; // Ensure input field is updated
+                    console.log("Searching by suggestion value (Consignment Order Number) or restored value:", searchTerm);
                 } else {
                     searchTerm = searchInput.value.toLowerCase();
                     console.log("Searching by typed input:", searchTerm);
+                }
+
+                // Save the current search term to session storage
+                if (searchTerm) {
+                    sessionStorage.setItem('lastSearchTerm', searchTerm);
+                } else {
+                    sessionStorage.removeItem('lastSearchTerm');
                 }
 
                 if (searchTerm) {
@@ -1374,6 +1393,9 @@
                 } else {
                     filteredData = [];
                     processedData = [];
+                    // Ensure quantities are hidden if no search term
+                    quantitySummaryPanel.classList.add('hidden');
+                    dashboardContainer.classList.add('hidden');
                 }
 
                 console.log("Filtered Data Length after search:", filteredData.length);
@@ -1514,16 +1536,21 @@
             allMatchedSuggestions = [];
             currentSuggestionOffset = 0;
 
-            if (lastDisplayedData.length > 0) {
-                filteredData = [...lastDisplayedData];
-                processedData = mergeData(allData);
-            } else {
-                filteredData = [];
-                processedData = [];
-            }
+            // Clear saved search term from sessionStorage
+            sessionStorage.removeItem('lastSearchTerm');
+
+            // Reset to empty state
+            filteredData = [];
+            processedData = [];
+
+            // Ensure all relevant sections are hidden when search is cleared
+            quantitySummaryPanel.classList.add('hidden');
+            dashboardContainer.classList.add('hidden');
+            tableContainer.classList.add('hidden'); // Hide table on clear
+            paginationContainer.classList.add('hidden'); // Hide pagination on clear
 
             currentPage = 1;
-            renderTable();
+            renderTable(); // Re-render table to show empty message
             renderDashboard();
         });
 
@@ -1975,7 +2002,7 @@
             mainContent.classList.add('hidden');
             loadingOverlay.classList.remove('hidden');
 
-            fetchData();
+            fetchData(); // This will now handle restoring search state
             updatePrintButtonLabel();
             updateSearchInputPlaceholder();
             setupStatusButtonDelegation();
