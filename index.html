@@ -981,7 +981,7 @@
 
             const consignmentTotals = filteredData.reduce((acc, item) => {
                 const consignmentNumber = String(item['Consignment Order Number'] || 'N/A');
-                const quantity = parseInt(item['Quantity Sold'], 10);
+                const quantity = parseFloat(String(item['Quantity Sold'] || '0').replace(/[^0-9.-]+/g,"")) || 0;
                 const amount = parseFloat(String(item['Amount'] || '0').replace(/[^0-9.-]+/g,"")) || 0;
 
                 if (!acc[consignmentNumber]) {
@@ -1225,7 +1225,7 @@
 
                     const statusHtml = getStatusHtml(item);
 
-                    const quantitySold = item['Quantity Sold'] ? parseInt(item['Quantity Sold'], 10).toLocaleString() : '';
+                    const quantitySold = item['Quantity Sold'] ? parseFloat(String(item['Quantity Sold']).replace(/[^0-9.-]+/g,"")).toLocaleString() : '';
                     const amount = item['Amount'] ? parseFloat(String(item['Amount']).replace(/[^0-9.-]+/g,"")).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
 
                     row.innerHTML = `
@@ -1259,7 +1259,7 @@
                 const consignmentOrderNumber = item['Consignment Order Number'] || '';
                 const key = `${srId}-${consignmentOrderNumber}`;
 
-                const quantity = parseInt(item['Quantity Sold'], 10) || 0;
+                const quantity = parseFloat(String(item['Quantity Sold'] || '0').replace(/[^0-9.-]+/g,"")) || 0;
                 const amount = parseFloat(String(item['Amount'] || '0').replace(/[^0-9.-]+/g,"")) || 0;
 
                 if (mergedMap.has(key)) {
