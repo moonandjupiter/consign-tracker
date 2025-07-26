@@ -436,13 +436,12 @@ async function fetchData() {
             renderTable(); // Render empty table if no search term
         }
 
-        console.log('Raw data fetched successfully. Dashboard and table will load on search or restored search.');
+        console.log('Raw data fetched successfully.');
 
-        setTimeout(() => {
-            loadingOverlay.classList.add('hidden');
-            mainContent.classList.remove('hidden');
-            console.log('Loading overlay hidden and main content shown after successful fetch (5000ms delay).');
-        }, 5000);
+        // Artificial delay removed. The loading overlay will now hide immediately.
+        loadingOverlay.classList.add('hidden');
+        mainContent.classList.remove('hidden');
+        console.log('Loading overlay hidden and main content shown.');
 
     } catch (error) {
         console.error("Error fetching data:", error);
@@ -453,10 +452,9 @@ async function fetchData() {
         tableContainer.classList.add('hidden');
         paginationContainer.classList.add('hidden');
 
-        setTimeout(() => {
-            loadingOverlay.classList.add('hidden');
-            mainContent.classList.remove('hidden');
-        }, 500);
+        // Artificial delay removed from error case as well.
+        loadingOverlay.classList.add('hidden');
+        mainContent.classList.remove('hidden');
     }
 }
 
