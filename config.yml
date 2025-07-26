@@ -1,0 +1,7 @@
+# config.yml
+# Configuration settings for the ConsignTracker application
+
+mongodb:
+  uri: "mongodb://localhost:27017"
+  database: "consign_tracker_db"
+  collection: "consign_tracker"
