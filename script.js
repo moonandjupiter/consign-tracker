@@ -8,7 +8,7 @@
 const apiUrl = "https://consigntracker-db.jtdigital.cc/api/consign_tracker"; // <-- IMPORTANT: This must point to your local backend API
 const itemsPerPage = 5;
 let currentPage = 1;
-let allData = [];
+let allData = []; // This will now hold only the data from the latest search, not the entire DB
 let processedData = [];
 let filteredData = [];
 let lastDisplayedData = [];
@@ -406,135 +406,87 @@ function mergeData(data) {
     return Array.from(mergedMap.values());
 }
 
-async function fetchData() {
+// This function is no longer needed to fetch ALL data on load.
+// It will only be used to restore a search from session storage.
+async function initializeApp() {
     loadingOverlay.classList.remove('hidden');
     mainContent.classList.add('hidden');
-    console.log('Loading overlay shown, main content hidden.');
+
+    const lastSearchTerm = sessionStorage.getItem('lastSearchTerm');
+    if (lastSearchTerm) {
+        console.log('Found last search term in session storage:', lastSearchTerm);
+        searchInput.value = lastSearchTerm;
+        await performSearch(lastSearchTerm); // Await the search to complete
+    } else {
+        // If no stored search, just show an empty table.
+        renderTable();
+    }
+
+    loadingOverlay.classList.add('hidden');
+    mainContent.classList.remove('hidden');
+    console.log('App initialized.');
+}
+
+async function performSearch(searchValue = null) {
+    let searchTerm;
+    if (searchValue !== null) {
+        searchTerm = String(searchValue).toLowerCase();
+        searchInput.value = searchTerm;
+    } else {
+        searchTerm = searchInput.value.toLowerCase();
+    }
+
+    if (!searchTerm) {
+        // If search is cleared, reset the view
+        filteredData = [];
+        processedData = [];
+        quantitySummaryPanel.classList.add('hidden');
+        dashboardContainer.classList.add('hidden');
+        renderTable();
+        return;
+    }
+
+    console.log("Performing search for:", searchTerm);
+    sessionStorage.setItem('lastSearchTerm', searchTerm);
+
+    hideMessageBox();
+    tableLoadingOverlay.classList.remove('hidden');
 
     try {
-        const response = await fetch(apiUrl);
+        // Fetch only the data that matches the search term from the backend
+        const response = await fetch(`${apiUrl}/search?query=${encodeURIComponent(searchTerm)}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        allData = await response.json();
+        allData = await response.json(); // allData now only contains search results
 
-        // Check sessionStorage for a last search term and restore
-        const lastSearchTerm = sessionStorage.getItem('lastSearchTerm');
-        if (lastSearchTerm) {
-            console.log('Found last search term in session storage:', lastSearchTerm);
-            searchInput.value = lastSearchTerm; // Set the input field value
-            performSearch(lastSearchTerm); // Trigger a search with the stored term
-            clearSearchButton.classList.remove('hidden'); // Ensure clear button is visible
-        } else {
-            // If no stored search, initialize to empty state
-            processedData = [];
-            filteredData = [];
-            lastDisplayedData = [];
-            hideMessageBox();
-            quantitySummaryPanel.classList.add('hidden');
-            dashboardContainer.classList.add('hidden');
-            renderTable(); // Render empty table if no search term
-        }
-
-        console.log('Raw data fetched successfully.');
-
-        // Artificial delay removed. The loading overlay will now hide immediately.
-        loadingOverlay.classList.add('hidden');
-        mainContent.classList.remove('hidden');
-        console.log('Loading overlay hidden and main content shown.');
-
-    } catch (error) {
-        console.error("Error fetching data:", error);
-        showMessage(`Failed to load data from your local API. Make sure your backend server is running. Error: ${error.message}`, 'error');
-        invoiceTableBody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-red-500 empty-table-message">Error loading data. Please check your API connection.</td></tr>';
-        quantitySummaryPanel.classList.add('hidden');
-        dashboardContainer.classList.add('hidden');
-        tableContainer.classList.add('hidden');
-        paginationContainer.classList.add('hidden');
-
-        // Artificial delay removed from error case as well.
-        loadingOverlay.classList.add('hidden');
-        mainContent.classList.remove('hidden');
-    }
-}
-
-function performSearch(searchValue = null) {
-    console.log("performSearch called. Search term (raw):", searchInput.value);
-
-    hideMessageBox();
-    showMessage("Retrieving consignments...", 'info');
-    tableLoadingOverlay.classList.remove('hidden');
-
-    setTimeout(() => {
-        invoiceTableBody.innerHTML = '';
-        tableLoadingOverlay.classList.add('hidden');
-
-        let searchTerm;
-        if (searchValue !== null) {
-            searchTerm = String(searchValue).toLowerCase();
-            searchInput.value = searchTerm; // Ensure input field is updated
-            console.log("Searching by suggestion value (Consignment Order Number) or restored value:", searchTerm);
-        } else {
-            searchTerm = searchInput.value.toLowerCase();
-            console.log("Searching by typed input:", searchTerm);
-        }
-
-        // Save the current search term to session storage
-        if (searchTerm) {
-            sessionStorage.setItem('lastSearchTerm', searchTerm);
-        } else {
-            sessionStorage.removeItem('lastSearchTerm');
-        }
-
-        if (searchTerm) {
-            processedData = mergeData(allData);
-
-            const relevantCOs = new Set();
-            processedData.forEach(item => {
-                const srId = item.sr_id ? String(item.sr_id).toLowerCase() : '';
-                const consignmentOrderNumber = item.co_no ? String(item.co_no).toLowerCase() : '';
-                const invoiceNo = item.inv_no ? String(item.inv_no).toLowerCase() : '';
-
-                if (srId.includes(searchTerm) || consignmentOrderNumber.includes(searchTerm) || invoiceNo.includes(searchTerm)) {
-                    if (item.co_no) {
-                        relevantCOs.add(item.co_no);
-                    }
-                }
-            });
-
-            filteredData = processedData.filter(item =>
-                relevantCOs.has(item.co_no)
-            );
-
-            filteredData.sort((a, b) => {
-                const srA = String(a.sr_id || '').toLowerCase();
-                const srB = String(b.sr_id || '').toLowerCase();
-                if (srA < srB) return -1;
-                if (srA > srB) return 1;
-                return 0;
-            });
-
-        } else {
-            filteredData = [];
-            processedData = [];
-            // Ensure quantities are hidden if no search term
-            quantitySummaryPanel.classList.add('hidden');
-            dashboardContainer.classList.add('hidden');
-        }
+        // Since the backend does the main filtering, we just need to merge
+        processedData = mergeData(allData);
+        filteredData = processedData.sort((a, b) => {
+            const srA = String(a.sr_id || '').toLowerCase();
+            const srB = String(b.sr_id || '').toLowerCase();
+            if (srA < srB) return -1;
+            if (srA > srB) return 1;
+            return 0;
+        });
 
         console.log("Filtered Data Length after search:", filteredData.length);
         currentPage = 1;
         calculateAndDisplaySummary();
         renderTable();
         renderDashboard();
-        hideMessageBox();
 
-        lastDisplayedData = [...filteredData];
-
-        if (filteredData.length === 0 && searchInput.value.trim() !== '') {
+        if (filteredData.length === 0) {
             showMessage("No matching results found.", 'info');
         }
-    }, 500);
+
+    } catch (error) {
+        console.error("Error fetching search data:", error);
+        showMessage(`Failed to load search results. Error: ${error.message}`, 'error');
+        invoiceTableBody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-red-500 empty-table-message">Error loading data.</td></tr>';
+    } finally {
+        tableLoadingOverlay.classList.add('hidden');
+    }
 }
 
 
@@ -610,9 +562,8 @@ function renderSuggestions(suggestionsToRender, offset) {
 }
 
 
-searchInput.addEventListener('input', () => {
+searchInput.addEventListener('input', async () => {
     const searchTerm = searchInput.value.toLowerCase();
-    suggestionsList.innerHTML = '';
     currentSuggestionOffset = 0;
 
     if (searchInput.value.length > 0) {
@@ -621,32 +572,26 @@ searchInput.addEventListener('input', () => {
         clearSearchButton.classList.add('hidden');
     }
 
-    if (searchTerm.length > 2 && allData.length > 0) {
-        const matchedItemsMap = new Map();
-
-        allData.forEach(item => {
-            const srId = item.sr_id ? String(item.sr_id).toLowerCase() : '';
-            const consignmentOrderNumber = item.co_no ? String(item.co_no) : '';
-            const invoiceNo = item.inv_no ? String(item.inv_no).toLowerCase() : '';
-            const companyName = item.name_company ? String(item.name_company) : 'Unknown Company';
-
-            if (srId.includes(searchTerm) || consignmentOrderNumber.toLowerCase().includes(searchTerm) || invoiceNo.includes(searchTerm)) {
-                if (consignmentOrderNumber !== '') {
-                    matchedItemsMap.set(consignmentOrderNumber, {
-                        display: `${companyName} – ${consignmentOrderNumber}`,
-                        value: consignmentOrderNumber
-                    });
-                }
+    if (searchTerm.length > 2) {
+        try {
+            const response = await fetch(`${apiUrl}/suggestions?query=${encodeURIComponent(searchTerm)}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch suggestions');
             }
-        });
-
-        allMatchedSuggestions = Array.from(matchedItemsMap.values());
-        renderSuggestions(allMatchedSuggestions, currentSuggestionOffset);
+            const suggestions = await response.json();
+            allMatchedSuggestions = suggestions.map(item => ({
+                display: `${item.name_company} – ${item.co_no}`,
+                value: item.co_no
+            }));
+            renderSuggestions(allMatchedSuggestions, currentSuggestionOffset);
+        } catch (error) {
+            console.error("Error fetching suggestions:", error);
+            suggestionsList.classList.add('hidden');
+        }
     } else {
         suggestionsList.classList.add('hidden');
         suggestionsList.innerHTML = '';
         allMatchedSuggestions = [];
-        currentSuggestionOffset = 0;
     }
     hideMessageBox();
 });
@@ -660,21 +605,18 @@ clearSearchButton.addEventListener('click', () => {
     allMatchedSuggestions = [];
     currentSuggestionOffset = 0;
 
-    // Clear saved search term from sessionStorage
     sessionStorage.removeItem('lastSearchTerm');
 
-    // Reset to empty state
     filteredData = [];
     processedData = [];
 
-    // Ensure all relevant sections are hidden when search is cleared
     quantitySummaryPanel.classList.add('hidden');
     dashboardContainer.classList.add('hidden');
-    tableContainer.classList.add('hidden'); // Hide table on clear
-    paginationContainer.classList.add('hidden'); // Hide pagination on clear
+    tableContainer.classList.add('hidden');
+    paginationContainer.classList.add('hidden');
 
     currentPage = 1;
-    renderTable(); // Re-render table to show empty message
+    renderTable(); 
     renderDashboard();
 });
 
@@ -1138,10 +1080,7 @@ function renderDashboard() {
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOMContentLoaded fired. Initializing...');
-    mainContent.classList.add('hidden');
-    loadingOverlay.classList.remove('hidden');
-
-    fetchData(); // This will now handle restoring search state
+    initializeApp(); // Call the new initialization function
     updatePrintButtonLabel();
     updateSearchInputPlaceholder();
     setupStatusButtonDelegation();
