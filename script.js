@@ -330,7 +330,7 @@ function renderTable() {
     const dataToDisplay = filteredData.slice(startIndex, endIndex);
 
     if (filteredData.length === 0) {
-        const message = searchInput.value.trim() === '' ? 'Enter a search term and press Enter or select a suggestion.' : 'No data found for your search.';
+        const message = searchInput.value.trim() === '' ? 'Enter a search term and select a suggestion.' : 'No data found for your search.';
         invoiceTableBody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-gray-500 empty-table-message">${message}</td></tr>`;
 
         exportButton.disabled = true;
@@ -492,9 +492,8 @@ async function performSearch(searchValue = null) {
 
 searchInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') {
-        event.preventDefault();
-        performSearch();
-        suggestionsList.classList.add('hidden');
+        event.preventDefault(); // This line prevents the default Enter key action
+        // The search is no longer called from here.
     }
 });
 
