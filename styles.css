@@ -713,4 +713,45 @@ footer.app-footer {
     .loading-dot { width: 1.2rem; height: 1.2rem; }
     .mb-6.flex.flex-row { flex-wrap: nowrap; justify-content: space-between; }
     .search-reset-container { flex-grow: 1; min-width: 200px; margin-bottom: 0; }
+
+    /* --- NEW: Admin Table Responsive Styles --- */
+    #adminReportsTable thead { display: none; }
+    #adminReportsTable, #adminReportsTable tbody, #adminReportsTable tr { display: block; width: 100%; }
+    #adminReportsTable tr { 
+        margin-bottom: 1rem; 
+        border: 1px solid #E2E8F0; 
+        border-radius: 0.75rem; 
+        overflow: hidden; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+    }
+    #adminReportsTable td { 
+        display: grid; 
+        grid-template-columns: 130px 1fr; /* Wider label column */
+        gap: 0.5rem; 
+        padding: 0.75rem 1rem; 
+        align-items: center; 
+        border-bottom: 1px solid #E2E8F0; 
+        font-size: 0.9rem; 
+        color: #4A5568; 
+    }
+    #adminReportsTable td:first-child { /* Checkbox cell */
+        grid-template-columns: 1fr; /* Let it be a single column */
+        padding-left: 1rem;
+    }
+    #adminReportsTable td:first-child::before {
+        display: none; /* No label for the checkbox */
+    }
+    #adminReportsTable td:last-child { border-bottom: none; }
+    #adminReportsTable td::before { 
+        content: attr(data-label); 
+        font-weight: 600; 
+        color: #4A5568; 
+    }
+    #adminReportsTable td > * {
+        text-align: right;
+    }
+    #adminReportsTable td:first-child > * {
+        justify-self: start; /* Align checkbox to the left */
+        text-align: left;
+    }
 }

@@ -1,11 +1,5 @@
-// IMPORTANT: This frontend code now expects to fetch data from a local backend API.
-// You must create a server that connects to your MongoDB and exposes an endpoint.
-// Example API URL: http://localhost:3000/api/consign_tracker
-// Your MongoDB database name: consign_tracker_db
-// Your MongoDB collection name: consign_tracker
-
 // Constants for API URL, items per page, and global state variables
-const apiUrl = "https://consigntracker-db.jtdigital.cc/api/consign_tracker"; // <-- IMPORTANT: This must point to your local backend API
+const apiUrl = "/api/consign_tracker"; // Use relative path for all API calls
 const itemsPerPage = 5;
 let currentPage = 1;
 let allData = []; // This will now hold only the data from the latest search, not the entire DB
