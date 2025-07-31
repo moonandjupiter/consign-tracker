@@ -3,168 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Status Search</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>ConsignTracker - Smart Consignment Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #4A90E2 0%, #2C5F9B 100%);
+        }
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
 </head>
-<body class="flex flex-col min-h-screen bg-gray-100">
-    <div id="loadingOverlay">
-        <div class="loading-dots-container">
-            <div class="loading-dot"></div>
-            <div class="loading-dot"></div>
-            <div class="loading-dot"></div>
-            <div class="loading-dot"></div>
-        </div>
-        <h1 class="loading-text">ConsignTracker <span class="version-suffix">v2</span></h1>
-    </div>
+<body class="bg-gray-50 text-gray-800">
 
-    <header class="app-header mx-auto max-w-screen-lg w-full px-4 sm:px-6 lg:px-8 py-4 md:py-6 rounded-t-2xl md:rounded-t-xl md:mt-8">
-        <div class="flex flex-col md:flex-row justify-between md:items-center h-full">
-            <div>
-                <h1 class="text-3xl font-bold">ConsignTracker</h1>
-                <p class="text-blue-200 mt-1 text-sm">Smart lookup for consignors: reported sales, invoices, and vouchers at a glance.</p>
-            </div>
-            <div class="version-number mt-2 md:mt-0 self-end text-right md:self-auto md:text-left">Version: 2.0 build 6</div>
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-blue-600">ConsignTracker</h1>
+            <nav>
+                <a href="https://consigntracker.jtdigital.cc/login" class="text-gray-600 hover:text-blue-600 font-semibold">Admin Login</a>
+            </nav>
         </div>
     </header>
 
-    <main id="mainContent" class="flex-grow w-full flex flex-col">
-        <div class="page-content-wrapper mx-auto max-w-screen-lg w-full bg-white shadow-xl flex-grow rounded-none">
-            <div class="p-6">
-                <div class="mb-6 flex flex-row gap-4 items-center flex-nowrap">
-                    <div class="flex-grow search-reset-container">
-                        <div class="search-input-container">
-                            <i class="fas fa-search search-icon-left"></i>
-                            <input type="text" id="searchInput" placeholder="Search by, Consignment Order Number, SR ID, or Invoice No."
-                                class="w-full p-3 focus:outline-none text-gray-700">
-                            <div class="search-icons-right">
-                                <button id="clearSearchButton" class="search-clear-button hidden" title="Clear search">
-                                    <i class="fas fa-times-circle"></i>
-                                </button>
-                                <div class="export-options-inside relative">
-                                    <button id="exportButton" disabled class="export-button-inside" title="Export Data">
-                                        <i class="fas fa-file-export"></i>
-                                    </button>
-                                    <div id="exportDropdown" class="soft-dropdown hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-10">
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="csv">Export as CSV</a>
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-format="html" id="exportHtmlOption">Export as HTML</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <p class="text-sm text-gray-600 mt-2">Type your SR ID, Consignment Order #, or Invoice # to search. Select a suggestion from the list.</p>
-                <div id="quantitySummaryPanel" class="mt-4 p-4 hidden">
-                    <div class="summary-content">
-                        <i class="fas fa-info-circle summary-icon"></i> <div id="overallSummary"></div>
-                    </div>
-                    <ul id="consignmentSummaryList" class="mt-2 text-sm font-normal">
-                    </ul>
-                </div>
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white">
+        <div class="container mx-auto px-6 py-20 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">Effortless Consignment Tracking</h2>
+            <p class="text-lg md:text-xl mb-8 text-blue-100 max-w-3xl mx-auto">A centralized portal for suppliers to monitor sales reports, invoices, and payment statuses in real-time.</p>
+            <a href="https://consigntracker.jtdigital.cc/" class="bg-white text-blue-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition-colors text-lg shadow-lg">Access the Portal</a>
+        </div>
+    </section>
 
-                <div id="dashboardContainer" class="mt-6 dashboard-section hidden">
-                    <h2 id="dashboardMainTitle" class="dashboard-main-title">Consignment Overview Dashboard</h2>
-                    <div id="srProgressBubblesContainer">
+    <!-- Features Section -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <h3 class="text-3xl font-bold text-center mb-12">Key Features</h3>
+            <div class="grid md:grid-cols-3 gap-10">
+                <!-- Feature 1 -->
+                <div class="feature-card bg-white p-8 rounded-lg shadow-md text-center">
+                    <div class="bg-blue-100 text-blue-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
+                    <h4 class="text-xl font-bold mb-2">Real-Time Status</h4>
+                    <p class="text-gray-600">Suppliers can instantly check the status of sales reports, from invoice submission to voucher completion.</p>
                 </div>
-
-                <div id="messageBox" class="mt-4 p-4 rounded-md hidden"></div>
-                <div id="tableContainer" class="overflow-x-auto mt-4 px-4 py-4 hidden">
-                    <table id="invoiceTable" class="min-w-full">
-                        <thead>
-                            <tr>
-                                <th data-sort="sr_id">SR ID</th>
-                                <th data-sort="name_company">Name of Company</th>
-                                <th class="sortable" data-sort="co_no">CO No. <i class="fas fa-sort"></i></th>
-                                <th data-sort="qty_sold">Quantity Sold</th>
-                                <th data-sort="remaining_bal">Remaining Balance</th>
-                                <th data-sort="amount">Amount</th>
-                                <th data-sort="inv_no">Invoice No.</th>
-                                <th data-sort="voucher_no">Voucher No.</th>
-                                <th data-sort="voucher_date">Voucher Date</th>
-                                <th data-sort="Status">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="invoiceTableBody">
-                            <tr>
-                                <td colspan="10" class="text-center py-4 text-gray-500 empty-table-message">Enter a search term and select a suggestion.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div id="tableLoadingOverlay" class="table-loading-overlay hidden">
-                        <div class="loading-dots-container">
-                            <div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>
-                            <div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>
-                        </div>
+                <!-- Feature 2 (Updated) -->
+                <div class="feature-card bg-white p-8 rounded-lg shadow-md text-center">
+                    <div class="bg-green-100 text-green-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     </div>
+                    <h4 class="text-xl font-bold mb-2">Centralized Dashboard</h4>
+                    <p class="text-gray-600">Access all your consignment information in one place. View sales data, track balances, and check payment statuses.</p>
                 </div>
-            </div>
-            <div id="paginationContainer" class="mt-6 p-4 flex justify-center items-center hidden">
-                <div class="pagination-join flex">
+                <!-- Feature 3 -->
+                <div class="feature-card bg-white p-8 rounded-lg shadow-md text-center">
+                    <div class="bg-yellow-100 text-yellow-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     </div>
+                    <h4 class="text-xl font-bold mb-2">Automated Notifications</h4>
+                    <p class="text-gray-600">Administrators can send professional, templated email notifications directly to suppliers.</p>
+                </div>
             </div>
         </div>
-    </main>
+    </section>
 
-    <footer class="app-footer mx-auto max-w-screen-lg w-full px-4 sm:px-6 lg:px-8 py-4 md:py-6 text-center rounded-b-2xl md:rounded-b-xl md:mb-8">
-        <div class="px-4 sm:px-6 lg:px-8">
-            <p class="copyright">&copy; 2025 ConsignTracker. All rights reserved. | <a href="login.html" class="hover:underline text-white">Admin Login</a></p>
-            <p class="designer">Built with ❤️ by jTeves.</p>
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 ConsignTracker. All Rights Reserved.</p>
         </div>
     </footer>
-
-    <div id="detailsModalOverlay" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="print-header">
-                    <p>Philippine General Hospital</p>
-                    <p>The National University Hospital</p>
-                    <p>University of Philippines - Manila</p>
-                </div>
-                <h2>Sales Report Acknowledgement Slip</h2> <button class="modal-close-button" id="closeModalButton">&times;</button>
-            </div>
-            <div class="modal-body" id="modalDetailsBody"></div>
-            <div class="modal-footer">
-                <div class="confirmation-section no-print w-full">
-                    <label for="termsCheckbox" class="flex items-start text-sm text-gray-700 cursor-pointer">
-                        <input type="checkbox" id="termsCheckbox" class="mr-2 mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0">
-                        <span>By clicking 'Confirm', you acknowledge that you have reviewed the sales report and agree to the terms, figures, and details it contains. This action signifies your acceptance of the report as accurate and final for the stated period.</span>
-                    </label>
-                </div>
-                <button class="modal-print-button" id="printDetailsButton"></button>
-                <div class="print-separator"></div>
-                <div class="signature-section">
-                    <div class="signature-block-centered">
-                        <div class="signature-line"></div>
-                        <p class="signature-text">Signature over Printed Name</p>
-                    </div>
-                    <p class="date-line" id="modalDateLine">Date: _______________</p> </div>
-                <p class="modal-note only-print">
-                    <strong>Note to Supplier:</strong> Please attach this form to your sales invoice upon submission. Failure to attach may result in delays in verifying and processing your invoice.
-                </p>
-            </div>
-        </div>
-    </div>
-    <div id="messageModalOverlay" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <i class="fas fa-info-circle"></i><h2 id="messageModalTitle"></h2>
-                <button class="modal-close-button" id="closeMessageModalButton">&times;</button>
-            </div>
-            <div class="modal-body" id="messageModalBody"></div>
-            <div class="modal-footer">
-                <button id="messageModalOkButton">OK</button>
-            </div>
-        </div>
-    </div>
-    <div id="suggestionsList" class="hidden"></div>
-
-    <script src="script.js"></script>
 
 </body>
 </html>
